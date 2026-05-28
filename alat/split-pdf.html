@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Pisah PDF - Rekan PDF</title>
+<meta name="description" content="Pisahkan satu file PDF menjadi beberapa file atau ekstrak halaman tertentu. Proses cepat, aman, tanpa batas ukuran langsung di browser."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E8720C;
+  --orange-dark:#C45F00;
+  --orange-light:#FF9235;
+  --orange-bg:#FFF4EB;
+  --navy:#0F1923;
+  --navy2:#1A2736;
+  --blue:#1B5FA8;
+  --blue-light:#2272C3;
+  --white:#FFFFFF;
+  --off:#F7F8FA;
+  --border:#DDE1E7;
+  --border2:#C8CDD5;
+  --text:#0F1923;
+  --text2:#3D4A5A;
+  --muted:#6B7A8D;
+  --green:#1A7A42;
+  --red:#C0392B;
+  --purple:#F3E8FD;
+  --purple-dark:#8E44AD;
+  --shadow:0 2px 8px rgba(15,25,35,0.10);
+  --shadow-md:0 4px 20px rgba(15,25,35,0.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.5}
+
+/* ── TOP BAR & NAVBAR ── */
+.topbar{background:var(--navy);color:#fff;font-size:12.5px;text-align:center;padding:7px 20px;font-weight:600;letter-spacing:0.01em}
+.topbar span{color:var(--orange-light)}
+nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-inner{display:flex;align-items:center;gap:0;max-width:1380px;margin:0 auto;padding:0 20px;height:62px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:28px;flex-shrink:0}
+.logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
+.logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
+.logo-sub span{color:var(--orange-light)}
+.nav-right{display:flex;align-items:center;gap:4px;margin-left:auto;padding-left:20px}
+.nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
+.nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+
+/* ── LAYOUT WRAPPER ── */
+.page-body{max-width:1100px;margin:40px auto;padding:0 20px;display:block;}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:24px}
+.breadcrumb a{display:flex;align-items:center;gap:4px;color:var(--blue-light);text-decoration:none;font-weight:600}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb span{color:var(--border2)}
+
+/* ── TOOL HEADER ── */
+.tool-header{text-align:center;margin-bottom:32px}
+.tool-icon{width:64px;height:64px;background:var(--orange-bg);color:var(--orange);font-size:2rem;display:flex;align-items:center;justify-content:center;border-radius:12px;margin:0 auto 16px}
+.tool-header h1{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:var(--text);margin-bottom:8px}
+.tool-header p{color:var(--text2);font-size:1.1rem;max-width:600px;margin:0 auto}
+
+/* ── WORKSPACE ── */
+.workspace{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:40px;min-height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+
+/* 1. Upload Area */
+.upload-area{width:100%;max-width:600px;border:2.5px dashed var(--border2);border-radius:12px;padding:50px 20px;text-align:center;background:var(--off);transition:all .2s ease;cursor:pointer}
+.upload-area:hover, .upload-area.dragover{border-color:var(--orange);background:var(--orange-bg)}
+.upload-area i{font-size:3.5rem;color:var(--orange);margin-bottom:16px;display:block}
+.upload-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.upload-area p{color:var(--muted);font-size:14px;margin-bottom:24px}
+.btn-upload{background:var(--orange);color:#fff;padding:12px 32px;font-size:1rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-upload:hover{background:var(--orange-dark)}
+#fileInput{display:none}
+
+/* 2. Configuration Area */
+.config-area{display:none;width:100%;max-width:700px}
+.config-header{text-align:center;margin-bottom:24px}
+.config-header h3{font-size:1.4rem;font-weight:800;color:var(--text);margin-bottom:6px}
+.file-badge{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:6px 14px;border-radius:100px;font-size:12.5px;font-weight:700}
+
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px}
+.mode-card{background:var(--off);border:2px solid var(--border);border-radius:8px;padding:20px;cursor:pointer;transition:all .2s;position:relative}
+.mode-card:hover{border-color:var(--orange-light)}
+.mode-card.active{background:var(--orange-bg);border-color:var(--orange)}
+.mode-radio{position:absolute;top:20px;right:20px;width:20px;height:20px;accent-color:var(--orange);pointer-events:none}
+.mode-icon{font-size:2rem;color:var(--orange);margin-bottom:12px;display:block}
+.mode-card h4{font-weight:800;font-size:1.1rem;margin-bottom:6px;color:var(--text)}
+.mode-card p{font-size:13px;color:var(--muted);line-height:1.5}
+
+.range-input-box{display:none;margin-top:16px;animation:fadeIn 0.3s}
+@keyframes fadeIn { from{opacity:0;transform:translateY(-5px)} to{opacity:1;transform:none} }
+.range-input-box label{display:block;font-size:13.5px;font-weight:700;margin-bottom:8px;color:var(--text)}
+.range-input-box input{width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:6px;font-size:14px;font-family:'Nunito Sans',sans-serif;outline:none;transition:border .2s}
+.range-input-box input:focus{border-color:var(--orange)}
+.range-help{font-size:12.5px;color:var(--muted);margin-top:8px;display:block}
+
+.config-actions{display:flex;justify-content:center;gap:12px;margin-top:32px;border-top:1px solid var(--border);padding-top:24px}
+.btn-primary-action{background:var(--orange);color:#fff;padding:14px 36px;font-size:1.05rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary-action:hover{background:var(--orange-dark);box-shadow:var(--shadow-md)}
+.btn-sec{background:var(--off);color:var(--text);padding:14px 24px;font-size:1rem;font-weight:700;border:1px solid var(--border2);border-radius:6px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-sec:hover{background:var(--border)}
+
+/* 3. Loading Area */
+.loading-area{display:none;text-align:center;width:100%}
+.spinner{width:60px;height:60px;border:5px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.loading-area p{color:var(--muted);font-size:14px}
+.progress-bar{width:100%;max-width:400px;height:8px;background:var(--border);border-radius:4px;margin:20px auto 0;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:var(--orange);transition:width 0.3s ease}
+
+/* 4. Result Area */
+.result-area{display:none;text-align:center;width:100%}
+.result-icon{width:70px;height:70px;background:#E6F4EA;color:var(--green);font-size:2.5rem;display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 20px}
+.result-area h3{font-size:1.5rem;font-weight:800;margin-bottom:10px}
+.stats-box{display:flex;justify-content:center;gap:40px;background:var(--off);border:1px solid var(--border);padding:20px;border-radius:8px;max-width:500px;margin:20px auto}
+.stat{text-align:center}
+.stat span{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.stat strong{font-size:1.5rem;color:var(--text);font-family:'Barlow Condensed',sans-serif;}
+.result-actions{display:flex;justify-content:center;gap:12px;margin-top:24px}
+.btn-download{background:var(--green);color:#fff;padding:14px 36px;font-size:1.05rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;text-decoration:none;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-download:hover{background:#146134;color:#fff}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;border-top:3px solid var(--orange);padding:24px 20px;text-align:center;font-size:14px}
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+  .topbar { font-size: 11px; padding: 6px 10px; }
+  .page-body { margin: 20px auto; }
+  .tool-header h1 { font-size: 2rem; }
+  
+  .workspace { padding: 24px 16px; min-height: auto; }
+  .upload-area { padding: 30px 16px; }
+  .mode-grid { grid-template-columns: 1fr; gap: 12px; }
+  
+  .config-actions, .result-actions { flex-direction: column; width: 100%; }
+  .btn-primary-action, .btn-sec, .btn-download, .btn-reset { width: 100%; justify-content: center; }
+  
+  .stats-box { gap: 20px; flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"><i class="bi bi-shield-check"></i> <span>Privasi Terjamin</span> — PDF dipisah langsung di dalam memori browser Anda, file tidak dikirim kemana-mana!</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="logo">
+      <span class="logo-mark">PDF</span>
+      <span class="logo-sub">Rekan<span>PDF</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="../index.html" class="nav-btn"><i class="bi bi-grid-fill"></i> Semua Alat</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-body">
+
+  <div class="breadcrumb">
+    <a href="../index.html"><i class="bi bi-house-door-fill"></i> Beranda</a>
+    <span>/</span>
+    <span>Alat Edit</span>
+    <span>/</span>
+    <span>Pisah PDF</span>
+  </div>
+
+  <div class="tool-header">
+    <div class="tool-icon"><i class="bi bi-scissors"></i></div>
+    <h1>Pisah PDF (Split)</h1>
+    <p>Pecah PDF besar menjadi beberapa file terpisah atau ambil rentang halaman tertentu dengan cepat.</p>
+  </div>
+
+  <div class="workspace">
+    
+    <div class="upload-area" id="viewUpload" onclick="document.getElementById('fileInput').click()">
+      <i class="bi bi-file-earmark-pdf-fill"></i>
+      <h3>Pilih file PDF</h3>
+      <p>atau seret dan lepas file PDF besar Anda ke sini</p>
+      <button class="btn-upload"><i class="bi bi-folder-fill"></i> Buka Dokumen</button>
+      <input type="file" id="fileInput" accept="application/pdf">
+    </div>
+
+    <div class="config-area" id="viewConfig">
+      <div class="config-header">
+        <h3>Pilih Mode Pemisahan</h3>
+        <div class="file-badge" id="fileInfoBadge">
+          <i class="bi bi-file-text"></i> <span id="fileNameDisp">document.pdf</span> (<span id="filePagesDisp">0</span> Halaman)
+        </div>
+      </div>
+
+      <div class="mode-grid">
+        <div class="mode-card active" id="modeAll" onclick="setMode('all')">
+          <input type="radio" name="splitMode" class="mode-radio" checked>
+          <i class="bi bi-files mode-icon"></i>
+          <h4>Pecah Semua Halaman</h4>
+          <p>Ubah setiap halaman menjadi 1 file PDF yang berdiri sendiri. (Misal: PDF 5 halaman akan jadi 5 file).</p>
+        </div>
+        
+        <div class="mode-card" id="modeCustom" onclick="setMode('custom')">
+          <input type="radio" name="splitMode" class="mode-radio">
+          <i class="bi bi-list-ol mode-icon"></i>
+          <h4>Rentang Kustom</h4>
+          <p>Tentukan sendiri grup halamannya. (Misal: 1-3 jadi file A, 5-7 jadi file B).</p>
+          
+          <div class="range-input-box" id="rangeInputBox">
+            <label>Masukkan rentang (Pisahkan dengan koma):</label>
+            <input type="text" id="rangeInput" placeholder="Contoh: 1-4, 6, 8-10" onclick="(e) => e.stopPropagation()">
+            <span class="range-help">File akan dipisah sesuai grup koma.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="config-actions">
+        <button class="btn-sec" onclick="resetTool()"><i class="bi bi-arrow-left"></i> Ganti File</button>
+        <button class="btn-primary-action" onclick="executeSplit()"><i class="bi bi-scissors"></i> Pisahkan PDF Sekarang</button>
+      </div>
+    </div>
+
+    <div class="loading-area" id="viewLoading">
+      <div class="spinner"></div>
+      <h3>Memproses Pemisahan...</h3>
+      <p id="loadingText">Sedang membuat dokumen baru. Mohon tunggu...</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="result-area" id="viewResult">
+      <div class="result-icon"><i class="bi bi-check-lg"></i></div>
+      <h3>Selesai! PDF Berhasil Dipisah</h3>
+      
+      <div class="stats-box">
+        <div class="stat">
+          <span>File Dihasilkan</span>
+          <strong id="statFiles">-</strong>
+        </div>
+        <div class="stat">
+          <span>Format Unduhan</span>
+          <strong id="statFormat">-</strong>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <a href="#" id="btnDownload" class="btn-download"><i class="bi bi-download"></i> Unduh File Sekarang</a>
+        <button class="btn-reset" onclick="resetTool()"><i class="bi bi-arrow-counterclockwise"></i> Pisah File Baru</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  © 2025 Rekan PDF. Dibuat untuk Indonesia.
+</footer>
+
+<script>
+// State Management
+let currentFileBuffer = null;
+let currentFileName = '';
+let currentTotalPages = 0;
+let currentMode = 'all'; // 'all' | 'custom'
+
+// Elements
+const viewUpload = document.getElementById('viewUpload');
+const viewConfig = document.getElementById('viewConfig');
+const viewLoading = document.getElementById('viewLoading');
+const viewResult = document.getElementById('viewResult');
+const fileInput = document.getElementById('fileInput');
+const progressBar = document.getElementById('progressBar');
+const loadingText = document.getElementById('loadingText');
+const btnDownload = document.getElementById('btnDownload');
+
+// Drag & Drop
+viewUpload.addEventListener('dragover', (e) => { e.preventDefault(); viewUpload.classList.add('dragover'); });
+viewUpload.addEventListener('dragleave', () => { viewUpload.classList.remove('dragover'); });
+viewUpload.addEventListener('drop', (e) => {
+  e.preventDefault();
+  viewUpload.classList.remove('dragover');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length) handleFile(e.target.files[0]);
+});
+
+// Pilih Mode UI
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('modeAll').classList.remove('active');
+  document.getElementById('modeCustom').classList.remove('active');
+  document.getElementById('modeAll').querySelector('.mode-radio').checked = false;
+  document.getElementById('modeCustom').querySelector('.mode-radio').checked = false;
+  
+  document.getElementById('rangeInputBox').style.display = 'none';
+
+  if (mode === 'all') {
+    document.getElementById('modeAll').classList.add('active');
+    document.getElementById('modeAll').querySelector('.mode-radio').checked = true;
+  } else {
+    document.getElementById('modeCustom').classList.add('active');
+    document.getElementById('modeCustom').querySelector('.mode-radio').checked = true;
+    document.getElementById('rangeInputBox').style.display = 'block';
+  }
+}
+
+// Reset Tool
+function resetTool() {
+  currentFileBuffer = null;
+  fileInput.value = '';
+  document.getElementById('rangeInput').value = '';
+  setMode('all');
+  
+  viewResult.style.display = 'none';
+  viewConfig.style.display = 'none';
+  viewLoading.style.display = 'none';
+  viewUpload.style.display = 'block';
+  progressBar.style.width = '0%';
+}
+
+// Awal Load File
+async function handleFile(file) {
+  if (file.type !== 'application/pdf') {
+    alert('Harap unggah file berformat PDF!');
+    return;
+  }
+
+  currentFileName = file.name.split('.')[0];
+  viewUpload.style.display = 'none';
+  viewLoading.style.display = 'block';
+  loadingText.innerText = "Membaca jumlah halaman...";
+
+  try {
+    currentFileBuffer = await file.arrayBuffer();
+    
+    // Ambil PDF-lib untuk baca total halaman
+    const { PDFDocument } = PDFLib;
+    const pdf = await PDFDocument.load(currentFileBuffer, { updateMetadata: false });
+    currentTotalPages = pdf.getPageCount();
+
+    // Set UI Config
+    document.getElementById('fileNameDisp').innerText = file.name;
+    document.getElementById('filePagesDisp').innerText = currentTotalPages;
+
+    viewLoading.style.display = 'none';
+    viewConfig.style.display = 'block';
+
+  } catch (error) {
+    alert('Gagal memuat PDF. Pastikan file tidak rusak atau dikunci password.');
+    console.error(error);
+    resetTool();
+  }
+}
+
+// Logika Parsing Range Input user
+// Output: Array of Objects [{ name: "1", indices: [0] }, { name: "3-5", indices: [2,3,4] }]
+function parseRanges(rangeStr, maxPages) {
+  const ranges = [];
+  const parts = rangeStr.split(',').map(s => s.trim()).filter(s => s);
+  
+  if (parts.length === 0) throw new Error("Input rentang kosong.");
+
+  for (let p of parts) {
+    if (p.includes('-')) {
+      let [start, end] = p.split('-').map(Number);
+      if (isNaN(start) || isNaN(end) || start < 1 || start > end || end > maxPages) {
+        throw new Error(`Format tidak valid atau di luar jangkauan: ${p}`);
+      }
+      let indices = [];
+      for (let i = start; i <= end; i++) indices.push(i - 1); // Index mulai dari 0 di PDF-lib
+      ranges.push({ name: `${start}-${end}`, indices });
+    } else {
+      let page = Number(p);
+      if (isNaN(page) || page < 1 || page > maxPages) {
+        throw new Error(`Halaman tidak valid atau di luar jangkauan: ${p}`);
+      }
+      ranges.push({ name: `${page}`, indices: [page - 1] });
+    }
+  }
+  return ranges;
+}
+
+// Eksekusi Pemisahan Utama
+async function executeSplit() {
+  let splitTasks = [];
+
+  // 1. Tentukan tugas pemisahan berdasarkan mode
+  if (currentMode === 'all') {
+    // Mode pecah semua (1 PDF per halaman)
+    for (let i = 0; i < currentTotalPages; i++) {
+      splitTasks.push({ name: `${i+1}`, indices: [i] });
+    }
+  } else {
+    // Mode kustom
+    const inputStr = document.getElementById('rangeInput').value;
+    try {
+      splitTasks = parseRanges(inputStr, currentTotalPages);
+    } catch (err) {
+      alert(err.message);
+      return;
+    }
+  }
+
+  // Pindah UI ke Loading
+  viewConfig.style.display = 'none';
+  viewLoading.style.display = 'block';
+  progressBar.style.width = '10%';
+
+  try {
+    const { PDFDocument } = PDFLib;
+    const originalPdf = await PDFDocument.load(currentFileBuffer);
+    const generatedFiles = []; // Format: { filename, uint8array }
+
+    // 2. Loop tugas dan buat PDF
+    for (let i = 0; i < splitTasks.length; i++) {
+      loadingText.innerText = `Memisahkan file ${i+1} dari ${splitTasks.length}...`;
+      
+      const task = splitTasks[i];
+      const newPdf = await PDFDocument.create();
+      
+      // Copy spesifik halaman dari file original
+      const copiedPages = await newPdf.copyPages(originalPdf, task.indices);
+      copiedPages.forEach(page => newPdf.addPage(page));
+
+      // Simpan
+      const pdfBytes = await newPdf.save();
+      generatedFiles.push({
+        filename: `${currentFileName}_hal_${task.name}.pdf`,
+        data: pdfBytes
+      });
+
+      progressBar.style.width = Math.round(10 + ((i + 1) / splitTasks.length) * 70) + '%';
+    }
+
+    // 3. Logika Download (ZIP vs Direct PDF)
+    loadingText.innerText = "Mengemas file untuk diunduh...";
+    
+    if (generatedFiles.length === 1) {
+      // Jika hanya 1 file, langsung download PDF-nya (Tidak perlu ZIP)
+      const blob = new Blob([generatedFiles[0].data], { type: 'application/pdf' });
+      btnDownload.href = URL.createObjectURL(blob);
+      btnDownload.download = generatedFiles[0].filename;
+      
+      document.getElementById('statFormat').innerText = "File .PDF";
+    } else {
+      // Jika > 1 file, gunakan JSZip agar terdownload jadi 1 paket ZIP
+      const zip = new JSZip();
+      generatedFiles.forEach(file => {
+        zip.file(file.filename, file.data);
+      });
+
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      btnDownload.href = URL.createObjectURL(zipBlob);
+      btnDownload.download = `RekanPDF_Split_${currentFileName}.zip`;
+
+      document.getElementById('statFormat').innerText = "Arsip .ZIP";
+    }
+
+    // 4. Update UI Berhasil
+    progressBar.style.width = '100%';
+    document.getElementById('statFiles').innerText = generatedFiles.length;
+
+    setTimeout(() => {
+      viewLoading.style.display = 'none';
+      viewResult.style.display = 'block';
+    }, 500);
+
+  } catch (error) {
+    alert("Terjadi kesalahan saat memproses PDF.");
+    console.error(error);
+    viewLoading.style.display = 'none';
+    viewConfig.style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Hapus Halaman PDF - Rekan PDF</title>
+<meta name="description" content="Hapus halaman tertentu dari dokumen PDF secara permanen dan gratis. Proses instan langsung di perangkat Anda tanpa batas ukuran."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E8720C;
+  --orange-dark:#C45F00;
+  --orange-light:#FF9235;
+  --orange-bg:#FFF4EB;
+  --navy:#0F1923;
+  --navy2:#1A2736;
+  --blue:#1B5FA8;
+  --blue-light:#2272C3;
+  --white:#FFFFFF;
+  --off:#F7F8FA;
+  --border:#DDE1E7;
+  --border2:#C8CDD5;
+  --text:#0F1923;
+  --text2:#3D4A5A;
+  --muted:#6B7A8D;
+  --green:#1A7A42;
+  --red:#C0392B;
+  --red-light:#FDECEA;
+  --shadow:0 2px 8px rgba(15,25,35,0.10);
+  --shadow-md:0 4px 20px rgba(15,25,35,0.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.5}
+
+/* ── TOP BAR & NAVBAR ── */
+.topbar{background:var(--navy);color:#fff;font-size:12.5px;text-align:center;padding:7px 20px;font-weight:600;letter-spacing:0.01em}
+.topbar span{color:var(--orange-light)}
+nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-inner{display:flex;align-items:center;gap:0;max-width:1380px;margin:0 auto;padding:0 20px;height:62px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:28px;flex-shrink:0}
+.logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
+.logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
+.logo-sub span{color:var(--orange-light)}
+.nav-right{display:flex;align-items:center;gap:4px;margin-left:auto;padding-left:20px}
+.nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
+.nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+
+/* ── LAYOUT WRAPPER ── */
+.page-body{max-width:1100px;margin:40px auto;padding:0 20px;display:block;}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:24px}
+.breadcrumb a{display:flex;align-items:center;gap:4px;color:var(--blue-light);text-decoration:none;font-weight:600}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb span{color:var(--border2)}
+
+/* ── TOOL HEADER ── */
+.tool-header{text-align:center;margin-bottom:32px}
+.tool-icon{width:64px;height:64px;background:var(--red-light);color:var(--red);font-size:2rem;display:flex;align-items:center;justify-content:center;border-radius:12px;margin:0 auto 16px}
+.tool-header h1{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:var(--text);margin-bottom:8px}
+.tool-header p{color:var(--text2);font-size:1.1rem;max-width:600px;margin:0 auto}
+
+/* ── WORKSPACE ── */
+.workspace{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:40px;min-height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+
+/* 1. Upload Area */
+.upload-area{width:100%;max-width:600px;border:2.5px dashed var(--border2);border-radius:12px;padding:50px 20px;text-align:center;background:var(--off);transition:all .2s ease;cursor:pointer}
+.upload-area:hover, .upload-area.dragover{border-color:var(--red);background:var(--red-light)}
+.upload-area i{font-size:3.5rem;color:var(--red);margin-bottom:16px;display:block}
+.upload-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.upload-area p{color:var(--muted);font-size:14px;margin-bottom:24px}
+.btn-upload{background:var(--red);color:#fff;padding:12px 32px;font-size:1rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-upload:hover{background:#A93226}
+#fileInput{display:none}
+
+/* 2. Loading Area */
+.loading-area{display:none;text-align:center;width:100%}
+.spinner{width:60px;height:60px;border:5px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.loading-area p{color:var(--muted);font-size:14px}
+.progress-bar{width:100%;max-width:400px;height:8px;background:var(--border);border-radius:4px;margin:20px auto 0;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:var(--red);transition:width 0.3s ease}
+
+/* 3. Selection Area */
+.selection-area{display:none;width:100%;text-align:center}
+.selection-header{margin-bottom:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.selection-header h3{font-size:1.4rem;font-weight:800;color:var(--text)}
+.selection-controls{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
+.btn-control{background:var(--off);border:1px solid var(--border2);padding:8px 16px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;color:var(--text2)}
+.btn-control:hover{background:var(--border);color:var(--text)}
+
+/* Grid Halaman */
+.page-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));gap:24px;width:100%;max-width:900px;margin:0 auto 32px;padding:10px;max-height:480px;overflow-y:auto;background:var(--off);border:1px solid var(--border);border-radius:8px;padding:24px}
+.page-card{background:var(--white);border:2.5px solid var(--border);border-radius:6px;position:relative;cursor:pointer;transition:all .2s;box-shadow:var(--shadow)}
+.page-card:hover{transform:translateY(-3px);border-color:var(--border2);box-shadow:var(--shadow-md)}
+.page-card.to-delete{border-color:var(--red);background:var(--red-light)}
+.page-card canvas{width:100%;height:auto;display:block;border-radius:3px;opacity:1;transition:opacity .2s}
+.page-card.to-delete canvas{opacity:0.4;filter:grayscale(80%)}
+.trash-badge{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;background:var(--red);color:white;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 10px rgba(192,57,43,0.4);z-index:2}
+.page-card.to-delete .trash-badge{display:flex}
+.page-num{position:absolute;bottom:-28px;left:0;right:0;text-align:center;font-size:13px;font-weight:700;color:var(--text2)}
+.page-card.to-delete .page-num{color:var(--red);text-decoration:line-through}
+
+/* Aksi Penghapusan */
+.selection-actions{display:flex;justify-content:center;gap:12px;margin-top:16px}
+.btn-primary-action{background:var(--red);color:#fff;padding:14px 36px;font-size:1.05rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary-action:hover{background:#A93226;box-shadow:var(--shadow-md)}
+.btn-primary-action:disabled{background:var(--border2);cursor:not-allowed;box-shadow:none}
+
+/* 4. Result Area */
+.result-area{display:none;text-align:center;width:100%}
+.result-icon{width:70px;height:70px;background:#E6F4EA;color:var(--green);font-size:2.5rem;display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 20px}
+.result-area h3{font-size:1.5rem;font-weight:800;margin-bottom:10px}
+.stats-box{display:flex;justify-content:center;gap:40px;background:var(--off);border:1px solid var(--border);padding:20px;border-radius:8px;max-width:500px;margin:20px auto}
+.stat{text-align:center}
+.stat span{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.stat strong{font-size:1.5rem;color:var(--text);font-family:'Barlow Condensed',sans-serif;}
+.result-actions{display:flex;justify-content:center;gap:12px;margin-top:24px}
+.btn-download{background:var(--green);color:#fff;padding:14px 36px;font-size:1.05rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;text-decoration:none;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-download:hover{background:#146134;color:#fff}
+.btn-reset{background:var(--off);color:var(--text2);padding:14px 24px;font-size:1rem;font-weight:700;border:1px solid var(--border2);border-radius:6px;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-reset:hover{background:var(--border);color:var(--text)}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;border-top:3px solid var(--orange);padding:24px 20px;text-align:center;font-size:14px}
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+  .topbar { font-size: 11px; padding: 6px 10px; }
+  .page-body { margin: 20px auto; }
+  .tool-header h1 { font-size: 2rem; }
+  
+  .workspace { padding: 24px 16px; min-height: auto; }
+  .upload-area { padding: 30px 16px; }
+  .upload-area i { font-size: 2.5rem; margin-bottom: 12px; }
+  
+  .page-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 16px; max-height: 400px; }
+  .page-num { bottom: -22px; font-size: 11px; }
+  
+  .selection-actions, .result-actions { flex-direction: column; width: 100%; }
+  .btn-primary-action, .btn-download, .btn-reset { width: 100%; justify-content: center; }
+  
+  .stats-box { gap: 20px; flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"><i class="bi bi-shield-check"></i> <span>Privasi 100% Aman</span> — Diproses langsung di perangkat Anda, tidak ada data yang diunggah ke server!</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="logo">
+      <span class="logo-mark">PDF</span>
+      <span class="logo-sub">Rekan<span>PDF</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="../index.html" class="nav-btn"><i class="bi bi-grid-fill"></i> Semua Alat</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-body">
+
+  <div class="breadcrumb">
+    <a href="../index.html"><i class="bi bi-house-door-fill"></i> Beranda</a>
+    <span>/</span>
+    <span>Alat Edit</span>
+    <span>/</span>
+    <span>Hapus Halaman</span>
+  </div>
+
+  <div class="tool-header">
+    <div class="tool-icon"><i class="bi bi-trash3-fill"></i></div>
+    <h1>Hapus Halaman PDF</h1>
+    <p>Pilih halaman yang ingin dihapus. File akan diproses instan dan disimpan tanpa halaman tersebut.</p>
+  </div>
+
+  <div class="workspace">
+    
+    <div class="upload-area" id="viewUpload" onclick="document.getElementById('fileInput').click()">
+      <i class="bi bi-file-earmark-x-fill"></i>
+      <h3>Pilih file PDF</h3>
+      <p>atau seret dan lepas PDF Anda di sini</p>
+      <button class="btn-upload"><i class="bi bi-folder-fill"></i> Pilih Dokumen</button>
+      <input type="file" id="fileInput" accept="application/pdf">
+    </div>
+
+    <div class="loading-area" id="viewLoading">
+      <div class="spinner"></div>
+      <h3>Memuat Dokumen...</h3>
+      <p id="loadingText">Sedang membaca struktur halaman. Mohon tunggu...</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="selection-area" id="viewSelection">
+      <div class="selection-header">
+        <h3>Pilih Halaman Untuk Dihapus</h3>
+        <p>Klik pada halaman untuk menandainya. Halaman dengan ikon tong sampah akan dibuang.</p>
+      </div>
+      
+      <div class="page-grid" id="pageGrid">
+        </div>
+
+      <div class="selection-actions">
+        <button id="btnRemove" class="btn-primary-action" onclick="removePages()" disabled>
+          <i class="bi bi-trash"></i> Hapus Halaman Terpilih
+        </button>
+      </div>
+    </div>
+
+    <div class="result-area" id="viewResult">
+      <div class="result-icon"><i class="bi bi-check-lg"></i></div>
+      <h3>Selesai! Halaman Telah Dihapus</h3>
+      
+      <div class="stats-box">
+        <div class="stat">
+          <span>Sisa Halaman</span>
+          <strong id="statPages">-</strong>
+        </div>
+        <div class="stat">
+          <span>Ukuran File Baru</span>
+          <strong id="statSize">-</strong>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <a href="#" id="btnDownload" class="btn-download"><i class="bi bi-download"></i> Unduh PDF Sekarang</a>
+        <button class="btn-reset" onclick="resetTool()"><i class="bi bi-arrow-counterclockwise"></i> Mulai Baru</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  © 2025 Rekan PDF. Dibuat untuk Indonesia.
+</footer>
+
+<script>
+// Konfigurasi Worker PDF.js
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+// Elements
+const viewUpload = document.getElementById('viewUpload');
+const viewLoading = document.getElementById('viewLoading');
+const viewSelection = document.getElementById('viewSelection');
+const viewResult = document.getElementById('viewResult');
+const fileInput = document.getElementById('fileInput');
+const pageGrid = document.getElementById('pageGrid');
+const btnRemove = document.getElementById('btnRemove');
+const progressBar = document.getElementById('progressBar');
+const loadingText = document.getElementById('loadingText');
+
+// State Global
+let currentFileBuffer = null;
+let currentFileName = '';
+let pagesToDelete = new Set();
+let totalPages = 0;
+
+// Drag & Drop
+viewUpload.addEventListener('dragover', (e) => { e.preventDefault(); viewUpload.classList.add('dragover'); });
+viewUpload.addEventListener('dragleave', () => { viewUpload.classList.remove('dragover'); });
+viewUpload.addEventListener('drop', (e) => {
+  e.preventDefault();
+  viewUpload.classList.remove('dragover');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length) handleFile(e.target.files[0]);
+});
+
+// Format Bytes
+function formatBytes(bytes, decimals = 2) {
+  if (!+bytes) return '0 Bytes';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
+
+// Reset Tool
+function resetTool() {
+  currentFileBuffer = null;
+  pagesToDelete.clear();
+  pageGrid.innerHTML = '';
+  fileInput.value = '';
+  btnRemove.disabled = true;
+  
+  viewResult.style.display = 'none';
+  viewSelection.style.display = 'none';
+  viewLoading.style.display = 'none';
+  viewUpload.style.display = 'block';
+}
+
+// Proses Awal: Baca File & Render Thumbnail
+async function handleFile(file) {
+  if (file.type !== 'application/pdf') {
+    alert('Harap unggah file berformat PDF!');
+    return;
+  }
+
+  currentFileName = file.name;
+  viewUpload.style.display = 'none';
+  viewLoading.style.display = 'block';
+
+  try {
+    currentFileBuffer = await file.arrayBuffer();
+    
+    // Baca dokumen dengan PDF.js
+    const pdf = await pdfjsLib.getDocument(currentFileBuffer).promise;
+    totalPages = pdf.numPages;
+    pageGrid.innerHTML = '';
+
+    // Render Thumbnail satu per satu
+    for (let i = 1; i <= totalPages; i++) {
+      loadingText.innerText = `Menyiapkan pratinjau halaman ${i} dari ${totalPages}...`;
+      progressBar.style.width = Math.round((i / totalPages) * 100) + '%';
+      
+      const page = await pdf.getPage(i);
+      const viewport = page.getViewport({ scale: 0.3 }); 
+      
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+      // Buat elemen card
+      const card = document.createElement('div');
+      card.className = 'page-card';
+      card.dataset.page = i;
+      card.onclick = () => toggleSelectPage(card, i);
+
+      card.innerHTML = `
+        <div class="trash-badge"><i class="bi bi-trash-fill"></i></div>
+        <img src="${canvas.toDataURL()}" style="width:100%; border-radius:3px; display:block;">
+        <div class="page-num">Hal ${i}</div>
+      `;
+      pageGrid.appendChild(card);
+    }
+
+    // Tampilkan Area Seleksi
+    setTimeout(() => {
+      viewLoading.style.display = 'none';
+      viewSelection.style.display = 'block';
+    }, 400);
+
+  } catch (error) {
+    alert('Gagal memuat PDF. Pastikan file tidak rusak atau diproteksi password.');
+    console.error(error);
+    resetTool();
+  }
+}
+
+// Logika Penandaan Halaman yang akan Dihapus
+function toggleSelectPage(cardElement, pageNum) {
+  if (pagesToDelete.has(pageNum)) {
+    // Batal hapus
+    pagesToDelete.delete(pageNum);
+    cardElement.classList.remove('to-delete');
+  } else {
+    // Tandai untuk dihapus
+    pagesToDelete.add(pageNum);
+    cardElement.classList.add('to-delete');
+  }
+  updateRemoveButton();
+}
+
+function updateRemoveButton() {
+  const count = pagesToDelete.size;
+  if (count > 0) {
+    btnRemove.disabled = false;
+    btnRemove.innerHTML = `<i class="bi bi-trash"></i> Hapus ${count} Halaman`;
+  } else {
+    btnRemove.disabled = true;
+    btnRemove.innerHTML = `<i class="bi bi-trash"></i> Hapus Halaman Terpilih`;
+  }
+}
+
+// Eksekusi: Buang halaman pakai pdf-lib
+async function removePages() {
+  if (pagesToDelete.size === 0) return;
+
+  // Validasi: Tidak boleh hapus semua halaman
+  if (pagesToDelete.size === totalPages) {
+    alert("Kamu tidak bisa menghapus semua halaman. Sebuah PDF harus memiliki minimal 1 halaman.");
+    return;
+  }
+
+  viewSelection.style.display = 'none';
+  viewLoading.style.display = 'block';
+  loadingText.innerText = "Sedang membuang halaman dan menyimpan PDF...";
+  
+  // Fake progress bar untuk UX
+  let width = 10;
+  const progInterval = setInterval(() => {
+    if(width < 90) width += 10;
+    progressBar.style.width = width + '%';
+  }, 200);
+
+  try {
+    const { PDFDocument } = PDFLib;
+    
+    // Load file original
+    const originalPdf = await PDFDocument.load(currentFileBuffer);
+    
+    // Buat file baru
+    const newPdfDoc = await PDFDocument.create();
+
+    // Cari tahu halaman mana yang harus DIPERTAHANKAN
+    let pagesToKeep = [];
+    for (let i = 1; i <= totalPages; i++) {
+      if (!pagesToDelete.has(i)) {
+        pagesToKeep.push(i - 1); // pdf-lib index mulai dari 0
+      }
+    }
+    
+    // Copy halaman yang tidak dihapus ke dokumen baru
+    const copiedPages = await newPdfDoc.copyPages(originalPdf, pagesToKeep);
+    copiedPages.forEach(page => newPdfDoc.addPage(page));
+
+    // Save
+    const pdfBytes = await newPdfDoc.save();
+    
+    // Persiapkan Unduhan
+    clearInterval(progInterval);
+    progressBar.style.width = '100%';
+
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    
+    const btnDown = document.getElementById('btnDownload');
+    btnDown.href = url;
+    btnDown.download = `RekanPDF_Cleaned_${currentFileName}`;
+
+    document.getElementById('statPages').innerText = pagesToKeep.length;
+    document.getElementById('statSize').innerText = formatBytes(blob.size);
+
+    setTimeout(() => {
+      viewLoading.style.display = 'none';
+      viewResult.style.display = 'block';
+    }, 500);
+
+  } catch (error) {
+    clearInterval(progInterval);
+    alert('Terjadi kesalahan saat memproses halaman.');
+    console.error(error);
+    viewLoading.style.display = 'none';
+    viewSelection.style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>

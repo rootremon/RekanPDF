@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>FAQ (Tanya Jawab) - Rekan PDF</title>
+<meta name="description" content="Pertanyaan yang sering diajukan seputar layanan Rekan PDF. Pelajari keamanan, privasi, dan cara kerja alat PDF gratis kami."/>
+
+<link rel="icon" type="image/png" href="../img/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E8720C;
+  --orange-dark:#C45F00;
+  --orange-light:#FF9235;
+  --navy:#0F1923;
+  --navy2:#1A2736;
+  --white:#FFFFFF;
+  --off:#F7F8FA;
+  --border:#DDE1E7;
+  --text:#0F1923;
+  --text2:#3D4A5A;
+  --muted:#6B7A8D;
+  --shadow-md:0 4px 20px rgba(15,25,35,0.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.6;overflow-x:hidden; display:flex; flex-direction:column; min-height:100vh;}
+
+/* ── NAVBAR ── */
+nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-inner{display:flex;align-items:center;gap:0;max-width:1380px;margin:0 auto;padding:0 20px;height:62px; justify-content:space-between;}
+.mobile-menu-btn{display:none;background:transparent;border:none;color:#fff;font-size:1.8rem;cursor:pointer;margin-right:12px;padding:0;}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
+.logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
+.logo-sub span{color:var(--orange-light)}
+
+.nav-right{display:flex;align-items:center;gap:4px;}
+.nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
+.nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+.nav-btn.primary{background:var(--orange);border-color:var(--orange-dark)}
+.nav-btn.primary:hover{background:var(--orange-dark)}
+
+/* ── MOBILE MENU DRAWER ── */
+.mobile-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:1000;opacity:0;visibility:hidden;transition:all .3s ease;}
+.mobile-overlay.active{opacity:1;visibility:visible;}
+.mobile-drawer{position:fixed;top:0;left:-320px;width:300px;height:100%;background:#fff;z-index:1001;box-shadow:4px 0 20px rgba(0,0,0,0.15);transition:all .3s ease;display:flex;flex-direction:column;overflow-y:auto;}
+.mobile-drawer.active{left:0;}
+.md-header{display:flex;justify-content:flex-end;padding:12px 16px;}
+.md-close{background:transparent;border:none;font-size:1.6rem;color:var(--text2);cursor:pointer;}
+.md-content{padding:0 20px 30px;}
+.md-cat{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:800;color:var(--muted);margin:16px 0 10px;letter-spacing:0.04em;}
+.md-link{display:flex;align-items:center;gap:12px;padding:10px 0;color:var(--text);text-decoration:none;font-weight:700;font-size:14px;border-bottom:1px solid var(--border);}
+.md-link:last-child{border-bottom:none;}
+.md-link:hover{color:var(--orange);}
+
+/* ── MAIN CONTENT (FAQ) ── */
+.faq-container { max-width: 840px; margin: 60px auto; padding: 0 20px; flex-grow: 1; width: 100%; }
+.faq-box { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 48px; box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
+.faq-box::before { content:''; position:absolute; top:0; left:0; right:0; height:6px; background:var(--orange); }
+
+.faq-header { text-align: center; margin-bottom: 40px; }
+.faq-header h1 { font-family: 'Barlow Condensed', sans-serif; font-size: 2.6rem; font-weight: 800; color: var(--navy); margin-bottom: 8px; line-height: 1.1; }
+.faq-header p { color: var(--text2); font-size: 1.05rem; }
+
+/* Accordion Styles */
+.faq-list { display: flex; flex-direction: column; gap: 16px; }
+details { background: var(--off); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: all 0.3s ease; }
+details[open] { border-color: var(--orange); background: var(--white); box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
+
+summary { padding: 20px; font-weight: 800; color: var(--text); font-size: 1.1rem; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+summary::-webkit-details-marker { display: none; } /* Sembunyikan panah default bawaan browser */
+summary .toggle-icon { color: var(--orange); font-size: 1.2rem; transition: transform 0.3s ease; flex-shrink: 0; margin-left: 16px; }
+details[open] summary .toggle-icon { transform: rotate(180deg); }
+
+.faq-answer { padding: 0 20px 24px; color: var(--text2); font-size: 1rem; line-height: 1.6; border-top: 1px dashed var(--border); margin: 0 20px; padding-top: 16px; padding-left: 0; padding-right: 0; }
+.faq-answer strong { color: var(--navy); }
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:auto;border-top:3px solid var(--orange)}
+.footer-main{max-width:1380px;margin:0 auto;padding:48px 20px 36px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:36px}
+.footer-logo-text{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;letter-spacing:0.06em}
+.footer-logo-text span{color:var(--orange-light)}
+.footer-brand p{font-size:13px;margin-top:10px;line-height:1.6;max-width:240px;color:rgba(255,255,255,0.6)}
+.footer-col h5{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.12);padding-bottom:8px}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:9px}
+.footer-col ul li a{color:rgba(255,255,255,0.62);text-decoration:none;font-size:13px;transition:color .15s}
+.footer-col ul li a:hover{color:var(--orange-light)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.1);max-width:1380px;margin:0 auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;font-size:12.5px}
+.footer-bottom a{color:rgba(255,255,255,0.5);text-decoration:none;margin-left:16px}
+.footer-bottom a:hover{color:var(--orange-light)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .mobile-menu-btn{display:block;}
+  .nav-inner { justify-content: flex-start; }
+  .logo{margin-right:auto;}
+  .nav-right{display:none}
+  .footer-main{grid-template-columns:1fr 1fr;gap:24px}
+}
+@media(max-width:580px){
+  .faq-container { margin: 30px auto; padding: 0 16px; }
+  .faq-box { padding: 32px 16px; }
+  .faq-header h1 { font-size: 2.2rem; }
+  summary { font-size: 1rem; padding: 16px; }
+  .faq-answer { margin: 0 16px; padding-bottom: 16px; font-size: 0.95rem;}
+  
+  .footer-main{grid-template-columns:1fr; text-align: center;}
+  .footer-brand p { margin: 10px auto; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+  .footer-bottom a { margin: 0 8px; }
+}
+
+/* Reveal Animasi */
+.rev{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
+.rev.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><i class="bi bi-list"></i></button>
+    <a href="../index.html" class="logo">
+      <span class="logo-mark">PDF</span>
+      <span class="logo-sub">Rekan<span>PDF</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="../index.html#alat" class="nav-btn">Semua Alat</a>
+      <a href="../index.html#kenapa" class="nav-btn">Keunggulan</a>
+      <a href="../index.html#alat" class="nav-btn primary">Mulai Gratis →</a>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
+<div class="mobile-drawer" id="mobileMenuDrawer">
+  <div class="md-header">
+    <button class="md-close" onclick="toggleMobileMenu()"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <div class="md-content">
+    <div class="md-cat">MENU UTAMA</div>
+    <a href="../index.html" class="md-link"><i class="bi bi-house-door-fill" style="color:var(--orange)"></i> Beranda</a>
+    <a href="../index.html#alat" class="md-link"><i class="bi bi-grid-fill" style="color:var(--blue-light)"></i> Semua Alat PDF</a>
+  </div>
+</div>
+
+<main class="faq-container rev">
+  <div class="faq-box">
+    <div class="faq-header">
+      <h1>Tanya Jawab (FAQ)</h1>
+      <p>Temukan jawaban atas pertanyaan yang paling sering diajukan mengenai Rekan PDF.</p>
+    </div>
+    
+    <div class="faq-list">
+      
+      <details open>
+        <summary>Apakah Rekan PDF benar-benar gratis? <i class="bi bi-chevron-down toggle-icon"></i></summary>
+        <div class="faq-answer">
+          <strong>Ya, 100% gratis selamanya.</strong> Kami tidak menyediakan sistem langganan premium, tidak ada biaya tersembunyi, dan tidak akan memberikan <i>watermark</i> pada dokumen hasil editan Anda. Website ini dibuat sebagai solusi untuk mahasiswa dan pencari kerja yang membutuhkan alat PDF cepat tanpa halangan biaya.
+        </div>
+      </details>
+
+      <details>
+        <summary>Apakah file dokumen saya aman dan terjaga privasinya? <i class="bi bi-chevron-down toggle-icon"></i></summary>
+        <div class="faq-answer">
+          <strong>Sangat aman.</strong> Rekan PDF menggunakan teknologi pemrosesan lokal berbasis browser (WebAssembly). Artinya, file PDF Anda <strong>tidak pernah diunggah atau disimpan ke server kami</strong>. Semua proses kompresi, penggabungan, dan pemisahan terjadi sepenuhnya di dalam memori HP atau Komputer Anda sendiri. Tidak ada jejak digital yang tersisa di server mana pun.
+        </div>
+      </details>
+
+      <details>
+        <summary>Apakah ada batasan ukuran file atau batas penggunaan harian? <i class="bi bi-chevron-down toggle-icon"></i></summary>
+        <div class="faq-answer">
+          <strong>Tidak ada batasan dari kami.</strong> Anda bebas memproses file berukuran besar dan menggunakannya berkali-kali dalam sehari. Satu-satunya hal yang membatasi adalah spesifikasi/RAM perangkat (HP atau Laptop) yang Anda gunakan saat memproses file yang sangat besar.
+        </div>
+      </details>
+
+      <details>
+        <summary>Kenapa ada iklan di website yang katanya gratis ini? <i class="bi bi-chevron-down toggle-icon"></i></summary>
+        <div class="faq-answer">
+          Mempertahankan sebuah website tetap online memerlukan biaya bulanan untuk sewa server dan domain. Iklan dalam jumlah yang wajar kami pasang semata-mata untuk <strong>menutupi biaya pemeliharaan tersebut</strong> agar Rekan PDF bisa terus hidup dan diakses gratis oleh siapa saja. Kami berjanji penempatan iklan tidak akan menutupi layar atau mengganggu proses kerja Anda.
+        </div>
+      </details>
+
+      <details>
+        <summary>Apakah saya perlu mendownload atau menginstal aplikasi? <i class="bi bi-chevron-down toggle-icon"></i></summary>
+        <div class="faq-answer">
+          <strong>Tidak perlu.</strong> Rekan PDF sepenuhnya berbasis web. Anda hanya perlu membuka browser (seperti Google Chrome, Safari, atau Firefox) dan langsung bisa mulai bekerja. Ini sangat menghemat kuota internet dan ruang penyimpanan di perangkat Anda.
+        </div>
+      </details>
+
+      <details>
+        <summary>Bisa dipakai di HP Android atau iPhone? <i class="bi bi-chevron-down toggle-icon"></i></summary>
+        <div class="faq-answer">
+          <strong>Tentu saja!</strong> Desain website kami sudah dioptimalkan agar berjalan sangat mulus di berbagai perangkat layar sentuh, baik itu ponsel pintar (Android/iOS) maupun tablet. Fitur <i>drag-and-drop</i> file kami juga disesuaikan agar mudah dilakukan menggunakan jari.
+        </div>
+      </details>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="footer-logo-text">Rekan<span>PDF</span></div>
+      <p>Platform alat PDF nomor 1 untuk pengguna Indonesia. Mengutamakan privasi, kecepatan, dan bebas biaya tanpa syarat apapun.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Edit PDF</h5>
+      <ul>
+        <li><a href="../alat/merge.html">Gabung PDF</a></li>
+        <li><a href="../alat/split-pdf.html">Pisah PDF</a></li>
+        <li><a href="../alat/extract-pages.html">Ambil Halaman</a></li>
+        <li><a href="../alat/remove-pages.html">Hapus Halaman</a></li>
+        <li><a href="../alat/organize-pdf.html">Atur Halaman</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Konversi</h5>
+      <ul>
+        <li><a href="../alat/word-to-pdf.html">Word ke PDF</a></li>
+        <li><a href="../alat/jpg-to-pdf.html">JPG ke PDF</a></li>
+        <li><a href="../alat/pdf-to-images.html">PDF ke JPG</a></li>
+        <li><a href="../alat/excel-to-pdf.html">Excel ke PDF</a></li>
+        <li><a href="../alat/ocr-pdf.html">OCR PDF</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Optimasi</h5>
+      <ul>
+        <li><a href="../alat/compress-pdf.html">Kompres PDF</a></li>
+        <li><a href="../alat/repair-pdf.html">Perbaiki PDF</a></li>
+        <li><a href="../alat/scan-to-pdf.html">Scan ke PDF</a></li>
+        <li><a href="../alat/powerpoint-to-pdf.html">PPT ke PDF</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Perusahaan</h5>
+      <ul>
+        <li><a href="about.html">Tentang Kami</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="privacy-police.html">Kebijakan Privasi</a></li>
+        <li><a href="terms.html">Syarat Layanan</a></li>
+        <li><a href="contact.html">Kontak Developer</a></li>
+        <li><a href="../status.html">Status Sistem</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Rekan PDF. Dibuat dengan ☕ di Indonesia.</span>
+    <div>
+      <a href="privacy-police.html">Privasi</a>
+      <a href="terms.html">Syarat Layanan</a>
+      <a href="../sitemap.xml">Sitemap</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// --- MOBILE MENU TOGGLE ---
+function toggleMobileMenu() {
+  const overlay = document.getElementById('mobileMenuOverlay');
+  const drawer = document.getElementById('mobileMenuDrawer');
+  overlay.classList.toggle('active');
+  drawer.classList.toggle('active');
+  document.body.style.overflow = drawer.classList.contains('active') ? 'hidden' : '';
+}
+
+// --- EXCLUSIVE ACCORDION (Hanya buka 1 FAQ dalam 1 waktu) ---
+const details = document.querySelectorAll('details');
+details.forEach((targetDetail) => {
+  targetDetail.addEventListener('click', () => {
+    // Tutup semua details lain saat salah satu diklik
+    details.forEach((detail) => {
+      if (detail !== targetDetail) {
+        detail.removeAttribute('open');
+      }
+    });
+  });
+});
+
+// --- SCROLL REVEAL ANIMATION ---
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      setTimeout(()=>e.target.classList.add('in'), i*60);
+      obs.unobserve(e.target);
+    }
+  });
+},{threshold:0.1});
+document.querySelectorAll('.rev').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

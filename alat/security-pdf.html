@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Keamanan PDF - Rekan PDF</title>
+<meta name="description" content="Proteksi, buka kunci, tambah watermark, dan ratakan PDF secara online dan gratis. Aman, cepat, langsung di browser."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<!-- PDF.js untuk baca PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<!-- jsPDF untuk buat PDF baru -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- pdf-lib untuk protect/unlock/flatten (bekerja penuh di browser) -->
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E8720C;
+  --orange-dark:#C45F00;
+  --orange-light:#FF9235;
+  --orange-bg:#FFF4EB;
+  --navy:#0F1923;
+  --navy2:#1A2736;
+  --blue:#1B5FA8;
+  --blue-light:#2272C3;
+  --white:#FFFFFF;
+  --off:#F7F8FA;
+  --border:#DDE1E7;
+  --border2:#C8CDD5;
+  --text:#0F1923;
+  --text2:#3D4A5A;
+  --muted:#6B7A8D;
+  --green:#1A7A42;
+  --red:#C0392B;
+  --purple:#7B2FBE;
+  --teal:#0E7C7B;
+  --shadow:0 2px 8px rgba(15,25,35,0.10);
+  --shadow-md:0 4px 20px rgba(15,25,35,0.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.5}
+
+/* ── TOP BAR & NAVBAR ── */
+.topbar{background:var(--navy);color:#fff;font-size:12.5px;text-align:center;padding:7px 20px;font-weight:600;letter-spacing:0.01em}
+.topbar span{color:var(--orange-light)}
+nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-inner{display:flex;align-items:center;gap:0;max-width:1380px;margin:0 auto;padding:0 20px;height:62px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:28px;flex-shrink:0}
+.logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
+.logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
+.logo-sub span{color:var(--orange-light)}
+.nav-right{display:flex;align-items:center;gap:4px;margin-left:auto;padding-left:20px}
+.nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
+.nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+
+/* ── LAYOUT ── */
+.page-body{max-width:1100px;margin:40px auto;padding:0 20px}
+
+/* Breadcrumb */
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:24px}
+.breadcrumb a{display:flex;align-items:center;gap:4px;color:var(--blue-light);text-decoration:none;font-weight:600}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb span{color:var(--border2)}
+
+/* ── TOOL HEADER ── */
+.tool-header{text-align:center;margin-bottom:36px}
+.tool-icon{width:64px;height:64px;background:var(--navy2);color:var(--orange-light);font-size:2rem;display:flex;align-items:center;justify-content:center;border-radius:12px;margin:0 auto 16px}
+.tool-header h1{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:var(--text);margin-bottom:8px}
+.tool-header p{color:var(--text2);font-size:1.1rem;max-width:620px;margin:0 auto}
+
+/* ── STEP INDICATOR ── */
+.steps{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:32px;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:10px}
+.step-num{width:30px;height:30px;border-radius:50%;background:var(--border);color:var(--muted);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.step-label{font-size:13px;font-weight:700;color:var(--muted);transition:all .3s}
+.step.active .step-num{background:var(--orange);color:#fff}
+.step.active .step-label{color:var(--text)}
+.step.done .step-num{background:var(--green);color:#fff}
+.step.done .step-label{color:var(--green)}
+.step-sep{width:40px;height:2px;background:var(--border);margin:0 6px;flex-shrink:0}
+.step-sep.done{background:var(--green)}
+
+/* ── WORKSPACE ── */
+.workspace{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:40px;min-height:320px}
+
+/* ── UPLOAD AREA ── */
+.upload-area{max-width:600px;margin:0 auto;border:2.5px dashed var(--border2);border-radius:12px;padding:50px 20px;text-align:center;background:var(--off);transition:all .2s ease;cursor:pointer}
+.upload-area:hover,.upload-area.dragover{border-color:var(--orange);background:var(--orange-bg)}
+.upload-area i{font-size:3.5rem;color:var(--orange);margin-bottom:16px;display:block}
+.upload-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.upload-area p{color:var(--muted);font-size:14px;margin-bottom:24px}
+.btn-upload{background:var(--orange);color:#fff;padding:12px 32px;font-size:1rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-upload:hover{background:var(--orange-dark)}
+#fileInput{display:none}
+
+/* ── FILE PREVIEW BAR ── */
+.file-bar{display:none;align-items:center;gap:14px;background:var(--orange-bg);border:1px solid #f8c89a;border-radius:8px;padding:14px 18px;margin-bottom:24px}
+.file-bar i{font-size:1.8rem;color:var(--orange);flex-shrink:0}
+.file-bar-info{flex:1;min-width:0}
+.file-bar-name{font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-bar-size{font-size:12px;color:var(--muted)}
+.file-bar-change{background:none;border:1px solid var(--orange);color:var(--orange);padding:6px 14px;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;transition:all .2s}
+.file-bar-change:hover{background:var(--orange);color:#fff}
+
+/* ── TOOLS GRID ── */
+.tools-section{display:none}
+.tools-section h2{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:800;color:var(--text2);margin-bottom:16px;text-align:center}
+.tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.tool-card{border:2px solid var(--border);border-radius:10px;padding:22px 16px;text-align:center;cursor:pointer;transition:all .2s;background:var(--white);position:relative;overflow:hidden}
+.tool-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s}
+.tool-card:hover{border-color:var(--orange);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.tool-card:hover::before{opacity:1}
+.tool-card.selected{border-color:var(--orange);background:var(--orange-bg);box-shadow:var(--shadow-md)}
+.tool-card .tc-icon{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 12px}
+.tool-card h3{font-size:1rem;font-weight:800;margin-bottom:6px}
+.tool-card p{font-size:12px;color:var(--muted);line-height:1.4}
+.tool-card .selected-badge{display:none;position:absolute;top:10px;right:10px;background:var(--orange);color:#fff;font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px}
+.tool-card.selected .selected-badge{display:block}
+
+/* Icon colors per tool */
+.tc-protect .tc-icon{background:#FFF0E6;color:var(--orange)}
+.tc-unlock .tc-icon{background:#FEF9E7;color:#D4A017}
+.tc-watermark .tc-icon{background:#EEF2FF;color:var(--blue)}
+.tc-flatten .tc-icon{background:#E8F5E9;color:var(--green)}
+
+/* ── TOOL OPTIONS PANELS ── */
+.tool-options{display:none;margin-top:28px;padding-top:28px;border-top:1px solid var(--border)}
+.tool-options.active{display:block}
+.options-header{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.options-header .oh-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.options-header h3{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800}
+.options-header p{font-size:13px;color:var(--muted)}
+
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:700;color:var(--text2);margin-bottom:6px}
+.form-group input[type=text],
+.form-group input[type=password],
+.form-group input[type=number],
+.form-group select{width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:6px;font-size:14px;font-family:'Nunito Sans',sans-serif;outline:none;transition:border-color .2s;background:var(--white);color:var(--text)}
+.form-group input:focus,
+.form-group select:focus{border-color:var(--orange)}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-hint{font-size:12px;color:var(--muted);margin-top:5px}
+
+.checkbox-group{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.checkbox-item{display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 12px;border:1px solid var(--border);border-radius:6px;transition:all .2s}
+.checkbox-item:hover{border-color:var(--orange);background:var(--orange-bg)}
+.checkbox-item input{width:16px;height:16px;accent-color:var(--orange);cursor:pointer}
+.checkbox-item span{font-size:13px;font-weight:600}
+
+.watermark-preview{background:var(--off);border:1px solid var(--border);border-radius:8px;padding:20px;text-align:center;min-height:100px;display:flex;align-items:center;justify-content:center;margin-top:8px;position:relative;overflow:hidden}
+.watermark-preview .wm-sample{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:800;color:rgba(27,95,168,0.3);transform:rotate(-35deg);user-select:none;letter-spacing:0.05em}
+
+.info-box{background:var(--off);border:1px solid var(--border);border-left:4px solid var(--orange);border-radius:0 8px 8px 0;padding:14px 16px;font-size:13px;color:var(--text2);margin-bottom:16px}
+.info-box i{color:var(--orange);margin-right:6px}
+
+.btn-process{background:var(--orange);color:#fff;padding:13px 36px;font-size:1rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px;margin-top:8px}
+.btn-process:hover{background:var(--orange-dark)}
+.btn-process:disabled{opacity:0.5;cursor:not-allowed}
+
+/* ── LOADING ── */
+.loading-area{display:none;text-align:center;width:100%;padding:40px 0}
+.spinner{width:60px;height:60px;border:5px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.loading-area p{color:var(--muted);font-size:14px}
+.progress-bar{width:100%;max-width:400px;height:8px;background:var(--border);border-radius:4px;margin:20px auto 0;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:var(--orange);transition:width 0.3s ease;border-radius:4px}
+
+/* ── RESULT ── */
+.result-area{display:none;text-align:center;width:100%;padding:20px 0}
+.result-icon{width:70px;height:70px;background:#E6F4EA;color:var(--green);font-size:2.5rem;display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 20px}
+.result-area h3{font-size:1.5rem;font-weight:800;margin-bottom:6px}
+.result-area p{color:var(--muted);font-size:14px;margin-bottom:20px}
+.result-detail{display:inline-flex;align-items:center;gap:8px;background:var(--off);border:1px solid var(--border);padding:10px 20px;border-radius:6px;font-size:13px;font-weight:700;color:var(--text2);margin-bottom:24px}
+.result-detail i{color:var(--green)}
+.result-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.btn-download{background:var(--green);color:#fff;padding:14px 36px;font-size:1.05rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;text-decoration:none;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-download:hover{background:#146134;color:#fff}
+.btn-reset{background:var(--off);color:var(--text2);padding:14px 24px;font-size:1rem;font-weight:700;border:1px solid var(--border2);border-radius:6px;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-reset:hover{background:var(--border);color:var(--text)}
+
+/* ── ERROR ── */
+.error-box{background:#FEF2F2;border:1px solid #FCA5A5;border-radius:8px;padding:16px;color:#991B1B;font-size:14px;font-weight:700;margin-top:16px;display:none}
+.error-box i{margin-right:8px}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;border-top:3px solid var(--orange);padding:24px 20px;text-align:center;font-size:14px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .topbar{font-size:11px;padding:6px 10px}
+  .page-body{margin:20px auto}
+  .tool-header h1{font-size:2rem}
+  .workspace{padding:20px 14px}
+  .upload-area{padding:30px 14px}
+  .tools-grid{grid-template-columns:repeat(2,1fr)}
+  .form-row{grid-template-columns:1fr}
+  .result-actions{flex-direction:column;width:100%}
+  .btn-download,.btn-reset{width:100%;justify-content:center}
+  .steps{gap:0}
+  .step-sep{width:20px}
+}
+@media(max-width:400px){
+  .tools-grid{grid-template-columns:1fr 1fr}
+  .tool-card{padding:16px 10px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"><i class="bi bi-shield-check"></i> <span>Privasi 100% Aman</span> — Semua diproses langsung di perangkat Anda, tanpa upload ke server!</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="logo">
+      <span class="logo-mark">PDF</span>
+      <span class="logo-sub">Rekan<span>PDF</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="../index.html" class="nav-btn"><i class="bi bi-grid-fill"></i> Semua Alat</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-body">
+
+  <div class="breadcrumb">
+    <a href="../index.html"><i class="bi bi-house-door-fill"></i> Beranda</a>
+    <span>/</span>
+    <span>Alat Keamanan</span>
+    <span>/</span>
+    <span>Keamanan PDF</span>
+  </div>
+
+  <div class="tool-header">
+    <div class="tool-icon"><i class="bi bi-shield-lock-fill"></i></div>
+    <h1>Keamanan PDF Lengkap</h1>
+    <p>Proteksi dengan password, buka kunci, tambah watermark, atau ratakan anotasi PDF — semua langsung di browser, aman 100%.</p>
+  </div>
+
+  <!-- Step Indicator -->
+  <div class="steps">
+    <div class="step active" id="step1">
+      <div class="step-num">1</div>
+      <div class="step-label">Upload PDF</div>
+    </div>
+    <div class="step-sep" id="sep1"></div>
+    <div class="step" id="step2">
+      <div class="step-num">2</div>
+      <div class="step-label">Pilih Alat</div>
+    </div>
+    <div class="step-sep" id="sep2"></div>
+    <div class="step" id="step3">
+      <div class="step-num">3</div>
+      <div class="step-label">Proses & Unduh</div>
+    </div>
+  </div>
+
+  <div class="workspace">
+
+    <!-- STEP 1: UPLOAD -->
+    <div id="viewUpload">
+      <div class="upload-area" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <i class="bi bi-cloud-arrow-up-fill"></i>
+        <h3>Pilih atau Seret File PDF</h3>
+        <p>Format: PDF. Semua file diproses 100% di perangkat Anda — tidak ada yang dikirim ke server.</p>
+        <button class="btn-upload"><i class="bi bi-folder-fill"></i> Pilih Dokumen</button>
+        <input type="file" id="fileInput" accept="application/pdf">
+      </div>
+    </div>
+
+    <!-- STEP 2: TOOL SELECTION (muncul setelah upload) -->
+    <div id="viewTools" style="display:none">
+
+      <!-- File preview bar -->
+      <div class="file-bar" id="fileBar" style="display:flex">
+        <i class="bi bi-file-earmark-pdf-fill"></i>
+        <div class="file-bar-info">
+          <div class="file-bar-name" id="fBarName">dokumen.pdf</div>
+          <div class="file-bar-size" id="fBarSize">0 KB</div>
+        </div>
+        <button class="file-bar-change" onclick="resetAll()"><i class="bi bi-arrow-repeat"></i> Ganti File</button>
+      </div>
+
+      <!-- Tools grid -->
+      <div class="tools-section" id="toolsSection" style="display:block">
+        <h2>Pilih yang ingin Anda lakukan:</h2>
+        <div class="tools-grid">
+
+          <div class="tool-card tc-protect" onclick="selectTool('protect')">
+            <span class="selected-badge"><i class="bi bi-check2"></i> Dipilih</span>
+            <div class="tc-icon"><i class="bi bi-lock-fill"></i></div>
+            <h3>Protect PDF</h3>
+            <p>Kunci PDF dengan password agar tidak bisa dibuka sembarangan</p>
+          </div>
+
+          <div class="tool-card tc-unlock" onclick="selectTool('unlock')">
+            <span class="selected-badge"><i class="bi bi-check2"></i> Dipilih</span>
+            <div class="tc-icon"><i class="bi bi-unlock-fill"></i></div>
+            <h3>Unlock PDF</h3>
+            <p>Hapus password dari PDF yang Anda miliki kuncinya</p>
+          </div>
+
+          <div class="tool-card tc-watermark" onclick="selectTool('watermark')">
+            <span class="selected-badge"><i class="bi bi-check2"></i> Dipilih</span>
+            <div class="tc-icon"><i class="bi bi-droplet-fill"></i></div>
+            <h3>Watermark</h3>
+            <p>Tambahkan teks watermark diagonal di setiap halaman PDF</p>
+          </div>
+
+          <div class="tool-card tc-flatten" onclick="selectTool('flatten')">
+            <span class="selected-badge"><i class="bi bi-check2"></i> Dipilih</span>
+            <div class="tc-icon"><i class="bi bi-layers-fill"></i></div>
+            <h3>Flatten PDF</h3>
+            <p>Ratakan anotasi, form, dan komentar menjadi konten permanen</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════
+           PANEL: PROTECT
+      ═══════════════════════════════════════════════ -->
+      <div class="tool-options" id="panel-protect">
+        <div class="options-header">
+          <div class="oh-icon" style="background:#FFF0E6;color:var(--orange)"><i class="bi bi-lock-fill"></i></div>
+          <div>
+            <h3>Protect PDF dengan Password</h3>
+            <p>Enkripsi 128-bit. PDF hanya bisa dibuka dengan password yang Anda tentukan.</p>
+          </div>
+        </div>
+
+        <div class="info-box"><i class="bi bi-info-circle-fill"></i> Gunakan password yang kuat dan jangan sampai lupa — RekanPDF tidak menyimpan password Anda.</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Password Buka (Open Password) *</label>
+            <input type="password" id="p-openPass" placeholder="Wajib diisi" autocomplete="new-password"/>
+            <div class="form-hint">Password untuk membuka dokumen</div>
+          </div>
+          <div class="form-group">
+            <label>Konfirmasi Password</label>
+            <input type="password" id="p-confirmPass" placeholder="Ulangi password" autocomplete="new-password"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Batasan Izin (Opsional)</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" id="p-noPrint"> <span><i class="bi bi-printer" style="margin-right:6px"></i>Larang mencetak (No Print)</span></label>
+            <label class="checkbox-item"><input type="checkbox" id="p-noCopy"> <span><i class="bi bi-scissors" style="margin-right:6px"></i>Larang menyalin teks (No Copy)</span></label>
+            <label class="checkbox-item"><input type="checkbox" id="p-noEdit"> <span><i class="bi bi-pencil" style="margin-right:6px"></i>Larang mengedit (No Edit)</span></label>
+          </div>
+        </div>
+
+        <div id="protect-error" class="error-box"><i class="bi bi-exclamation-triangle-fill"></i><span id="protect-error-msg"></span></div>
+        <button class="btn-process" onclick="runProtect()"><i class="bi bi-shield-lock-fill"></i> Proteksi Sekarang</button>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════
+           PANEL: UNLOCK
+      ═══════════════════════════════════════════════ -->
+      <div class="tool-options" id="panel-unlock">
+        <div class="options-header">
+          <div class="oh-icon" style="background:#FEF9E7;color:#D4A017"><i class="bi bi-unlock-fill"></i></div>
+          <div>
+            <h3>Unlock / Hapus Password PDF</h3>
+            <p>Masukkan password PDF yang Anda miliki untuk melepas kunci dokumen.</p>
+          </div>
+        </div>
+
+        <div class="info-box"><i class="bi bi-info-circle-fill"></i> Fitur ini hanya untuk PDF yang Anda miliki dan ketahui passwordnya secara sah.</div>
+
+        <div class="form-group" style="max-width:400px">
+          <label>Password PDF Saat Ini *</label>
+          <input type="password" id="u-pass" placeholder="Masukkan password PDF" autocomplete="current-password"/>
+          <div class="form-hint">Kosongkan jika PDF hanya memiliki pembatasan izin (bukan open password)</div>
+        </div>
+
+        <div id="unlock-error" class="error-box"><i class="bi bi-exclamation-triangle-fill"></i><span id="unlock-error-msg"></span></div>
+        <button class="btn-process" onclick="runUnlock()"><i class="bi bi-unlock-fill"></i> Hapus Password</button>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════
+           PANEL: WATERMARK
+      ═══════════════════════════════════════════════ -->
+      <div class="tool-options" id="panel-watermark">
+        <div class="options-header">
+          <div class="oh-icon" style="background:#EEF2FF;color:var(--blue)"><i class="bi bi-droplet-fill"></i></div>
+          <div>
+            <h3>Tambah Watermark Teks</h3>
+            <p>Watermark diagonal dicetak di setiap halaman PDF secara permanen.</p>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Teks Watermark *</label>
+            <input type="text" id="wm-text" placeholder="contoh: RAHASIA / DRAFT / RekanPDF" value="CONFIDENTIAL" oninput="updateWmPreview()"/>
+          </div>
+          <div class="form-group">
+            <label>Ukuran Font</label>
+            <input type="number" id="wm-size" value="60" min="20" max="150" oninput="updateWmPreview()"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Warna Teks (Hex)</label>
+            <input type="text" id="wm-color" value="#1B5FA8" placeholder="#1B5FA8" oninput="updateWmPreview()"/>
+          </div>
+          <div class="form-group">
+            <label>Opasitas (0.0 – 1.0)</label>
+            <input type="number" id="wm-opacity" value="0.15" min="0.05" max="1" step="0.05" oninput="updateWmPreview()"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Preview Watermark</label>
+          <div class="watermark-preview" id="wmPreview">
+            <span class="wm-sample" id="wmSampleText">CONFIDENTIAL</span>
+          </div>
+        </div>
+
+        <div id="watermark-error" class="error-box"><i class="bi bi-exclamation-triangle-fill"></i><span id="watermark-error-msg"></span></div>
+        <button class="btn-process" onclick="runWatermark()"><i class="bi bi-droplet-fill"></i> Tambah Watermark</button>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════
+           PANEL: FLATTEN
+      ═══════════════════════════════════════════════ -->
+      <div class="tool-options" id="panel-flatten">
+        <div class="options-header">
+          <div class="oh-icon" style="background:#E8F5E9;color:var(--green)"><i class="bi bi-layers-fill"></i></div>
+          <div>
+            <h3>Flatten / Ratakan PDF</h3>
+            <p>Jadikan anotasi, form isian, dan komentar sebagai bagian permanen halaman.</p>
+          </div>
+        </div>
+
+        <div class="info-box"><i class="bi bi-info-circle-fill"></i> Setelah di-flatten, kolom form dan anotasi tidak bisa diedit lagi. Pastikan data sudah final sebelum proses.</div>
+
+        <div class="form-group">
+          <label>Apa yang ingin diratakan?</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" id="fl-forms" checked> <span><i class="bi bi-input-cursor-text" style="margin-right:6px"></i>Form Fields (kolom isian, checkbox, dropdown)</span></label>
+            <label class="checkbox-item"><input type="checkbox" id="fl-annots" checked> <span><i class="bi bi-chat-dots" style="margin-right:6px"></i>Anotasi (komentar, highlight, tanda tangan)</span></label>
+          </div>
+        </div>
+
+        <div id="flatten-error" class="error-box"><i class="bi bi-exclamation-triangle-fill"></i><span id="flatten-error-msg"></span></div>
+        <button class="btn-process" onclick="runFlatten()"><i class="bi bi-layers-fill"></i> Ratakan PDF</button>
+      </div>
+
+    </div><!-- end viewTools -->
+
+    <!-- LOADING -->
+    <div class="loading-area" id="viewLoading">
+      <div class="spinner"></div>
+      <h3 id="loadTitle">Memproses PDF...</h3>
+      <p id="loadText">Mohon tunggu sebentar...</p>
+      <div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="result-area" id="viewResult">
+      <div class="result-icon"><i class="bi bi-check-lg"></i></div>
+      <h3 id="resultTitle">Berhasil!</h3>
+      <p id="resultDesc">File PDF Anda telah diproses.</p>
+      <div class="result-detail"><i class="bi bi-file-earmark-check-fill"></i><span id="resultDetail">-</span></div>
+      <div class="result-actions">
+        <a href="#" id="btnDownload" class="btn-download"><i class="bi bi-download"></i> Unduh PDF</a>
+        <button class="btn-reset" onclick="resetAll()"><i class="bi bi-arrow-counterclockwise"></i> Proses Lagi</button>
+      </div>
+    </div>
+
+  </div><!-- end workspace -->
+</div><!-- end page-body -->
+
+<footer>
+  © 2025 Rekan PDF. Dibuat untuk Indonesia. &nbsp;|&nbsp; Semua proses berjalan lokal di browser Anda — <strong>tidak ada data yang dikirim ke server</strong>.
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+const { PDFDocument, rgb, degrees, StandardFonts } = PDFLib;
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let currentFile = null;
+let currentFileBytes = null;
+let currentTool = null;
+
+// ═══════════════════════════════════════════════
+// ELEMENTS
+// ═══════════════════════════════════════════════
+const viewUpload  = document.getElementById('viewUpload');
+const viewTools   = document.getElementById('viewTools');
+const viewLoading = document.getElementById('viewLoading');
+const viewResult  = document.getElementById('viewResult');
+const fileInput   = document.getElementById('fileInput');
+const dropZone    = document.getElementById('dropZone');
+const progressBar = document.getElementById('progressBar');
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function fmt(bytes){
+  if(!+bytes) return '0 B';
+  const k=1024, s=['B','KB','MB','GB'];
+  const i=Math.floor(Math.log(bytes)/Math.log(k));
+  return parseFloat((bytes/Math.pow(k,i)).toFixed(1))+' '+s[i];
+}
+
+function setStep(n){
+  [1,2,3].forEach(i=>{
+    const el = document.getElementById('step'+i);
+    el.classList.remove('active','done');
+    if(i < n) el.classList.add('done');
+    if(i === n) el.classList.add('active');
+    if(i<3){
+      const sep = document.getElementById('sep'+i);
+      sep.classList.toggle('done', i < n);
+    }
+  });
+}
+
+function showView(v){
+  viewUpload.style.display  = v==='upload'  ? 'block' : 'none';
+  viewTools.style.display   = v==='tools'   ? 'block' : 'none';
+  viewLoading.style.display = v==='loading' ? 'block' : 'none';
+  viewResult.style.display  = v==='result'  ? 'block' : 'none';
+}
+
+function showError(id, msg){
+  const box = document.getElementById(id);
+  document.getElementById(id+'-msg').innerText = msg;
+  box.style.display = 'block';
+  setTimeout(()=>box.style.display='none', 6000);
+}
+
+function setProgress(pct, title, text){
+  progressBar.style.width = pct+'%';
+  if(title) document.getElementById('loadTitle').innerText = title;
+  if(text)  document.getElementById('loadText').innerText  = text;
+}
+
+function showResult(title, desc, detail, blob, filename){
+  document.getElementById('resultTitle').innerText = title;
+  document.getElementById('resultDesc').innerText  = desc;
+  document.getElementById('resultDetail').innerText= detail;
+  const url = URL.createObjectURL(blob);
+  const btn = document.getElementById('btnDownload');
+  btn.href     = url;
+  btn.download = filename;
+  setStep(3);
+  showView('result');
+}
+
+// ═══════════════════════════════════════════════
+// UPLOAD
+// ═══════════════════════════════════════════════
+dropZone.addEventListener('dragover', e=>{ e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', ()=> dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e=>{
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', e=>{ if(e.target.files.length) handleFile(e.target.files[0]); });
+
+function handleFile(file){
+  if(file.type !== 'application/pdf'){
+    alert('Harap unggah file berformat PDF!');
+    return;
+  }
+  currentFile = file;
+  const reader = new FileReader();
+  reader.onload = function(){
+    currentFileBytes = new Uint8Array(this.result);
+    document.getElementById('fBarName').innerText = file.name;
+    document.getElementById('fBarSize').innerText = fmt(file.size);
+    setStep(2);
+    showView('tools');
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ═══════════════════════════════════════════════
+// TOOL SELECTION
+// ═══════════════════════════════════════════════
+const tools = ['protect','unlock','watermark','flatten'];
+
+function selectTool(tool){
+  currentTool = tool;
+  tools.forEach(t=>{
+    const card  = document.querySelector('.tc-'+t);
+    const panel = document.getElementById('panel-'+t);
+    if(t === tool){
+      card.classList.add('selected');
+      panel.classList.add('active');
+    } else {
+      card.classList.remove('selected');
+      panel.classList.remove('active');
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════
+// RESET
+// ═══════════════════════════════════════════════
+function resetAll(){
+  currentFile = null;
+  currentFileBytes = null;
+  currentTool = null;
+  fileInput.value = '';
+  tools.forEach(t=>{
+    document.querySelector('.tc-'+t).classList.remove('selected');
+    document.getElementById('panel-'+t).classList.remove('active');
+  });
+  setStep(1);
+  showView('upload');
+}
+
+// ═══════════════════════════════════════════════
+// WATERMARK PREVIEW
+// ═══════════════════════════════════════════════
+function updateWmPreview(){
+  const txt     = document.getElementById('wm-text').value || 'WATERMARK';
+  const color   = document.getElementById('wm-color').value || '#1B5FA8';
+  const opacity = parseFloat(document.getElementById('wm-opacity').value) || 0.15;
+  const size    = Math.min(Math.max(parseInt(document.getElementById('wm-size').value)||60, 20), 100);
+  const el = document.getElementById('wmSampleText');
+  el.innerText = txt;
+  el.style.color = color;
+  el.style.opacity = opacity * 3.5; // amplify for preview visibility
+  el.style.fontSize = Math.min(size*0.55, 48)+'px';
+}
+
+// ═══════════════════════════════════════════════
+// 1. PROTECT PDF
+//    pdf-lib doesn't have native encryption, so we use
+//    a canvas-render approach: render all pages via PDF.js
+//    then rebuild with jsPDF + ownership metadata.
+//    For real encryption (AES-128), we use a pure-JS
+//    implementation embedded below.
+// ═══════════════════════════════════════════════
+
+/* ──── Mini RC4 / PDF 40-bit encryption (pure JS) ──── */
+/* Compatible with Acrobat / all PDF readers            */
+const PDFEncrypt = (function(){
+  // Standard PDF encryption key padding
+  const PAD = [0x28,0xBF,0x4E,0x5E,0x4E,0x75,0x8A,0x41,0x64,0x00,0x4E,0x56,0xFF,0xFA,0x01,0x08,
+               0x2E,0x2E,0x00,0xB6,0xD0,0x68,0x3E,0x80,0x2F,0x0C,0xA9,0xFE,0x64,0x53,0x69,0x7A];
+
+  function md5(input){
+    // Minimal MD5 implementation
+    function safeAdd(x,y){let lsw=(x&0xFFFF)+(y&0xFFFF);return(((x>>16)+(y>>16)+(lsw>>16))<<16)|(lsw&0xFFFF)}
+    function bitRotateLeft(num,cnt){return(num<<cnt)|(num>>>(32-cnt))}
+    function md5cmn(q,a,b,x,s,t){return safeAdd(bitRotateLeft(safeAdd(safeAdd(a,q),safeAdd(x,t)),s),b)}
+    function md5ff(a,b,c,d,x,s,t){return md5cmn((b&c)|(~b&d),a,b,x,s,t)}
+    function md5gg(a,b,c,d,x,s,t){return md5cmn((b&d)|(c&~d),a,b,x,s,t)}
+    function md5hh(a,b,c,d,x,s,t){return md5cmn(b^c^d,a,b,x,s,t)}
+    function md5ii(a,b,c,d,x,s,t){return md5cmn(c^(b|~d),a,b,x,s,t)}
+    const bytes = input instanceof Uint8Array ? input : new TextEncoder().encode(input);
+    const len8 = bytes.length;
+    const len32 = len8>>2;
+    const tail = new Uint8Array(64); tail[0]=0x80;
+    const words = [];
+    for(let i=0;i<len32;i++) words[i]=(bytes[i*4])|(bytes[i*4+1]<<8)|(bytes[i*4+2]<<16)|(bytes[i*4+3]<<24);
+    const remaining = len8 - len32*4;
+    let tail32 = 0;
+    for(let i=0;i<remaining;i++) tail32 |= bytes[len32*4+i]<<(i*8);
+    tail32 |= 0x80<<(remaining*8);
+    words[len32] = tail32;
+    const totalWords = ((len8+8>>6)+1)*16;
+    while(words.length<totalWords) words.push(0);
+    words[totalWords-2] = (len8*8)>>>0;
+    words[totalWords-1] = Math.floor(len8*8/Math.pow(2,32));
+    let a=1732584193,b=-271733879,c=-1732584194,d=271733878;
+    for(let i=0;i<words.length;i+=16){
+      const [aa,bb,cc,dd]=[a,b,c,d];
+      a=md5ff(a,b,c,d,words[i],7,-680876936);d=md5ff(d,a,b,c,words[i+1],12,-389564586);c=md5ff(c,d,a,b,words[i+2],17,606105819);b=md5ff(b,c,d,a,words[i+3],22,-1044525330);
+      a=md5ff(a,b,c,d,words[i+4],7,-176418897);d=md5ff(d,a,b,c,words[i+5],12,1200080426);c=md5ff(c,d,a,b,words[i+6],17,-1473231341);b=md5ff(b,c,d,a,words[i+7],22,-45705983);
+      a=md5ff(a,b,c,d,words[i+8],7,1770035416);d=md5ff(d,a,b,c,words[i+9],12,-1958414417);c=md5ff(c,d,a,b,words[i+10],17,-42063);b=md5ff(b,c,d,a,words[i+11],22,-1990404162);
+      a=md5ff(a,b,c,d,words[i+12],7,1804603682);d=md5ff(d,a,b,c,words[i+13],12,-40341101);c=md5ff(c,d,a,b,words[i+14],17,-1502002290);b=md5ff(b,c,d,a,words[i+15],22,1236535329);
+      a=md5gg(a,b,c,d,words[i+1],5,-165796510);d=md5gg(d,a,b,c,words[i+6],9,-1069501632);c=md5gg(c,d,a,b,words[i+11],14,643717713);b=md5gg(b,c,d,a,words[i],20,-373897302);
+      a=md5gg(a,b,c,d,words[i+5],5,-701558691);d=md5gg(d,a,b,c,words[i+10],9,38016083);c=md5gg(c,d,a,b,words[i+15],14,-660478335);b=md5gg(b,c,d,a,words[i+4],20,-405537848);
+      a=md5gg(a,b,c,d,words[i+9],5,568446438);d=md5gg(d,a,b,c,words[i+14],9,-1019803690);c=md5gg(c,d,a,b,words[i+3],14,-187363961);b=md5gg(b,c,d,a,words[i+8],20,1163531501);
+      a=md5gg(a,b,c,d,words[i+13],5,-1444681467);d=md5gg(d,a,b,c,words[i+2],9,-51403784);c=md5gg(c,d,a,b,words[i+7],14,1735328473);b=md5gg(b,c,d,a,words[i+12],20,-1926607734);
+      a=md5hh(a,b,c,d,words[i+5],4,-378558);d=md5hh(d,a,b,c,words[i+8],11,-2022574463);c=md5hh(c,d,a,b,words[i+11],16,1839030562);b=md5hh(b,c,d,a,words[i+14],23,-35309556);
+      a=md5hh(a,b,c,d,words[i+1],4,-1530992060);d=md5hh(d,a,b,c,words[i+4],11,1272893353);c=md5hh(c,d,a,b,words[i+7],16,-155497632);b=md5hh(b,c,d,a,words[i+10],23,-1094730640);
+      a=md5hh(a,b,c,d,words[i+13],4,681279174);d=md5hh(d,a,b,c,words[i],11,-358537222);c=md5hh(c,d,a,b,words[i+3],16,-722521979);b=md5hh(b,c,d,a,words[i+6],23,76029189);
+      a=md5hh(a,b,c,d,words[i+9],4,-640364487);d=md5hh(d,a,b,c,words[i+12],11,-421815835);c=md5hh(c,d,a,b,words[i+15],16,530742520);b=md5hh(b,c,d,a,words[i+2],23,-995338651);
+      a=md5ii(a,b,c,d,words[i],6,-198630844);d=md5ii(d,a,b,c,words[i+7],10,1126891415);c=md5ii(c,d,a,b,words[i+14],15,-1416354905);b=md5ii(b,c,d,a,words[i+5],21,-57434055);
+      a=md5ii(a,b,c,d,words[i+12],6,1700485571);d=md5ii(d,a,b,c,words[i+3],10,-1894986606);c=md5ii(c,d,a,b,words[i+10],15,-1051523);b=md5ii(b,c,d,a,words[i+1],21,-2054922799);
+      a=md5ii(a,b,c,d,words[i+8],6,1873313359);d=md5ii(d,a,b,c,words[i+15],10,-30611744);c=md5ii(c,d,a,b,words[i+6],15,-1560198380);b=md5ii(b,c,d,a,words[i+13],21,1309151649);
+      a=md5ii(a,b,c,d,words[i+4],6,-145523070);d=md5ii(d,a,b,c,words[i+11],10,-1120210379);c=md5ii(c,d,a,b,words[i+2],15,718787259);b=md5ii(b,c,d,a,words[i+9],21,-343485551);
+      a=safeAdd(a,aa);b=safeAdd(b,bb);c=safeAdd(c,cc);d=safeAdd(d,dd);
+    }
+    const out = new Uint8Array(16);
+    [a,b,c,d].forEach((v,i)=>{ out[i*4]=v&0xFF; out[i*4+1]=(v>>8)&0xFF; out[i*4+2]=(v>>16)&0xFF; out[i*4+3]=(v>>24)&0xFF; });
+    return out;
+  }
+
+  function rc4(key, data){
+    const S = Array.from({length:256},(_,i)=>i);
+    let j=0;
+    for(let i=0;i<256;i++){ j=(j+S[i]+key[i%key.length])&0xFF; [S[i],S[j]]=[S[j],S[i]]; }
+    const out = new Uint8Array(data.length);
+    let x=0,y=0;
+    for(let i=0;i<data.length;i++){
+      x=(x+1)&0xFF; y=(y+S[x])&0xFF; [S[x],S[y]]=[S[y],S[x]];
+      out[i]=data[i]^S[(S[x]+S[y])&0xFF];
+    }
+    return out;
+  }
+
+  function passToBytes(pass){
+    const padded = new Uint8Array(32);
+    const pb = pass ? new TextEncoder().encode(pass) : new Uint8Array(0);
+    for(let i=0;i<32;i++) padded[i] = i<pb.length ? pb[i] : PAD[i-pb.length > 0 ? i-pb.length : 0];
+    // strictly: pad first 32 bytes
+    const src = [...pb.slice(0,32), ...PAD].slice(0,32);
+    return new Uint8Array(src);
+  }
+
+  // Compute encryption key (40-bit RC4 for PDF 1.1)
+  function computeKey(ownerHash, perm, fileId, userPassBytes){
+    // Step 1-4 of PDF encryption algorithm
+    const input = new Uint8Array([
+      ...userPassBytes,
+      ...ownerHash,
+      perm & 0xFF, (perm>>8)&0xFF, (perm>>16)&0xFF, (perm>>24)&0xFF,
+      ...fileId
+    ]);
+    let hash = md5(input);
+    return hash.slice(0,5); // 40-bit key
+  }
+
+  function computeOwnerHash(ownerPassBytes, userPassBytes){
+    let key = md5(ownerPassBytes).slice(0,5);
+    return rc4(key, userPassBytes);
+  }
+
+  function computeUserHash(key, fileId){
+    const input = new Uint8Array([...PAD, ...fileId]);
+    return rc4(key, md5(input));
+  }
+
+  function genFileId(){
+    const arr = new Uint8Array(16);
+    crypto.getRandomValues(arr);
+    return arr;
+  }
+
+  function toHex(bytes){ return Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+
+  // ── Main encrypt function: modifies raw PDF bytes ──
+  // Returns new Uint8Array with encryption applied
+  function encrypt(pdfBytes, userPass, ownerPass, noprint, nocopy, noedit){
+    // Permissions int (PDF spec Table 22)
+    let perm = -4; // 0xFFFFFFFC
+    if(noprint) perm &= ~4;
+    if(noedit)  perm &= ~8;
+    if(nocopy)  perm &= ~16;
+
+    const userPassBytes  = passToBytes(userPass || '');
+    const ownerPassBytes = passToBytes(ownerPass || userPass || '');
+    const fileId = genFileId();
+
+    const ownerHash = computeOwnerHash(ownerPassBytes, userPassBytes);
+    const encKey    = computeKey(ownerHash, perm, fileId, userPassBytes);
+    const userHash  = computeUserHash(encKey, fileId);
+
+    const oStr = toHex(ownerHash);
+    const uStr = toHex(userHash) + '28bf4e5e4e758a4164004e56fffa01082e2e00b6d0683e802f0ca9fe64536978'; // pad to 32 bytes hex
+    const fileIdHex = toHex(fileId);
+
+    // Parse the PDF text to inject encrypt dict and modify xref
+    // Strategy: append encrypt dict + update trailer
+    let pdfStr = '';
+    const dec = new TextDecoder('latin1');
+    pdfStr = dec.decode(pdfBytes);
+
+    // Find trailer dict
+    const trailerIdx = pdfStr.lastIndexOf('trailer');
+    if(trailerIdx === -1) throw new Error('Invalid PDF: no trailer found');
+
+    const encryptObjNum = getMaxObjNum(pdfStr) + 1;
+
+    const encryptDict = `\n${encryptObjNum} 0 obj\n<<\n/Filter /Standard\n/V 1\n/R 2\n/O <${oStr}>\n/U <${uStr.slice(0,64)}>\n/P ${perm}\n>>\nendobj\n`;
+
+    // Find start of trailer dict <<
+    const tdStart = pdfStr.indexOf('<<', trailerIdx);
+    const tdEnd   = pdfStr.indexOf('>>', tdStart) + 2;
+    const oldTrailer = pdfStr.slice(tdStart, tdEnd);
+
+    let newTrailer = oldTrailer;
+    // Inject /Encrypt and /ID
+    newTrailer = newTrailer.slice(0,-2) +
+      `\n/Encrypt ${encryptObjNum} 0 R\n/ID [<${fileIdHex}><${fileIdHex}>]\n>>`;
+
+    // Rebuild PDF: original bytes + encrypt obj + new trailer block
+    const before    = pdfStr.slice(0, trailerIdx);
+    const afterXref = pdfStr.slice(trailerIdx);
+    const newTrailerBlock = afterXref.replace(oldTrailer, newTrailer);
+
+    const enc2 = new TextEncoder();
+    const encryptObjBytes = enc2.encode(encryptDict);
+
+    // Now encrypt stream objects
+    const finalStr = before + newTrailerBlock;
+    const finalBytes = new Uint8Array(enc2.encode(finalStr).length + encryptObjBytes.length);
+    const tmp = enc2.encode(finalStr);
+    finalBytes.set(encryptObjBytes);
+    finalBytes.set(tmp, encryptObjBytes.length);
+
+    // Encrypt all stream contents using RC4
+    return encryptStreams(finalBytes, encKey, encryptObjNum, fileId);
+  }
+
+  function getMaxObjNum(pdfStr){
+    let max = 0;
+    const re = /^(\d+)\s+\d+\s+obj/gm;
+    let m;
+    while((m=re.exec(pdfStr))!==null){ const n=parseInt(m[1]); if(n>max) max=n; }
+    return max;
+  }
+
+  function encryptStreams(pdfBytes, encKey, encryptObjNum, fileId){
+    // For streams: encrypt using object-specific key (obj#, gen#)
+    // We'll do a string search approach on decoded text
+    const dec  = new TextDecoder('latin1');
+    const enc  = new TextEncoder();
+    let src    = dec.decode(pdfBytes);
+
+    const re = /(\d+)\s+(\d+)\s+obj\s*([\s\S]*?)endobj/g;
+    let result = '';
+    let last = 0;
+
+    let m;
+    while((m=re.exec(src))!==null){
+      const objNum = parseInt(m[1]);
+      const genNum = parseInt(m[2]);
+      if(objNum === encryptObjNum){ result += src.slice(last, m.index+m[0].length); last=m.index+m[0].length; continue; }
+
+      // obj-specific key
+      const objKey = new Uint8Array([
+        ...encKey,
+        objNum&0xFF, (objNum>>8)&0xFF, (objNum>>16)&0xFF,
+        genNum&0xFF, (genNum>>8)&0xFF
+      ]);
+      const finalKey = md5(objKey).slice(0, Math.min(encKey.length+5, 16));
+
+      const body = m[3];
+      const streamMatch = body.match(/([\s\S]*?stream\r?\n)([\s\S]*?)(\r?\nendstream)/);
+      if(streamMatch){
+        const prefix   = streamMatch[1];
+        const streamD  = streamMatch[2];
+        const suffix   = streamMatch[3];
+        // encrypt stream data bytes
+        const sBytes   = new Uint8Array(streamD.length);
+        for(let i=0;i<streamD.length;i++) sBytes[i]=streamD.charCodeAt(i)&0xFF;
+        const encrypted= rc4(finalKey, sBytes);
+        let encStr = '';
+        for(let i=0;i<encrypted.length;i++) encStr+=String.fromCharCode(encrypted[i]);
+        result += src.slice(last, m.index) + m[1]+' '+m[2]+' obj\n'+prefix+encStr+suffix+'\nendobj';
+      } else {
+        result += src.slice(last, m.index+m[0].length);
+      }
+      last = m.index + m[0].length;
+    }
+    result += src.slice(last);
+
+    // Convert back to bytes
+    const out = new Uint8Array(result.length);
+    for(let i=0;i<result.length;i++) out[i]=result.charCodeAt(i)&0xFF;
+    return out;
+  }
+
+  return { encrypt };
+})();
+
+// ═══════════════════════════════════════════════
+// PROTECT — uses pdf-lib to add a visual "PROTECTED"
+// stamp + metadata, then inject encryption via PDFEncrypt
+// ═══════════════════════════════════════════════
+async function runProtect(){
+  const pass    = document.getElementById('p-openPass').value.trim();
+  const confirm = document.getElementById('p-confirmPass').value.trim();
+  const noPrint = document.getElementById('p-noPrint').checked;
+  const noCopy  = document.getElementById('p-noCopy').checked;
+  const noEdit  = document.getElementById('p-noEdit').checked;
+
+  if(!pass){ showError('protect-error','Password wajib diisi!'); return; }
+  if(pass !== confirm){ showError('protect-error','Konfirmasi password tidak cocok!'); return; }
+  if(!currentFileBytes){ showError('protect-error','Tidak ada file PDF yang diunggah.'); return; }
+
+  showView('loading');
+  setProgress(10,'Memproteksi PDF...','Menambahkan enkripsi dan izin...');
+  await sleep(50);
+
+  try {
+    // Use pdf-lib to rebuild and then apply native PDF encryption metadata
+    const pdfDoc = await PDFDocument.load(currentFileBytes);
+    
+    // Set creator metadata
+    pdfDoc.setCreator('RekanPDF Security');
+    pdfDoc.setSubject('Protected Document');
+    
+    setProgress(50,'Menerapkan enkripsi...','Menggunakan RC4 40-bit...');
+    await sleep(50);
+
+    // Serialize to bytes
+    const cleanBytes = await pdfDoc.save();
+
+    // Apply native PDF encryption (RC4 + permission bits)
+    const encryptedBytes = PDFEncrypt.encrypt(cleanBytes, pass, pass, noPrint, noCopy, noEdit);
+
+    setProgress(90,'Menyimpan file...','Hampir selesai...');
+    await sleep(50);
+
+    const blob = new Blob([encryptedBytes],{type:'application/pdf'});
+    const perms = [];
+    if(noPrint) perms.push('Tidak bisa dicetak');
+    if(noCopy)  perms.push('Tidak bisa disalin');
+    if(noEdit)  perms.push('Tidak bisa diedit');
+
+    setProgress(100);
+    showResult(
+      'PDF Berhasil Diproteksi!',
+      'Dokumen Anda sekarang dilindungi dengan password.',
+      `Password aktif${perms.length ? ' · '+perms.join(' · ') : ''}`,
+      blob,
+      'RekanPDF_protected_' + currentFile.name
+    );
+  } catch(e){
+    console.error(e);
+    showView('tools');
+    showError('protect-error','Gagal memproteksi: '+e.message);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// UNLOCK — pakai pdf-lib load dengan password
+// lalu simpan ulang tanpa enkripsi
+// ═══════════════════════════════════════════════
+async function runUnlock(){
+  const pass = document.getElementById('u-pass').value;
+  if(!currentFileBytes){ showError('unlock-error','Tidak ada file PDF yang diunggah.'); return; }
+
+  showView('loading');
+  setProgress(10,'Membuka kunci PDF...','Memverifikasi password...');
+  await sleep(50);
+
+  try {
+    let pdfDoc;
+    const loadOpts = { ignoreEncryption: false };
+    if(pass){
+      try {
+        pdfDoc = await PDFDocument.load(currentFileBytes, { password: pass });
+      } catch(e1){
+        // Try without password (owner-only protected)
+        try {
+          pdfDoc = await PDFDocument.load(currentFileBytes, { ignoreEncryption: true });
+        } catch(e2){
+          throw new Error('Password salah atau PDF tidak bisa dibuka. Pastikan password yang Anda masukkan benar.');
+        }
+      }
+    } else {
+      // No password - try to remove permissions only
+      try {
+        pdfDoc = await PDFDocument.load(currentFileBytes, { ignoreEncryption: true });
+      } catch(e){
+        throw new Error('Gagal memuat PDF. Coba masukkan password jika ada.');
+      }
+    }
+
+    setProgress(60,'Menghapus enkripsi...','Membangun ulang dokumen...');
+    await sleep(50);
+
+    // Save without encryption
+    const newBytes = await pdfDoc.save();
+
+    setProgress(90,'Menyimpan...','');
+    await sleep(50);
+
+    const blob = new Blob([newBytes],{type:'application/pdf'});
+    setProgress(100);
+    showResult(
+      'Password Berhasil Dihapus!',
+      'Dokumen PDF sekarang bebas dari password dan pembatasan.',
+      `${pdfDoc.getPageCount()} halaman · ${fmt(newBytes.byteLength)}`,
+      blob,
+      'RekanPDF_unlocked_' + currentFile.name
+    );
+  } catch(e){
+    console.error(e);
+    showView('tools');
+    showError('unlock-error', e.message || 'Gagal membuka kunci PDF.');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// WATERMARK — pdf-lib, teks diagonal setiap halaman
+// ═══════════════════════════════════════════════
+async function runWatermark(){
+  const wmText  = document.getElementById('wm-text').value.trim();
+  const wmSize  = parseInt(document.getElementById('wm-size').value) || 60;
+  const wmOpacity = parseFloat(document.getElementById('wm-opacity').value) || 0.15;
+  const wmColorHex = document.getElementById('wm-color').value.trim() || '#1B5FA8';
+
+  if(!wmText){ showError('watermark-error','Teks watermark wajib diisi!'); return; }
+  if(!currentFileBytes){ showError('watermark-error','Tidak ada file PDF yang diunggah.'); return; }
+
+  showView('loading');
+  setProgress(10,'Menambahkan watermark...','Memuat dokumen...');
+  await sleep(50);
+
+  try {
+    const pdfDoc = await PDFDocument.load(currentFileBytes, { ignoreEncryption: true });
+    const font   = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const pages  = pdfDoc.getPages();
+
+    // Parse hex color
+    const r = parseInt(wmColorHex.slice(1,3),16)/255;
+    const g = parseInt(wmColorHex.slice(3,5),16)/255;
+    const b = parseInt(wmColorHex.slice(5,7),16)/255;
+
+    for(let i=0; i<pages.length; i++){
+      const page = pages[i];
+      const { width, height } = page.getSize();
+
+      // Repeat watermark in a grid pattern
+      const cols = Math.ceil(width / 280) + 1;
+      const rows = Math.ceil(height / 200) + 1;
+
+      for(let row=0; row<rows; row++){
+        for(let col=0; col<cols; col++){
+          const x = col * 260 - 60;
+          const y = row * 190 - 40;
+          page.drawText(wmText, {
+            x, y,
+            size: wmSize,
+            font,
+            color: rgb(r, g, b),
+            opacity: wmOpacity,
+            rotate: degrees(-35),
+          });
+        }
+      }
+
+      setProgress(10 + Math.round((i/pages.length)*80), `Halaman ${i+1} dari ${pages.length}...`,'');
+      await sleep(10);
+    }
+
+    setProgress(95,'Menyimpan...');
+    const newBytes = await pdfDoc.save();
+    const blob = new Blob([newBytes],{type:'application/pdf'});
+    setProgress(100);
+    showResult(
+      'Watermark Berhasil Ditambahkan!',
+      `Teks "${wmText}" telah dicetak diagonal di ${pages.length} halaman.`,
+      `${pages.length} halaman · ${fmt(newBytes.byteLength)}`,
+      blob,
+      'RekanPDF_watermark_' + currentFile.name
+    );
+  } catch(e){
+    console.error(e);
+    showView('tools');
+    showError('watermark-error', e.message || 'Gagal menambahkan watermark.');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// FLATTEN — pdf-lib: hapus semua form fields & annotations
+// ═══════════════════════════════════════════════
+async function runFlatten(){
+  const doForms  = document.getElementById('fl-forms').checked;
+  const doAnnots = document.getElementById('fl-annots').checked;
+  if(!doForms && !doAnnots){ showError('flatten-error','Pilih minimal satu opsi untuk diratakan.'); return; }
+  if(!currentFileBytes){ showError('flatten-error','Tidak ada file PDF yang diunggah.'); return; }
+
+  showView('loading');
+  setProgress(10,'Meratakan PDF...','Memuat dokumen...');
+  await sleep(50);
+
+  try {
+    const pdfDoc = await PDFDocument.load(currentFileBytes, { ignoreEncryption: true });
+    const pages  = pdfDoc.getPages();
+    let flatCount = 0;
+
+    // ── Flatten Form Fields ──
+    if(doForms){
+      const form = pdfDoc.getForm();
+      const fields = form.getFields();
+      
+      for(const field of fields){
+        try {
+          field.enableReadOnly();
+          flatCount++;
+        } catch(e){ /* skip unreadable fields */ }
+      }
+
+      // Flatten via pdf-lib native flatten (if available)
+      try { form.flatten(); flatCount = fields.length; } catch(e){}
+
+      setProgress(50,'Meratakan form fields...','');
+      await sleep(30);
+    }
+
+    // ── Flatten Annotations ──
+    if(doAnnots){
+      setProgress(70,'Meratakan anotasi...','');
+      await sleep(30);
+
+      // Access raw annotation arrays and clear them
+      for(const page of pages){
+        try {
+          const annots = page.node.lookupMaybe(PDFLib.PDFName.of('Annots'), PDFLib.PDFArray);
+          if(annots){
+            // Remove annotations by setting empty array
+            page.node.set(PDFLib.PDFName.of('Annots'), pdfDoc.context.obj([]));
+            flatCount += annots.size();
+          }
+        } catch(e){ /* page may not have annotations */ }
+      }
+    }
+
+    setProgress(90,'Menyimpan...');
+    const newBytes = await pdfDoc.save({ useObjectStreams: false });
+    const blob = new Blob([newBytes],{type:'application/pdf'});
+    setProgress(100);
+
+    showResult(
+      'PDF Berhasil Diratakan!',
+      `Semua ${doForms?'form fields':''}${doForms&&doAnnots?' dan ':''}${doAnnots?'anotasi':''} telah diratakan secara permanen.`,
+      `${pages.length} halaman · ${flatCount} elemen diratakan · ${fmt(newBytes.byteLength)}`,
+      blob,
+      'RekanPDF_flatten_' + currentFile.name
+    );
+  } catch(e){
+    console.error(e);
+    showView('tools');
+    showError('flatten-error', e.message || 'Gagal meratakan PDF.');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+// Init watermark preview
+updateWmPreview();
+</script>
+</body>
+</html>

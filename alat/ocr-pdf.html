@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>OCR PDF & Gambar - Rekan PDF</title>
+<meta name="description" content="Ekstrak teks dari file PDF hasil scan atau gambar (JPG/PNG) secara otomatis menggunakan teknologi OCR. Gratis, cepat, dan aman diproses di browser."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E8720C;
+  --orange-dark:#C45F00;
+  --orange-light:#FF9235;
+  --orange-bg:#FFF4EB;
+  --navy:#0F1923;
+  --navy2:#1A2736;
+  --blue:#1B5FA8;
+  --blue-light:#2272C3;
+  --white:#FFFFFF;
+  --off:#F7F8FA;
+  --border:#DDE1E7;
+  --border2:#C8CDD5;
+  --text:#0F1923;
+  --text2:#3D4A5A;
+  --muted:#6B7A8D;
+  --green:#1A7A42;
+  --red:#C0392B;
+  --shadow:0 2px 8px rgba(15,25,35,0.10);
+  --shadow-md:0 4px 20px rgba(15,25,35,0.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.5}
+
+/* ── TOP BAR & NAVBAR ── */
+.topbar{background:var(--navy);color:#fff;font-size:12.5px;text-align:center;padding:7px 20px;font-weight:600;letter-spacing:0.01em}
+.topbar span{color:var(--orange-light)}
+nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-inner{display:flex;align-items:center;gap:0;max-width:1380px;margin:0 auto;padding:0 20px;height:62px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:28px;flex-shrink:0}
+.logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
+.logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
+.logo-sub span{color:var(--orange-light)}
+.nav-right{display:flex;align-items:center;gap:4px;margin-left:auto;padding-left:20px}
+.nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
+.nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+
+/* ── LAYOUT WRAPPER ── */
+.page-body{max-width:1100px;margin:40px auto;padding:0 20px;display:block;}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:24px}
+.breadcrumb a{display:flex;align-items:center;gap:4px;color:var(--blue-light);text-decoration:none;font-weight:600}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb span{color:var(--border2)}
+
+/* ── TOOL HEADER ── */
+.tool-header{text-align:center;margin-bottom:32px}
+.tool-icon{width:64px;height:64px;background:#E8EEF4;color:#0F1923;font-size:2rem;display:flex;align-items:center;justify-content:center;border-radius:12px;margin:0 auto 16px}
+.tool-header h1{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:var(--text);margin-bottom:8px}
+.tool-header p{color:var(--text2);font-size:1.1rem;max-width:600px;margin:0 auto}
+
+/* ── WORKSPACE ── */
+.workspace{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:40px;min-height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+
+/* 1. Upload Area */
+.upload-area{width:100%;max-width:600px;border:2.5px dashed var(--border2);border-radius:12px;padding:50px 20px;text-align:center;background:var(--off);transition:all .2s ease;cursor:pointer}
+.upload-area:hover, .upload-area.dragover{border-color:var(--navy);background:#E8EEF4}
+.upload-area i{font-size:3.5rem;color:var(--navy);margin-bottom:16px;display:block}
+.upload-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.upload-area p{color:var(--muted);font-size:14px;margin-bottom:24px}
+.btn-upload{background:var(--navy);color:#fff;padding:12px 32px;font-size:1rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-upload:hover{background:var(--navy2)}
+#fileInput{display:none}
+
+/* 2. Loading Area */
+.loading-area{display:none;text-align:center;width:100%}
+.spinner{width:60px;height:60px;border:5px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.loading-area p{color:var(--muted);font-size:14px}
+.progress-bar{width:100%;max-width:400px;height:8px;background:var(--border);border-radius:4px;margin:20px auto 0;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:var(--navy);transition:width 0.3s ease}
+
+/* 3. Result Area */
+.result-area{display:none;width:100%;max-width:800px;margin:0 auto}
+.result-header{text-align:center;margin-bottom:20px}
+.result-header h3{font-size:1.5rem;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--text)}
+.result-header p{color:var(--muted);font-size:14px}
+
+.text-box-container{position:relative;margin-bottom:24px}
+.text-box{width:100%;height:300px;padding:20px;font-family:'Nunito Sans',sans-serif;font-size:14px;line-height:1.6;border:2px solid var(--border);border-radius:8px;background:var(--off);color:var(--text);resize:vertical;outline:none;transition:border .2s}
+.text-box:focus{border-color:var(--navy);background:var(--white)}
+
+.result-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.btn-primary-action{background:var(--navy);color:#fff;padding:12px 28px;font-size:1rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary-action:hover{background:var(--navy2)}
+.btn-sec{background:var(--off);color:var(--text);padding:12px 24px;font-size:1rem;font-weight:700;border:1px solid var(--border2);border-radius:6px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-sec:hover{background:var(--border)}
+
+/* Status Alert */
+.alert-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--green);color:white;padding:12px 24px;border-radius:100px;font-weight:700;font-size:14px;display:none;align-items:center;gap:8px;box-shadow:var(--shadow-md);z-index:999}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;border-top:3px solid var(--orange);padding:24px 20px;text-align:center;font-size:14px}
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+  .topbar { font-size: 11px; padding: 6px 10px; }
+  .page-body { margin: 20px auto; }
+  .tool-header h1 { font-size: 2rem; }
+  
+  .workspace { padding: 24px 16px; min-height: auto; }
+  .upload-area { padding: 30px 16px; }
+  .upload-area i { font-size: 2.5rem; margin-bottom: 12px; }
+  
+  .result-actions { flex-direction: column; width: 100%; }
+  .btn-primary-action, .btn-sec { width: 100%; justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"><i class="bi bi-shield-check"></i> <span>Privasi Terjamin</span> — Teks diproses di browser kamu menggunakan AI, tidak dikirim ke server.</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="logo">
+      <span class="logo-mark">PDF</span>
+      <span class="logo-sub">Rekan<span>PDF</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="../index.html" class="nav-btn"><i class="bi bi-grid-fill"></i> Semua Alat</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-body">
+
+  <div class="breadcrumb">
+    <a href="../index.html"><i class="bi bi-house-door-fill"></i> Beranda</a>
+    <span>/</span>
+    <span>Alat Konversi</span>
+    <span>/</span>
+    <span>OCR PDF</span>
+  </div>
+
+  <div class="tool-header">
+    <div class="tool-icon"><i class="bi bi-upc-scan"></i></div>
+    <h1>Ekstrak Teks (OCR)</h1>
+    <p>Baca teks dari dokumen PDF hasil scan, foto, atau gambar menggunakan teknologi AI (Optical Character Recognition).</p>
+  </div>
+
+  <div class="workspace">
+    
+    <div class="upload-area" id="viewUpload" onclick="document.getElementById('fileInput').click()">
+      <i class="bi bi-image"></i>
+      <h3>Pilih PDF atau Gambar</h3>
+      <p>Mendukung file PDF, JPG, PNG, dan WEBP</p>
+      <button class="btn-upload"><i class="bi bi-folder-fill"></i> Unggah File</button>
+      <input type="file" id="fileInput" accept="application/pdf, image/jpeg, image/png, image/webp">
+    </div>
+
+    <div class="loading-area" id="viewLoading">
+      <div class="spinner"></div>
+      <h3>Menganalisis Dokumen...</h3>
+      <p id="loadingText">Sedang mengunduh mesin AI atau memproses gambar.</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="result-area" id="viewResult">
+      <div class="result-header">
+        <h3><i class="bi bi-check-circle-fill" style="color:var(--green)"></i> Ekstraksi Berhasil</h3>
+        <p>Teks di bawah ini berhasil diekstrak dan siap untuk digunakan.</p>
+      </div>
+      
+      <div class="text-box-container">
+        <textarea id="resultText" class="text-box" placeholder="Hasil teks akan muncul di sini..."></textarea>
+      </div>
+
+      <div class="result-actions">
+        <button class="btn-primary-action" onclick="copyText()"><i class="bi bi-copy"></i> Salin Teks</button>
+        <button class="btn-primary-action" onclick="downloadTxt()" style="background:var(--green)"><i class="bi bi-download"></i> Simpan .TXT</button>
+        <button class="btn-sec" onclick="resetTool()"><i class="bi bi-arrow-counterclockwise"></i> Pindai Lagi</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="alert-toast" id="toast">
+  <i class="bi bi-check-circle"></i> Teks berhasil disalin!
+</div>
+
+<footer>
+  © 2025 Rekan PDF. Dibuat untuk Indonesia.
+</footer>
+
+<script>
+// Konfigurasi Worker PDF.js
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+// Elements
+const viewUpload = document.getElementById('viewUpload');
+const viewLoading = document.getElementById('viewLoading');
+const viewResult = document.getElementById('viewResult');
+const fileInput = document.getElementById('fileInput');
+const resultText = document.getElementById('resultText');
+const progressBar = document.getElementById('progressBar');
+const loadingText = document.getElementById('loadingText');
+const toast = document.getElementById('toast');
+
+let originalFileName = "Dokumen";
+
+// Drag & Drop
+viewUpload.addEventListener('dragover', (e) => { e.preventDefault(); viewUpload.classList.add('dragover'); });
+viewUpload.addEventListener('dragleave', () => { viewUpload.classList.remove('dragover'); });
+viewUpload.addEventListener('drop', (e) => {
+  e.preventDefault();
+  viewUpload.classList.remove('dragover');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length) handleFile(e.target.files[0]);
+});
+
+// Reset Tool
+function resetTool() {
+  fileInput.value = '';
+  resultText.value = '';
+  viewResult.style.display = 'none';
+  viewLoading.style.display = 'none';
+  viewUpload.style.display = 'block';
+  progressBar.style.width = '0%';
+}
+
+// Proses Penanganan File
+async function handleFile(file) {
+  originalFileName = file.name.split('.')[0];
+  
+  viewUpload.style.display = 'none';
+  viewLoading.style.display = 'block';
+  loadingText.innerText = "Mempersiapkan dokumen...";
+  progressBar.style.width = '5%';
+
+  try {
+    let extractedString = "";
+
+    // 1. Jika filenya adalah PDF
+    if (file.type === 'application/pdf') {
+      const fileBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument(fileBuffer).promise;
+      const totalPages = pdf.numPages;
+
+      // Batasi 5 halaman untuk client-side agar browser tidak crash (opsional, tapi disarankan)
+      const maxPages = Math.min(totalPages, 5); 
+      if(totalPages > 5) {
+        alert("Peringatan: Untuk menjaga performa browser, hanya 5 halaman pertama yang akan dipindai (OCR).");
+      }
+
+      for (let i = 1; i <= maxPages; i++) {
+        loadingText.innerText = `Mengubah halaman ${i} menjadi gambar...`;
+        
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale: 2.0 }); // Skala 2x agar teks tajam untuk OCR
+        
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        const imgData = canvas.toDataURL('image/png');
+
+        // Jalankan OCR pada gambar halaman
+        const textFromPage = await performOCR(imgData, i, maxPages);
+        extractedString += textFromPage + "\n\n";
+      }
+    } 
+    // 2. Jika filenya adalah Gambar langsung
+    else if (file.type.startsWith('image/')) {
+      const imgDataUrl = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.readAsDataURL(file);
+      });
+      extractedString = await performOCR(imgDataUrl, 1, 1);
+    } 
+    else {
+      throw new Error("Format file tidak didukung.");
+    }
+
+    // Tampilkan Hasil
+    resultText.value = extractedString.trim();
+    
+    viewLoading.style.display = 'none';
+    viewResult.style.display = 'block';
+
+  } catch (error) {
+    alert("Terjadi kesalahan atau format file tidak didukung.");
+    console.error(error);
+    resetTool();
+  }
+}
+
+// Fungsi Utama Tesseract OCR
+async function performOCR(imageSource, currentPage, totalPages) {
+  return new Promise((resolve, reject) => {
+    Tesseract.recognize(
+      imageSource,
+      'ind+eng', // Menggunakan bahasa Indonesia & Inggris
+      {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            // Kalkulasi progress bar menyesuaikan jumlah halaman
+            const baseProgress = ((currentPage - 1) / totalPages) * 100;
+            const currentProgress = (m.progress * (100 / totalPages));
+            progressBar.style.width = Math.round(baseProgress + currentProgress) + '%';
+            
+            loadingText.innerText = `Membaca Teks (Halaman ${currentPage}/${totalPages}): ${Math.round(m.progress * 100)}%`;
+          } else if (m.status.includes('loading') || m.status.includes('downloading')) {
+            loadingText.innerText = "Mengunduh/Memuat mesin AI...";
+          }
+        }
+      }
+    ).then(({ data: { text } }) => {
+      resolve(text);
+    }).catch(err => reject(err));
+  });
+}
+
+// --- Fungsi Tombol Aksi ---
+function copyText() {
+  if (!resultText.value) return;
+  
+  navigator.clipboard.writeText(resultText.value).then(() => {
+    toast.style.display = 'flex';
+    setTimeout(() => { toast.style.display = 'none'; }, 2500);
+  });
+}
+
+function downloadTxt() {
+  if (!resultText.value) return;
+  
+  const blob = new Blob([resultText.value], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `RekanPDF_OCR_${originalFileName}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Rekan PDF – Alat PDF Online Gratis Terlengkap Indonesia</title>
+<meta name="description" content="Kompres, gabung, pisah, konversi PDF gratis dan online. Rekan PDF: platform alat PDF terlengkap, tercepat, tanpa daftar. Coba sekarang!"/>
+<meta name="keywords" content="kompres pdf, gabung pdf, split pdf, pdf ke word, ocr pdf, alat pdf gratis indonesia, rekan pdf"/>
+<meta property="og:title" content="Rekan PDF – Alat PDF Gratis Terlengkap"/>
+<meta property="og:description" content="15+ alat PDF profesional, gratis selamanya. Tidak perlu install atau daftar."/>
+
+<link rel="icon" type="image/png" href="img/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E8720C;
+  --orange-dark:#C45F00;
+  --orange-light:#FF9235;
+  --orange-bg:#FFF4EB;
+  --navy:#0F1923;
+  --navy2:#1A2736;
+  --blue:#1B5FA8;
+  --blue-light:#2272C3;
+  --white:#FFFFFF;
+  --off:#F7F8FA;
+  --border:#DDE1E7;
+  --border2:#C8CDD5;
+  --text:#0F1923;
+  --text2:#3D4A5A;
+  --muted:#6B7A8D;
+  --green:#1A7A42;
+  --red:#C0392B;
+  --shadow:0 2px 8px rgba(15,25,35,0.10);
+  --shadow-md:0 4px 20px rgba(15,25,35,0.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.5;overflow-x:hidden;}
+
+/* ── PAGE LOADER ── */
+#pageLoader {
+  position: fixed; inset: 0; background: rgba(255,255,255,0.92); z-index: 9999;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(4px);
+}
+#pageLoader.active { opacity: 1; visibility: visible; }
+.loader-spinner {
+  width: 54px; height: 54px; border: 5px solid var(--border); border-top-color: var(--orange);
+  border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px;
+}
+.loader-text {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 1.6rem; font-weight: 800;
+  color: var(--navy); letter-spacing: 0.05em; animation: pulse 1.5s infinite;
+}
+@keyframes pulse { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── TOP BAR ── */
+.topbar{background:var(--navy);color:#fff;font-size:12.5px;text-align:center;padding:7px 20px;font-weight:600;letter-spacing:0.01em}
+.topbar span{color:var(--orange-light)}
+
+/* ── NAVBAR ── */
+nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-inner{display:flex;align-items:center;gap:0;max-width:1380px;margin:0 auto;padding:0 20px;height:62px}
+.mobile-menu-btn{display:none;background:transparent;border:none;color:#fff;font-size:1.8rem;cursor:pointer;margin-right:16px;padding:0;}
+
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:auto;flex-shrink:0}
+.logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
+.logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
+.logo-sub span{color:var(--orange-light)}
+
+.nav-right{display:flex;align-items:center;gap:4px;}
+.nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
+.nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+
+/* Search Toggle Button */
+.search-toggle-btn{background:transparent;border:none;color:#fff;font-size:1.3rem;cursor:pointer;margin-left:16px;display:flex;align-items:center;transition:color 0.2s}
+.search-toggle-btn:hover{color:var(--orange-light)}
+
+/* ── HIDDEN SEARCH DROPDOWN ── */
+.search-dropdown { position: absolute; top: 100%; left: 0; width: 100%; background: var(--navy2); padding: 12px 20px; display: none; border-top: 1px solid rgba(255,255,255,0.08); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.search-dropdown.active { display: block; animation: slideDown 0.2s ease; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+.search-inner { max-width: 700px; margin: 0 auto; display: flex; align-items: center; background: #fff; border-radius: 6px; padding: 4px 16px; border: 2px solid var(--orange); }
+.search-inner i { color: var(--navy); font-size: 1.2rem; }
+.search-inner input { flex: 1; border: none; background: transparent; padding: 10px 12px; font-size: 1rem; outline: none; font-family: 'Nunito Sans'; color: var(--text); }
+.search-inner button { background: transparent; border: none; color: var(--muted); cursor: pointer; font-size: 1.4rem; transition: color 0.2s; display: flex; align-items: center; }
+.search-inner button:hover { color: var(--red); }
+
+/* ── MOBILE MENU DRAWER ── */
+.mobile-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:1000;opacity:0;visibility:hidden;transition:all .3s ease;}
+.mobile-overlay.active{opacity:1;visibility:visible;}
+.mobile-drawer{position:fixed;top:0;left:-320px;width:300px;height:100%;background:#fff;z-index:1001;box-shadow:4px 0 20px rgba(0,0,0,0.15);transition:all .3s ease;display:flex;flex-direction:column;overflow-y:auto;}
+.mobile-drawer.active{left:0;}
+.md-header{display:flex;justify-content:flex-end;padding:12px 16px;}
+.md-close{background:transparent;border:none;font-size:1.6rem;color:var(--text2);cursor:pointer;}
+.md-content{padding:0 20px 30px;}
+.md-cat{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:800;color:var(--muted);margin:16px 0 10px;letter-spacing:0.04em;}
+.md-link{display:flex;align-items:center;gap:12px;padding:10px 0;color:var(--text);text-decoration:none;font-weight:700;font-size:14px;border-bottom:1px solid var(--border);}
+.md-link:last-child{border-bottom:none;}
+.md-link:hover{color:var(--orange);}
+.md-link i{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+
+/* ── HERO BANNER ── */
+.hero{background:linear-gradient(100deg, var(--navy) 0%, #1B2F45 55%, #0F3460 100%);padding:48px 20px 48px;text-align:center;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;right:-80px;top:-80px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(232,114,12,0.18),transparent 65%);pointer-events:none}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:7px;background:rgba(232,114,12,0.18);border:1px solid rgba(232,114,12,0.4);color:var(--orange-light);font-size:12.5px;font-weight:700;padding:5px 14px;border-radius:100px;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:20px}
+.hero h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2.4rem,6vw,4.2rem);font-weight:800;color:#fff;line-height:1.05;letter-spacing:-0.01em;margin-bottom:12px}
+.hero h1 em{color:var(--orange-light);font-style:normal}
+.hero p{color:rgba(255,255,255,0.72);font-size:1.05rem;max-width:540px;margin:0 auto 0;line-height:1.65;font-weight:400}
+
+/* ── LAYOUT WRAPPER ── */
+.page-body{max-width:1380px;margin:32px auto 60px;padding:0 20px;display:block;}
+
+/* Category filter pills - Center Aligned */
+.filter-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:32px;}
+.filter-pill{display:flex;align-items:center;gap:6px;padding:8px 20px;border-radius:100px;border:1.5px solid var(--border2);background:var(--white);color:var(--text2);font-size:13.5px;font-weight:800;cursor:pointer;transition:all .15s;font-family:'Nunito Sans',sans-serif}
+.filter-pill:hover{border-color:var(--orange);color:var(--orange)}
+.filter-pill.active{background:var(--navy2);border-color:var(--navy2);color:#fff}
+
+/* ── TOOL CARDS GRID (FULL WIDTH) ── */
+.tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:48px}
+
+.tool-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:20px 18px;text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:12px;transition:all .18s;position:relative;overflow:hidden}
+.tool-card:hover{border-color:var(--orange);box-shadow:var(--shadow-md);transform:translateY(-3px)}
+.tool-card:hover .tc-arrow{opacity:1;transform:translateX(0)}
+
+.tc-top{display:flex;align-items:flex-start;gap:14px}
+.tc-icon{width:46px;height:46px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0}
+.tc-info{flex:1;min-width:0}
+.tc-name{font-weight:800;font-size:15px;line-height:1.25;color:var(--text)}
+.tc-cat{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:4px}
+.tc-desc{font-size:13px;color:var(--text2);line-height:1.5}
+.tc-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:4px}
+.tc-badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:0.04em;display:flex;align-items:center;gap:4px}
+.tc-badge.pop{background:#FFF0E0;color:var(--orange-dark)}
+.tc-badge.new{background:#E6F4EA;color:var(--green)}
+.tc-badge.hot{background:#FDECEA;color:var(--red)}
+.tc-arrow{font-size:12.5px;color:var(--orange);font-weight:800;opacity:0;transform:translateX(-6px);transition:all .2s}
+
+/* Icon colors */
+.ico-red{background:#FDECEA;color:#C0392B;}
+.ico-blue{background:#E8F0FE;color:#1B5FA8;}
+.ico-green{background:#E6F4EA;color:#1A7A42;}
+.ico-orange{background:#FFF0E0;color:#E8720C;}
+.ico-purple{background:#F3E8FD;color:#8E44AD;}
+.ico-teal{background:#E0F7F7;color:#008080;}
+.ico-pink{background:#FDE8F3;color:#D81B60;}
+.ico-lime{background:#F0FDE8;color:#556B2F;}
+.ico-navy{background:#E8EEF4;color:#0F1923;}
+.ico-blue-dark{background:#EBF3FC;color:#1B5FA8;} 
+
+/* ── FEATURED STRIP ── */
+.featured-strip{background:linear-gradient(100deg,#0F3460,#1B2F45);border-radius:8px;padding:28px 32px;margin-bottom:48px;display:flex;align-items:center;justify-content:space-between;gap:20px;border:1px solid rgba(255,255,255,0.08)}
+.fs-text h3{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.fs-text p{color:rgba(255,255,255,0.7);font-size:14px;max-width:500px;line-height:1.5}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;border-top:3px solid var(--orange)}
+.footer-main{max-width:1380px;margin:0 auto;padding:48px 20px 36px;display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr 1.5fr 1fr;gap:24px}
+.footer-brand{}
+.footer-logo-text{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;letter-spacing:0.06em}
+.footer-logo-text span{color:var(--orange-light)}
+.footer-brand p{font-size:13px;margin-top:10px;line-height:1.6;max-width:240px;color:rgba(255,255,255,0.6)}
+.footer-col h5{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.12);padding-bottom:8px}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:9px}
+.footer-col ul li a{color:rgba(255,255,255,0.62);text-decoration:none;font-size:13px;transition:color .15s}
+.footer-col ul li a:hover{color:var(--orange-light)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.1);max-width:1380px;margin:0 auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;font-size:12.5px}
+.footer-bottom a{color:rgba(255,255,255,0.5);text-decoration:none;margin-left:16px}
+.footer-bottom a:hover{color:var(--orange-light)}
+
+/* ── RESPONSIVE MOBILE FIXES ── */
+@media(max-width:1100px){
+  .tools-grid{grid-template-columns:repeat(3,1fr)}
+  .footer-main{grid-template-columns:repeat(3, 1fr);}
+}
+@media(max-width:900px){
+  .mobile-menu-btn{display:block;}
+  .nav-right{display:none} 
+  .tools-grid{grid-template-columns:repeat(2,1fr)}
+  .footer-main{grid-template-columns:1fr 1fr;gap:32px}
+  .featured-strip{flex-direction:column; text-align: center;}
+}
+@media(max-width:580px){
+  .tools-grid{grid-template-columns:1fr}
+  .footer-main{grid-template-columns:1fr; text-align: center;}
+  .footer-brand p { margin: 10px auto; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; justify-content: center;}
+  .footer-bottom a { margin: 0 8px; }
+  .filter-row { gap: 6px; }
+  .filter-pill { font-size: 12px; padding: 6px 14px; }
+}
+
+/* Reveal */
+.rev{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
+.rev.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<div id="pageLoader">
+  <div class="loader-spinner"></div>
+  <div class="loader-text">MEMBUAT RUANG KERJA...</div>
+</div>
+
+<div class="topbar"><i class="bi bi-stars"></i> <span>100% GRATIS</span> — Tidak perlu daftar, tidak ada watermark, tidak ada batas ukuran file!</div>
+
+<nav>
+  <div class="nav-inner">
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><i class="bi bi-list"></i></button>
+    
+    <a href="index.html" class="logo">
+      <span class="logo-mark">PDF</span>
+      <span class="logo-sub">Rekan<span>PDF</span></span>
+    </a>
+    
+    <div class="nav-right">
+      <a href="#alat" class="nav-btn">Alat PDF</a>
+      <a href="halaman/about.html" class="nav-btn">Tentang Kami</a>
+    </div>
+
+    <!-- Tombol Search (Sekarang ada di paling kanan) -->
+    <button class="search-toggle-btn" onclick="toggleSearch()" id="btnToggleSearch"><i class="bi bi-search"></i></button>
+  </div>
+
+  <!-- DROPDOWN PENCARIAN -->
+  <div class="search-dropdown" id="searchDropdown">
+    <div class="search-inner">
+      <i class="bi bi-search"></i>
+      <input type="text" id="navSearch" placeholder="Cari alat (contoh: kompres, cv, keamanan, dll)..." autocomplete="off" autofocus />
+      <button onclick="toggleSearch()"><i class="bi bi-x-lg"></i></button>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
+<div class="mobile-drawer" id="mobileMenuDrawer">
+  <div class="md-header">
+    <button class="md-close" onclick="toggleMobileMenu()"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <div class="md-content">
+    <div class="md-cat">EDIT PDF</div>
+    <a href="alat/merge.html" class="md-link"><i class="bi bi-link-45deg ico-blue"></i> Gabung PDF</a>
+    <a href="alat/split-pdf.html" class="md-link"><i class="bi bi-scissors ico-orange"></i> Pisah PDF</a>
+    <a href="alat/remove-pages.html" class="md-link"><i class="bi bi-trash3-fill ico-red"></i> Hapus Halaman</a>
+    <a href="alat/extract-pages.html" class="md-link"><i class="bi bi-file-earmark-plus-fill ico-teal"></i> Ambil Halaman</a>
+    <a href="alat/organize-pdf.html" class="md-link"><i class="bi bi-grid-fill ico-purple"></i> Atur Halaman</a>
+
+    <div class="md-cat">OPTIMASI PDF</div>
+    <a href="alat/compress-pdf.html" class="md-link"><i class="bi bi-file-earmark-zip-fill ico-red"></i> Kompres PDF</a>
+    <a href="alat/repair-pdf.html" class="md-link"><i class="bi bi-wrench-adjustable ico-lime"></i> Perbaiki PDF</a>
+
+    <div class="md-cat">KONVERSI KE PDF</div>
+    <a href="alat/jpg-to-pdf.html" class="md-link"><i class="bi bi-image-fill ico-pink"></i> JPG ke PDF</a>
+    <a href="alat/word-to-pdf.html" class="md-link"><i class="bi bi-file-earmark-word-fill ico-blue-dark"></i> Word ke PDF</a>
+    <a href="alat/powerpoint-to-pdf.html" class="md-link"><i class="bi bi-file-earmark-slides-fill ico-orange"></i> PowerPoint ke PDF</a>
+    <a href="alat/excel-to-pdf.html" class="md-link"><i class="bi bi-file-earmark-spreadsheet-fill ico-green"></i> Excel ke PDF</a>
+    <a href="alat/html-to-pdf.html" class="md-link"><i class="bi bi-globe ico-blue"></i> HTML ke PDF</a>
+    <a href="alat/scan-to-pdf.html" class="md-link"><i class="bi bi-camera-fill ico-teal"></i> Scan ke PDF</a>
+    
+    <div class="md-cat">KONVERSI DARI PDF</div>
+    <a href="alat/pdf-to-images.html" class="md-link"><i class="bi bi-file-earmark-image-fill ico-pink" style="background:#FDE8F3;color:#D81B60;"></i> PDF ke Gambar</a>
+    <a href="alat/ocr-pdf.html" class="md-link"><i class="bi bi-upc-scan ico-navy"></i> OCR PDF</a>
+
+    <div class="md-cat">KEAMANAN PDF</div>
+    <a href="alat/security-pdf.html" class="md-link"><i class="bi bi-shield-lock-fill ico-teal"></i> Keamanan PDF (4 in 1)</a>
+
+    <div class="md-cat">ALAT PEMBUAT</div>
+    <a href="alat/cv-maker.html" class="md-link"><i class="bi bi-file-earmark-richtext-fill ico-blue-dark"></i> CV Maker</a>
+    <a href="alat/cover-letter-generator.html" class="md-link"><i class="bi bi-envelope-paper-fill ico-orange"></i> Surat Lamaran</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-eyebrow"><i class="bi bi-star-fill"></i> Platform PDF #1 di Indonesia</div>
+  <h1>Semua Alat PDF<br/><em>Dalam Satu Tempat</em></h1>
+  <p>Setiap alat yang Anda butuhkan untuk menggunakan PDF ada di sini. 100% gratis, aman, dan langsung bekerja di browser Anda tanpa instalasi.</p>
+</div>
+
+<div class="page-body" id="alat">
+
+  <div class="filter-row" id="filterRow">
+    <button class="filter-pill active" onclick="filterCat('all',this)">Semua Alat</button>
+    <button class="filter-pill" onclick="filterCat('edit',this)"><i class="bi bi-scissors"></i> Edit PDF</button>
+    <button class="filter-pill" onclick="filterCat('konversi',this)"><i class="bi bi-arrow-repeat"></i> Konversi</button>
+    <button class="filter-pill" onclick="filterCat('optimasi',this)"><i class="bi bi-lightning-charge"></i> Optimasi</button>
+    <button class="filter-pill" onclick="filterCat('keamanan',this)"><i class="bi bi-shield-lock"></i> Keamanan</button>
+    <button class="filter-pill" onclick="filterCat('pembuat',this)"><i class="bi bi-magic"></i> Alat Pembuat</button>
+  </div>
+
+  <div class="tools-grid" id="toolsGrid">
+
+    <a href="alat/merge.html" class="tool-card rev" data-cat="edit" data-name="gabung merge pdf satukan">
+      <div class="tc-top">
+        <div class="tc-icon ico-blue"><i class="bi bi-link-45deg" style="font-size:1.6rem"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">Gabung PDF</div>
+          <div class="tc-cat">Edit PDF</div>
+        </div>
+      </div>
+      <div class="tc-desc">Satukan dua atau lebih file PDF menjadi satu dokumen dengan urutan bebas.</div>
+      <div class="tc-footer"><span class="tc-badge pop"><i class="bi bi-star-fill"></i> Populer</span><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/compress-pdf.html" class="tool-card rev" data-cat="optimasi" data-name="kompres pdf perkecil ukuran cpns">
+      <div class="tc-top">
+        <div class="tc-icon ico-red"><i class="bi bi-file-earmark-zip-fill"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">Kompres PDF</div>
+          <div class="tc-cat">Optimasi</div>
+        </div>
+      </div>
+      <div class="tc-desc">Perkecil ukuran file PDF tanpa kehilangan kualitas tampilan. Cocok untuk lamaran kerja.</div>
+      <div class="tc-footer"><span class="tc-badge pop"><i class="bi bi-fire"></i> Populer</span><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/cv-maker.html" class="tool-card rev" data-cat="pembuat" data-name="buat cv lamaran kerja otomatis curriculum vitae ats">
+      <div class="tc-top">
+        <div class="tc-icon ico-blue-dark"><i class="bi bi-file-earmark-richtext-fill"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">CV Maker</div>
+          <div class="tc-cat">Alat Pembuat</div>
+        </div>
+      </div>
+      <div class="tc-desc">Buat CV profesional dan ATS friendly dengan desain elegan secara instan. Siap unduh!</div>
+      <div class="tc-footer"><span class="tc-badge hot"><i class="bi bi-fire"></i> Paling Dicari</span><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/cover-letter-generator.html" class="tool-card rev" data-cat="pembuat" data-name="buat surat lamaran kerja otomatis cover letter">
+      <div class="tc-top">
+        <div class="tc-icon ico-orange"><i class="bi bi-envelope-paper-fill"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">Surat Lamaran</div>
+          <div class="tc-cat">Alat Pembuat</div>
+        </div>
+      </div>
+      <div class="tc-desc">Generator pembuat surat lamaran kerja otomatis dari isi formulir. Cepat & praktis.</div>
+      <div class="tc-footer"><span class="tc-badge new"><i class="bi bi-stars"></i> Praktis</span><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/security-pdf.html" class="tool-card rev" data-cat="keamanan" data-name="kunci buka protect unlock watermark flatten pdf aman password">
+      <div class="tc-top">
+        <div class="tc-icon ico-teal"><i class="bi bi-shield-lock-fill"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">Keamanan PDF</div>
+          <div class="tc-cat">Keamanan</div>
+        </div>
+      </div>
+      <div class="tc-desc">Alat multifungsi 4 in 1: Protect, Unlock, Watermark, dan Flatten PDF secara luring.</div>
+      <div class="tc-footer"><span class="tc-badge hot"><i class="bi bi-lightning-fill"></i> Super Tool</span><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/jpg-to-pdf.html" class="tool-card rev" data-cat="konversi" data-name="jpg gambar foto ke pdf konversi ktp">
+      <div class="tc-top">
+        <div class="tc-icon ico-pink"><i class="bi bi-image-fill"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">JPG ke PDF</div>
+          <div class="tc-cat">Konversi</div>
+        </div>
+      </div>
+      <div class="tc-desc">Jadikan foto galeri (KTP, Ijazah, Gambar) menjadi satu file PDF utuh dan rapi.</div>
+      <div class="tc-footer"><span class="tc-badge pop"><i class="bi bi-star-fill"></i> Populer</span><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/word-to-pdf.html" class="tool-card rev" data-cat="konversi" data-name="word doc docx ke pdf konversi">
+      <div class="tc-top">
+        <div class="tc-icon ico-blue-dark"><i class="bi bi-file-earmark-word-fill"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">Word ke PDF</div>
+          <div class="tc-cat">Konversi</div>
+        </div>
+      </div>
+      <div class="tc-desc">Ubah dokumen Word DOC atau DOCX ke PDF dengan format dan layout yang terjaga.</div>
+      <div class="tc-footer"><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/pdf-to-images.html" class="tool-card rev" data-cat="konversi" data-name="pdf ke jpg gambar png ekstrak">
+      <div class="tc-top">
+        <div class="tc-icon ico-pink" style="background:#FDE8F3;color:#D81B60;"><i class="bi bi-file-earmark-image-fill"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">PDF ke Gambar</div>
+          <div class="tc-cat">Konversi</div>
+        </div>
+      </div>
+      <div class="tc-desc">Ubah setiap halaman dokumen PDF Anda menjadi gambar JPG resolusi tinggi.</div>
+      <div class="tc-footer"><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/split-pdf.html" class="tool-card rev" data-cat="edit" data-name="pisah split pdf halaman potong">
+      <div class="tc-top">
+        <div class="tc-icon ico-orange"><i class="bi bi-scissors"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">Pisah PDF</div>
+          <div class="tc-cat">Edit PDF</div>
+        </div>
+      </div>
+      <div class="tc-desc">Pecah file PDF besar menjadi beberapa file kecil atau hapus halaman tak penting.</div>
+      <div class="tc-footer"><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/excel-to-pdf.html" class="tool-card rev" data-cat="konversi" data-name="excel xlsx spreadsheet ke pdf">
+      <div class="tc-top">
+        <div class="tc-icon ico-green"><i class="bi bi-file-earmark-spreadsheet-fill"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">Excel ke PDF</div>
+          <div class="tc-cat">Konversi</div>
+        </div>
+      </div>
+      <div class="tc-desc">Simpan spreadsheet Microsoft Excel (.xlsx, .xls) Anda menjadi dokumen PDF.</div>
+      <div class="tc-footer"><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/powerpoint-to-pdf.html" class="tool-card rev" data-cat="konversi" data-name="powerpoint ppt presentasi ke pdf">
+      <div class="tc-top">
+        <div class="tc-icon ico-orange"><i class="bi bi-file-earmark-slides-fill"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">PPT ke PDF</div>
+          <div class="tc-cat">Konversi</div>
+        </div>
+      </div>
+      <div class="tc-desc">Konversi file presentasi PPT atau PPTX menjadi format PDF dengan instan.</div>
+      <div class="tc-footer"><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/extract-pages.html" class="tool-card rev" data-cat="edit" data-name="ambil halaman ekstrak pdf">
+      <div class="tc-top">
+        <div class="tc-icon ico-teal"><i class="bi bi-file-earmark-plus-fill"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">Ambil Halaman</div>
+          <div class="tc-cat">Edit PDF</div>
+        </div>
+      </div>
+      <div class="tc-desc">Ambil atau ekstrak hanya satu atau beberapa halaman tertentu dari dalam file PDF.</div>
+      <div class="tc-footer"><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/remove-pages.html" class="tool-card rev" data-cat="edit" data-name="hapus halaman pdf buang">
+      <div class="tc-top">
+        <div class="tc-icon ico-red"><i class="bi bi-trash3-fill"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">Hapus Halaman</div>
+          <div class="tc-cat">Edit PDF</div>
+        </div>
+      </div>
+      <div class="tc-desc">Buang lembar halaman yang rusak atau tidak Anda perlukan dari sebuah dokumen.</div>
+      <div class="tc-footer"><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/organize-pdf.html" class="tool-card rev" data-cat="edit" data-name="atur halaman susun rotasi pdf">
+      <div class="tc-top">
+        <div class="tc-icon ico-purple"><i class="bi bi-grid-fill"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">Atur Halaman</div>
+          <div class="tc-cat">Edit PDF</div>
+        </div>
+      </div>
+      <div class="tc-desc">Susun ulang posisi atau rotasi urutan kertas PDF Anda layaknya bermain puzzle.</div>
+      <div class="tc-footer"><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/ocr-pdf.html" class="tool-card rev" data-cat="konversi" data-name="ocr pdf teks scan gambar">
+      <div class="tc-top">
+        <div class="tc-icon ico-navy"><i class="bi bi-upc-scan"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">OCR PDF</div>
+          <div class="tc-cat">Konversi</div>
+        </div>
+      </div>
+      <div class="tc-desc">Ubah PDF hasil jepretan kamera menjadi dokumen yang teksnya bisa di-copy paste.</div>
+      <div class="tc-footer"><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/scan-to-pdf.html" class="tool-card rev" data-cat="konversi" data-name="scan foto kamera ke pdf dokumen">
+      <div class="tc-top">
+        <div class="tc-icon ico-teal"><i class="bi bi-camera-fill"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">Scan ke PDF</div>
+          <div class="tc-cat">Konversi</div>
+        </div>
+      </div>
+      <div class="tc-desc">Gunakan kamera HP atau Laptop langsung sebagai mesin scanner portabel Anda.</div>
+      <div class="tc-footer"><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/html-to-pdf.html" class="tool-card rev" data-cat="konversi" data-name="html web ke pdf simpan halaman">
+      <div class="tc-top">
+        <div class="tc-icon ico-blue"><i class="bi bi-globe"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">HTML ke PDF</div>
+          <div class="tc-cat">Konversi</div>
+        </div>
+      </div>
+      <div class="tc-desc">Bekukan file web HTML mentah Anda dan simpan bentuk finalnya sebagai PDF.</div>
+      <div class="tc-footer"><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+    <a href="alat/repair-pdf.html" class="tool-card rev" data-cat="optimasi" data-name="perbaiki repair pdf rusak error">
+      <div class="tc-top">
+        <div class="tc-icon ico-lime"><i class="bi bi-wrench-adjustable"></i></div>
+        <div class="tc-info">
+          <div class="tc-name">Perbaiki PDF</div>
+          <div class="tc-cat">Optimasi</div>
+        </div>
+      </div>
+      <div class="tc-desc">Pulihkan file yang error corrupt atau tiba-tiba tak bisa dibuka di komputer lain.</div>
+      <div class="tc-footer"><span class="tc-arrow">Buka →</span></div>
+    </a>
+
+  </div>
+
+  <div class="featured-strip rev" id="kenapa">
+    <div class="fs-text">
+      <h3><i class="bi bi-shield-check" style="color: var(--orange-light)"></i> Keamanan Privasi Terjamin 100%</h3>
+      <p>Tidak seperti web alat PDF lain, Rekan PDF memproses file langsung di browser perangkat Anda sendiri tanpa diunggah ke server kami. Lebih cepat, hemat kuota, dan data Anda aman.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="footer-logo-text">Rekan<span>PDF</span></div>
+      <p>Platform alat PDF nomor 1 untuk pengguna Indonesia. Mengutamakan privasi, kecepatan, dan bebas biaya tanpa syarat apapun.</p>
+    </div>
+    
+    <div class="footer-col">
+      <h5>Edit & Keamanan</h5>
+      <ul>
+        <li><a href="alat/merge.html">Gabung PDF</a></li>
+        <li><a href="alat/split-pdf.html">Pisah PDF</a></li>
+        <li><a href="alat/organize-pdf.html">Atur Halaman</a></li>
+        <li><a href="alat/security-pdf.html">Keamanan PDF</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-col">
+      <h5>Konversi</h5>
+      <ul>
+        <li><a href="alat/word-to-pdf.html">Word ke PDF</a></li>
+        <li><a href="alat/jpg-to-pdf.html">JPG ke PDF</a></li>
+        <li><a href="alat/pdf-to-images.html">PDF ke JPG</a></li>
+        <li><a href="alat/excel-to-pdf.html">Excel ke PDF</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-col">
+      <h5>Optimasi & Alat</h5>
+      <ul>
+        <li><a href="alat/compress-pdf.html">Kompres PDF</a></li>
+        <li><a href="alat/repair-pdf.html">Perbaiki PDF</a></li>
+        <li><a href="alat/cv-maker.html">Buat CV Otomatis</a></li>
+        <li><a href="alat/cover-letter-generator.html">Surat Lamaran</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h5>Panduan & Solusi</h5>
+      <ul>
+        <li><a href="artikel/dokumen-cpns-melebihi-batas-200kb.html">Syarat PDF CPNS 2026</a></li>
+        <li><a href="artikel/file-pdf-terlalu-besar.html">Solusi Gagal Upload PDF</a></li>
+        <li><a href="artikel/gabung-scan-ktp-kk.html">Cara Gabung Scan KTP</a></li>
+        <li><a href="artikel/cara-kompres-pdf-200kb.html">Kompres PDF ke 200KB</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-col">
+      <h5>Perusahaan</h5>
+      <ul>
+        <li><a href="halaman/about.html">Tentang Kami</a></li>
+        <li><a href="halaman/faq.html">FAQ</a></li>
+        <li><a href="halaman/privacy-policy.html">Kebijakan Privasi</a></li>
+        <li><a href="halaman/terms.html">Syarat Layanan</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Rekan PDF. Dibuat dengan ☕ di Indonesia.</span>
+    <div>
+      <a href="halaman/privacy-policy.html">Privasi</a>
+      <a href="halaman/terms.html">Syarat Layanan</a>
+      <a href="sitemap.xml">Sitemap</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleMobileMenu() {
+  const overlay = document.getElementById('mobileMenuOverlay');
+  const drawer = document.getElementById('mobileMenuDrawer');
+  overlay.classList.toggle('active');
+  drawer.classList.toggle('active');
+  document.body.style.overflow = drawer.classList.contains('active') ? 'hidden' : '';
+}
+
+function toggleSearch() {
+  const dropdown = document.getElementById('searchDropdown');
+  const iconBtn = document.getElementById('btnToggleSearch').querySelector('i');
+  
+  if (dropdown.classList.contains('active')) {
+    dropdown.classList.remove('active');
+    iconBtn.classList.remove('bi-x-lg');
+    iconBtn.classList.add('bi-search');
+  } else {
+    dropdown.classList.add('active');
+    iconBtn.classList.remove('bi-search');
+    iconBtn.classList.add('bi-x-lg');
+    setTimeout(() => { document.getElementById('navSearch').focus(); }, 100);
+  }
+}
+
+document.querySelectorAll('.tool-card, .md-link').forEach(card => {
+  card.addEventListener('click', function(e) {
+    if (e.ctrlKey || e.shiftKey || e.metaKey || e.button === 1 || this.getAttribute('href') === '#') return;
+    e.preventDefault(); 
+    const targetUrl = this.getAttribute('href');
+    const loader = document.getElementById('pageLoader');
+    loader.classList.add('active');
+    setTimeout(() => { window.location.href = targetUrl; }, 400);
+  });
+});
+
+window.addEventListener('pageshow', function (event) {
+  if (event.persisted) document.getElementById('pageLoader').classList.remove('active');
+});
+
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      setTimeout(()=>e.target.classList.add('in'), i*60);
+      obs.unobserve(e.target);
+    }
+  });
+},{threshold:0.08});
+document.querySelectorAll('.rev').forEach(el=>obs.observe(el));
+
+const navS = document.getElementById('navSearch');
+navS.addEventListener('input',()=>{
+  const q = navS.value.toLowerCase();
+  document.querySelectorAll('.tool-card').forEach(c=>{
+    const txt = (c.dataset.name||'')+c.innerText.toLowerCase();
+    c.style.display = txt.includes(q) ? '' : 'none';
+  });
+});
+
+function filterCat(cat, el){
+  document.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.tool-card').forEach(c=>{
+    c.style.display = (cat==='all' || c.dataset.cat===cat) ? '' : 'none';
+  });
+  return false;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CV Maker - Rekan PDF</title>
+<meta name="description" content="Buat CV profesional dan menarik secara online gratis. Isi data, pilih tema, dan unduh langsung sebagai gambar atau PDF."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E8720C; --orange-dark:#C45F00; --orange-light:#FF9235; --orange-bg:#FFF4EB;
+  --navy:#0F1923; --navy2:#1A2736; --blue:#1B5FA8; --blue-light:#2272C3;
+  --white:#FFFFFF; --off:#F7F8FA; --border:#DDE1E7; --border2:#C8CDD5;
+  --text:#0F1923; --text2:#3D4A5A; --muted:#6B7A8D;
+  --green:#1A7A42; --red:#C0392B;
+  --shadow:0 2px 8px rgba(15,25,35,0.10); --shadow-md:0 4px 20px rgba(15,25,35,0.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.5;overflow-x:hidden}
+
+/* ── TOP BAR & NAVBAR ── */
+.topbar{background:var(--navy);color:#fff;font-size:12.5px;text-align:center;padding:7px 20px;font-weight:600;letter-spacing:0.01em}
+.topbar span{color:var(--orange-light)}
+nav{background:var(--navy2);position:sticky;top:0;z-index:300;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-inner{display:flex;align-items:center;max-width:1380px;margin:0 auto;padding:0 20px;height:62px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:auto;flex-shrink:0}
+.logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
+.logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
+.logo-sub span{color:var(--orange-light)}
+.nav-right{display:flex;align-items:center;gap:4px;}
+.nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
+.nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+
+/* ── LAYOUT WRAPPER ── */
+.page-body{max-width:800px; /* Satu Kolom Terpusat */ margin:40px auto; padding:0 20px; display:block;}
+
+/* Breadcrumb */
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:24px; justify-content: center;}
+.breadcrumb a{display:flex;align-items:center;gap:4px;color:var(--blue-light);text-decoration:none;font-weight:600}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb span{color:var(--border2)}
+
+/* ── TOOL HEADER ── */
+.tool-header{text-align:center;margin-bottom:32px}
+.tool-icon{width:64px;height:64px;background:var(--navy2);color:var(--orange-light);font-size:2rem;display:flex;align-items:center;justify-content:center;border-radius:12px;margin:0 auto 16px}
+.tool-header h1{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:var(--text);margin-bottom:8px}
+.tool-header p{color:var(--text2);font-size:1.1rem;max-width:600px;margin:0 auto}
+
+/* ── EDITOR PANEL (SATU KOLOM) ── */
+.editor-panel{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:40px;}
+.editor-tabs{display:flex;border-bottom:2px solid var(--border);overflow-x:auto;white-space:nowrap;}
+.editor-tabs::-webkit-scrollbar{display:none}
+.etab{flex:1;padding:14px 16px;text-align:center;font-size:14px;font-weight:800;color:var(--muted);cursor:pointer;transition:all .2s;border-bottom:2px solid transparent;margin-bottom:-2px}
+.etab.active{color:var(--orange);border-bottom-color:var(--orange)}
+.etab:hover:not(.active){color:var(--text);background:var(--off)}
+.etab-body{display:none;padding:24px 32px;}
+.etab-body.active{display:block}
+
+/* Form elements */
+.form-section{margin-bottom:24px}
+.form-section-title{font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.form-section-title i{color:var(--orange)}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:13px;font-weight:800;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:12px 14px;border:1.5px solid var(--border2);border-radius:6px;font-size:14.5px;font-family:'Nunito Sans',sans-serif;outline:none;transition:border-color .2s;background:var(--white);color:var(--text);resize:none;box-sizing:border-box;}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--orange)}
+.form-group textarea{height:90px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Photo upload */
+.photo-upload{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.photo-circle{width:80px;height:80px;border-radius:50%;border:2.5px dashed var(--border2);overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--off);cursor:pointer;flex-shrink:0;transition:all .2s;position:relative}
+.photo-circle:hover{border-color:var(--orange);background:var(--orange-bg)}
+.photo-circle img{width:100%;height:100%;object-fit:cover;display:none}
+.photo-circle i{font-size:1.8rem;color:var(--muted)}
+.photo-upload-info h4{font-size:14px;font-weight:800; margin-bottom: 2px;}
+.photo-upload-info p{font-size:12px;color:var(--muted); margin-bottom: 6px;}
+.btn-photo{display:inline-flex;align-items:center;gap:6px;background:var(--orange-bg);border:1px solid #f0a060;color:var(--orange);padding:6px 14px;border-radius:4px;font-size:13px;font-weight:800;cursor:pointer;transition:all .2s}
+.btn-photo:hover{background:var(--orange);color:#fff}
+
+/* Skill & Lang Tags */
+.skill-input-row{display:flex;gap:8px;margin-bottom:10px}
+.skill-input-row input{flex:1;padding:10px 12px;border:1.5px solid var(--border2);border-radius:6px;font-size:14px;font-family:'Nunito Sans',sans-serif;outline:none}
+.skill-input-row input:focus{border-color:var(--orange)}
+.btn-add-skill{background:var(--orange);color:#fff;border:none;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap;transition:background .2s}
+.btn-add-skill:hover{background:var(--orange-dark)}
+.skills-tags{display:flex;flex-wrap:wrap;gap:8px}
+.skill-tag{display:flex;align-items:center;gap:6px;background:var(--navy2);color:#fff;font-size:13px;font-weight:700;padding:6px 12px;border-radius:20px}
+.skill-tag button{background:none;border:none;color:rgba(255,255,255,0.6);cursor:pointer;padding:0;font-size:16px;line-height:1;transition:color .2s}
+.skill-tag button:hover{color:#fff}
+
+/* Experience / Education items */
+.exp-items{display:flex;flex-direction:column;gap:12px}
+.exp-item{background:var(--off);border:1px solid var(--border);border-radius:8px;padding:16px;position:relative}
+.exp-item-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.exp-item-header strong{font-size:14px;font-weight:800;color:var(--text)}
+.exp-item-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;transition:color .2s;flex-shrink:0}
+.exp-item-del:hover{color:var(--red)}
+.btn-add-item{display:flex;align-items:center;justify-content:center;gap:8px;background:none;border:2px dashed var(--border2);border-radius:8px;padding:12px;font-size:14px;font-weight:800;color:var(--muted);cursor:pointer;width:100%;transition:all .2s;margin-top:12px}
+.btn-add-item:hover{border-color:var(--orange);color:var(--orange);background:var(--orange-bg)}
+
+/* Theme selector */
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.theme-opt{border:2px solid var(--border);border-radius:8px;cursor:pointer;overflow:hidden;transition:all .2s}
+.theme-opt:hover{border-color:var(--orange)}
+.theme-opt.selected{border-color:var(--orange);box-shadow:0 0 0 4px var(--orange-bg)}
+.theme-swatch{height:60px;display:flex}
+.theme-swatch-l{flex:2}
+.theme-swatch-r{flex:3;display:flex;flex-direction:column;gap:4px;padding:10px 8px}
+.theme-swatch-line{height:5px;border-radius:3px;background:rgba(0,0,0,0.12)}
+.theme-name{font-size:13px;font-weight:800;text-align:center;padding:8px;color:var(--text2);background:var(--white);}
+
+/* Generate Button Box */
+.generate-box { padding: 24px 32px; background: var(--off); border-top: 1px solid var(--border); text-align: center; }
+.btn-primary { width: 100%; background: var(--orange); color: #fff; padding: 16px 20px; font-size: 1.15rem; font-weight: 800; border: none; border-radius: 6px; cursor: pointer; transition: background .2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-primary:hover { background: var(--orange-dark); }
+
+/* ── DOWNLOAD PANEL (MUNCUL SETELAH GENERATE) ── */
+.download-panel { display: none; background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%); border-radius: 12px; padding: 40px 32px; text-align: center; box-shadow: var(--shadow-md); margin-bottom: 40px; animation: slideDown 0.4s ease forwards; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+.download-panel .success-icon { font-size: 3.5rem; color: var(--green); margin-bottom: 16px; }
+.download-panel h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 2.2rem; font-weight: 800; color: #fff; margin-bottom: 12px; }
+.download-panel p { color: rgba(255,255,255,0.7); font-size: 16px; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto;}
+.download-actions { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.btn-dl { padding: 16px 24px; font-weight: 800; font-size: 16px; border-radius: 6px; text-decoration: none; cursor: pointer; transition: all 0.2s; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 10px; flex: 1; min-width: 200px; }
+.btn-dl.pdf { background: var(--red); color: #fff; }
+.btn-dl.pdf:hover { background: #a83226; transform: translateY(-2px); }
+.btn-dl.img { background: var(--blue); color: #fff; }
+.btn-dl.img:hover { background: #154c87; transform: translateY(-2px); }
+
+/* ── AREA RENDER KERTAS (DISEMBUNYIKAN DI LUAR LAYAR) ── */
+.hidden-render-area { position: absolute; left: -9999px; top: -9999px; }
+#cvCanvas{ width:794px; height:1123px; background:#fff; font-family:'Outfit',sans-serif; position:relative; overflow:hidden; display:flex; flex-direction:column; }
+
+/* ── THEME STYLES ── */
+.theme-midnight #cv-sidebar{background:#0F1923} .theme-midnight #cv-sidebar *{color:#fff} .theme-midnight .cv-name{color:#fff} .theme-midnight .cv-accent{color:#E8720C} .theme-midnight .cv-sidebar-divider{background:rgba(255,255,255,0.15)} .theme-midnight #cv-main{background:#fff} .theme-midnight .cv-section-title{color:#0F1923;border-color:#E8720C} .theme-midnight .cv-exp-title{color:#0F1923} .theme-midnight .cv-tag{background:#0F1923;color:#fff} .theme-midnight .cv-header-bar{background:#0F1923}
+.theme-slate #cv-sidebar{background:#1E3A4A} .theme-slate #cv-sidebar *{color:#fff} .theme-slate .cv-name{color:#fff} .theme-slate .cv-accent{color:#2DD4BF} .theme-slate .cv-sidebar-divider{background:rgba(255,255,255,0.15)} .theme-slate #cv-main{background:#fff} .theme-slate .cv-section-title{color:#1E3A4A;border-color:#2DD4BF} .theme-slate .cv-exp-title{color:#1E3A4A} .theme-slate .cv-tag{background:#1E3A4A;color:#fff} .theme-slate .cv-header-bar{background:#1E3A4A}
+.theme-burgundy #cv-sidebar{background:#5C1A1A} .theme-burgundy #cv-sidebar *{color:#fff} .theme-burgundy .cv-name{color:#fff} .theme-burgundy .cv-accent{color:#F4C430} .theme-burgundy .cv-sidebar-divider{background:rgba(255,255,255,0.15)} .theme-burgundy #cv-main{background:#fff} .theme-burgundy .cv-section-title{color:#5C1A1A;border-color:#F4C430} .theme-burgundy .cv-exp-title{color:#5C1A1A} .theme-burgundy .cv-tag{background:#5C1A1A;color:#fff} .theme-burgundy .cv-header-bar{background:#5C1A1A}
+.theme-forest #cv-sidebar{background:#1A3A2A} .theme-forest #cv-sidebar *{color:#fff} .theme-forest .cv-name{color:#fff} .theme-forest .cv-accent{color:#6EE7B7} .theme-forest .cv-sidebar-divider{background:rgba(255,255,255,0.15)} .theme-forest #cv-main{background:#fff} .theme-forest .cv-section-title{color:#1A3A2A;border-color:#6EE7B7} .theme-forest .cv-exp-title{color:#1A3A2A} .theme-forest .cv-tag{background:#1A3A2A;color:#fff} .theme-forest .cv-header-bar{background:#1A3A2A}
+.theme-violet #cv-sidebar{background:#2D1B69} .theme-violet #cv-sidebar *{color:#fff} .theme-violet .cv-name{color:#fff} .theme-violet .cv-accent{color:#A78BFA} .theme-violet .cv-sidebar-divider{background:rgba(255,255,255,0.15)} .theme-violet #cv-main{background:#fff} .theme-violet .cv-section-title{color:#2D1B69;border-color:#A78BFA} .theme-violet .cv-exp-title{color:#2D1B69} .theme-violet .cv-tag{background:#2D1B69;color:#fff} .theme-violet .cv-header-bar{background:#2D1B69}
+.theme-ivory #cv-sidebar{background:#F5F0E8} .theme-ivory #cv-sidebar *{color:#1a1a1a} .theme-ivory .cv-name{color:#1a1a1a} .theme-ivory .cv-accent{color:#B8860B} .theme-ivory .cv-sidebar-divider{background:rgba(0,0,0,0.1)} .theme-ivory #cv-main{background:#fff} .theme-ivory .cv-section-title{color:#1a1a1a;border-color:#B8860B} .theme-ivory .cv-exp-title{color:#1a1a1a} .theme-ivory .cv-tag{background:#1a1a1a;color:#fff} .theme-ivory .cv-header-bar{background:#1a1a1a}
+
+/* ── CV LAYOUT STRUCTURE ── */
+.cv-header-bar{height:8px;width:100%;flex-shrink:0}
+.cv-body{display:flex;flex:1}
+#cv-sidebar{width:240px;flex-shrink:0;padding:32px 24px;display:flex;flex-direction:column;}
+#cv-main{flex:1;padding:36px 32px;display:flex;flex-direction:column;}
+.cv-photo-wrap{margin-bottom:20px;display:flex;justify-content:center}
+.cv-photo{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.3);display:block}
+.cv-photo-placeholder{width:100px;height:100px;border-radius:50%;border:3px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:2.5rem;opacity:0.4}
+.cv-name{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;line-height:1.25;margin-bottom:4px;text-align:center}
+.cv-position{font-size:12px;font-weight:600;opacity:0.75;text-align:center;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:20px}
+.cv-sidebar-divider{height:1px;margin:14px 0}
+.cv-sidebar-section{margin-bottom:18px}
+.cv-sidebar-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;opacity:0.6;margin-bottom:10px}
+.cv-contact-item{display:flex;align-items:center;gap:8px;font-size:11.5px;margin-bottom:7px;opacity:0.9}
+.cv-contact-item i{font-size:13px;opacity:0.7;flex-shrink:0}
+.cv-contact-item span{word-break:break-all}
+.cv-skill-item{margin-bottom:8px}
+.cv-skill-name{font-size:11.5px;margin-bottom:3px;display:flex;justify-content:space-between;opacity:0.9}
+.cv-skill-bar{height:4px;border-radius:2px;background:rgba(255,255,255,0.2);overflow:hidden}
+.theme-ivory .cv-skill-bar{background:rgba(0,0,0,0.1)}
+.cv-skill-fill{height:100%;border-radius:2px;background:rgba(255,255,255,0.7)}
+.theme-ivory .cv-skill-fill{background:rgba(0,0,0,0.5)}
+.cv-lang-item{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:6px;opacity:0.9}
+.cv-main-name{font-family:'DM Serif Display',serif;font-size:32px;font-weight:400;line-height:1.15;margin-bottom:4px}
+.cv-main-position{font-size:13px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px}
+.cv-summary-text{font-size:12px;color:#555;line-height:1.65;margin-bottom:0}
+.cv-section{margin-bottom:24px}
+.cv-section-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;padding-bottom:6px;border-bottom:2px solid;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.cv-exp-entry{margin-bottom:14px;padding-left:12px;border-left:2px solid #e5e5e5;position:relative}
+.cv-exp-entry::before{content:'';position:absolute;left:-5px;top:5px;width:8px;height:8px;border-radius:50%;background:currentColor;opacity:0.3}
+.cv-exp-title{font-size:13px;font-weight:700;margin-bottom:2px}
+.cv-exp-company{font-size:11.5px;color:#888;font-weight:600;margin-bottom:3px;display:flex;gap:6px;align-items:center}
+.cv-exp-period{font-size:11px;color:#aaa;margin-bottom:5px}
+.cv-exp-desc{font-size:11.5px;color:#666;line-height:1.6}
+.cv-edu-entry{margin-bottom:12px;display:flex;gap:12px;align-items:flex-start}
+.cv-edu-year{font-size:11px;font-weight:800;color:#aaa;flex-shrink:0;min-width:70px;padding-top:2px;text-align:right}
+.cv-edu-degree{font-size:13px;font-weight:700;color:#222;margin-bottom:2px}
+.cv-edu-school{font-size:11.5px;color:#888}
+.cv-tags{display:flex;flex-wrap:wrap;gap:6px}
+.cv-tag{display:inline-flex;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:0.03em}
+
+/* ── EXPORT OVERLAY ── */
+#exportOverlay{display:none;position:fixed;inset:0;background:rgba(15,25,35,0.85);z-index:1000;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+#exportOverlay.show{display:flex}
+#exportOverlay .exp-spinner{width:60px;height:60px;border:5px solid rgba(255,255,255,0.2);border-top-color:var(--orange);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#exportOverlay p{color:#fff;font-weight:700;font-size:1.1rem}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;border-top:3px solid var(--orange);padding:24px 20px;text-align:center;font-size:14px}
+
+/* ── RESPONSIVE MOBILE FIXES ── */
+@media(max-width:768px){
+  .page-body { margin: 20px auto; padding: 0 16px; }
+  .tool-header h1 { font-size: 2.2rem; }
+  .etab-body { padding: 20px 16px; }
+  .form-row { grid-template-columns: 1fr; }
+  .theme-grid { grid-template-columns: repeat(2, 1fr); }
+  .download-panel { padding: 32px 20px; }
+  .download-actions { flex-direction: column; }
+  .btn-dl { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"><i class="bi bi-shield-check"></i> <span>100% Gratis & Privasi Aman</span> — CV dibuat langsung di browser Anda!</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="logo">
+      <span class="logo-mark">PDF</span>
+      <span class="logo-sub">Rekan<span>PDF</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="../index.html" class="nav-btn"><i class="bi bi-grid-fill"></i> Semua Alat</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Export overlay -->
+<div id="exportOverlay">
+  <div class="exp-spinner"></div>
+  <p id="exportMsg">Menyiapkan ekspor...</p>
+</div>
+
+<div class="page-body">
+
+  <div class="breadcrumb">
+    <a href="../index.html"><i class="bi bi-house-door-fill"></i> Beranda</a>
+    <span>/</span>
+    <span>Alat Pembuat</span>
+    <span>/</span>
+    <span>CV Maker</span>
+  </div>
+
+  <div class="tool-header">
+    <div class="tool-icon"><i class="bi bi-person-vcard-fill"></i></div>
+    <h1>CV Maker Generator</h1>
+    <p>Buat CV profesional bergaya dalam hitungan menit. Isi data Anda, lalu unduh hasilnya sebagai gambar atau file PDF siap kirim.</p>
+  </div>
+
+  <!-- EDITOR PANEL (SATU KOLOM) -->
+  <div class="editor-panel" id="formContainer">
+    <div class="editor-tabs">
+      <div class="etab active" onclick="switchTab('profil')"><i class="bi bi-person-fill"></i> Profil</div>
+      <div class="etab" onclick="switchTab('karir')"><i class="bi bi-briefcase-fill"></i> Karir</div>
+      <div class="etab" onclick="switchTab('skill')"><i class="bi bi-lightning-fill"></i> Skill</div>
+      <div class="etab" onclick="switchTab('tema')"><i class="bi bi-palette-fill"></i> Tema</div>
+    </div>
+
+    <!-- TAB: PROFIL -->
+    <div class="etab-body active" id="tab-profil">
+      <div class="form-section">
+        <div class="form-section-title"><i class="bi bi-camera-fill"></i> Foto Profil</div>
+        <div class="photo-upload">
+          <div class="photo-circle" onclick="document.getElementById('photoInput').click()" id="photoCircle">
+            <i class="bi bi-person-fill" id="photoIcon"></i>
+            <img id="photoPreviewCircle" alt="foto"/>
+          </div>
+          <div class="photo-upload-info">
+            <h4>Foto Profil</h4>
+            <p>JPG/PNG, maks 5MB. Disarankan foto formal.</p>
+            <button class="btn-photo" onclick="document.getElementById('photoInput').click()"><i class="bi bi-upload"></i> Upload Foto</button>
+            <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(this)">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title"><i class="bi bi-person-fill"></i> Identitas</div>
+        <div class="form-group">
+          <label>Nama Lengkap</label>
+          <input type="text" id="f-name" placeholder="contoh: Budi Santoso" oninput="updateCV()" value="Budi Santoso">
+        </div>
+        <div class="form-group">
+          <label>Posisi / Jabatan</label>
+          <input type="text" id="f-position" placeholder="contoh: UI/UX Designer" oninput="updateCV()" value="Senior UI/UX Designer">
+        </div>
+        <div class="form-group">
+          <label>Ringkasan Profil</label>
+          <textarea id="f-summary" placeholder="Deskripsikan diri Anda dalam 2-3 kalimat singkat..." oninput="updateCV()">Desainer berpengalaman dengan passion dalam menciptakan pengalaman digital yang intuitif dan berdampak. Memiliki track record kuat dalam memimpin proyek desain dari konsep hingga implementasi untuk brand-brand terkemuka Indonesia.</textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title"><i class="bi bi-telephone-fill"></i> Kontak</div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="text" id="f-email" placeholder="email@contoh.com" oninput="updateCV()" value="budi.santoso@email.com">
+        </div>
+        <div class="form-group">
+          <label>No. Telepon / WhatsApp</label>
+          <input type="text" id="f-phone" placeholder="+62 812-3456-7890" oninput="updateCV()" value="+62 812-3456-7890">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Kota</label>
+            <input type="text" id="f-city" placeholder="Jakarta" oninput="updateCV()" value="Jakarta">
+          </div>
+          <div class="form-group">
+            <label>Negara</label>
+            <input type="text" id="f-country" placeholder="Indonesia" oninput="updateCV()" value="Indonesia">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>LinkedIn (opsional)</label>
+          <input type="text" id="f-linkedin" placeholder="linkedin.com/in/username" oninput="updateCV()">
+        </div>
+        <div class="form-group">
+          <label>Website / Portfolio (opsional)</label>
+          <input type="text" id="f-website" placeholder="portofolio.com" oninput="updateCV()">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title"><i class="bi bi-translate"></i> Bahasa</div>
+        <div id="lang-items"></div>
+        <button class="btn-add-item" onclick="addLang()"><i class="bi bi-plus-circle-fill"></i> Tambah Bahasa</button>
+      </div>
+    </div>
+
+    <!-- TAB: KARIR -->
+    <div class="etab-body" id="tab-karir">
+      <div class="form-section">
+        <div class="form-section-title"><i class="bi bi-briefcase-fill"></i> Pengalaman Kerja</div>
+        <div class="exp-items" id="exp-items"></div>
+        <button class="btn-add-item" onclick="addExp()"><i class="bi bi-plus-circle-fill"></i> Tambah Pengalaman</button>
+      </div>
+
+      <div class="form-section" style="margin-top:24px">
+        <div class="form-section-title"><i class="bi bi-mortarboard-fill"></i> Pendidikan</div>
+        <div class="exp-items" id="edu-items"></div>
+        <button class="btn-add-item" onclick="addEdu()"><i class="bi bi-plus-circle-fill"></i> Tambah Pendidikan</button>
+      </div>
+    </div>
+
+    <!-- TAB: SKILL -->
+    <div class="etab-body" id="tab-skill">
+      <div class="form-section">
+        <div class="form-section-title"><i class="bi bi-tools"></i> Skill Teknis</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Tambahkan skill dan atur level kemampuan (1-5)</p>
+        <div id="skill-items-list"></div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <input type="text" id="new-skill-name" placeholder="Nama skill..." style="flex:1;padding:10px 12px;border:1.5px solid var(--border2);border-radius:6px;font-size:14px;font-family:'Nunito Sans',sans-serif;outline:none">
+          <select id="new-skill-level" style="padding:10px;border:1.5px solid var(--border2);border-radius:6px;font-size:14px;font-family:'Nunito Sans',sans-serif;outline:none;background:var(--white)">
+            <option value="5">Expert (5)</option>
+            <option value="4" selected>Advanced (4)</option>
+            <option value="3">Intermediate (3)</option>
+            <option value="2">Basic (2)</option>
+            <option value="1">Beginner (1)</option>
+          </select>
+          <button class="btn-add-skill" onclick="addSkill()"><i class="bi bi-plus"></i></button>
+        </div>
+      </div>
+
+      <div class="form-section" style="margin-top:24px">
+        <div class="form-section-title"><i class="bi bi-tag-fill"></i> Minat & Soft Skill</div>
+        <div class="skill-input-row">
+          <input type="text" id="hobby-input" placeholder="contoh: Team Leadership" onkeydown="if(event.key==='Enter')addHobby()">
+          <button class="btn-add-skill" onclick="addHobby()"><i class="bi bi-plus"></i> Tambah</button>
+        </div>
+        <div class="skills-tags" id="hobby-tags"></div>
+      </div>
+    </div>
+
+    <!-- TAB: TEMA -->
+    <div class="etab-body" id="tab-tema">
+      <div class="form-section">
+        <div class="form-section-title"><i class="bi bi-palette-fill"></i> Pilih Tema Warna</div>
+        <div class="theme-grid" id="themeGrid">
+          <!-- Themes injected by JS -->
+        </div>
+      </div>
+      <div class="form-section" style="margin-top:24px">
+        <div class="form-section-title"><i class="bi bi-layout-split"></i> Tips Desain CV</div>
+        <div style="background:var(--orange-bg);border:1px solid #f0a060;border-radius:8px;padding:16px;font-size:13.5px;color:var(--text2);line-height:1.7">
+          <p><strong>🎨 Midnight</strong> — Profesional & elegan, cocok untuk posisi Tech/IT.</p>
+          <p><strong>🌊 Slate</strong> — Modern & segar, ideal untuk pekerja Kreatif & Startup.</p>
+          <p><strong>🍷 Burgundy</strong> — Klasik berwibawa, cocok untuk bidang Hukum & Keuangan.</p>
+          <p><strong>🌿 Forest</strong> — Natural & terpercaya, ideal untuk Instansi/NGO.</p>
+          <p><strong>💜 Violet</strong> — Inovatif & berani, cocok untuk Seni & Hiburan.</p>
+          <p><strong>🏺 Ivory</strong> — Bersih & premium, universal untuk semua bidang pekerjaan.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOMBOL GENERATE -->
+    <div class="generate-box">
+      <button class="btn-primary" onclick="confirmGenerate()"><i class="bi bi-magic"></i> Generate CV Sekarang</button>
+    </div>
+  </div>
+
+  <!-- PANEL UNDUH (MUNCUL SETELAH KLIK GENERATE) -->
+  <div class="download-panel" id="downloadPanel">
+    <div class="success-icon"><i class="bi bi-check-circle-fill"></i></div>
+    <h3>Curriculum Vitae Anda Siap!</h3>
+    <p>CV berhasil digenerate dan disusun dengan rapi. Silakan pilih format dokumen yang ingin Anda unduh di bawah ini.</p>
+    <div class="download-actions">
+      <button class="btn-dl pdf" onclick="exportPDF()"><i class="bi bi-file-earmark-pdf-fill"></i> Unduh File PDF</button>
+      <button class="btn-dl img" onclick="exportImage()"><i class="bi bi-image-fill"></i> Unduh Gambar JPG</button>
+    </div>
+    <div style="margin-top: 24px;">
+      <button onclick="editLagi()" style="background: transparent; color: var(--orange-light); border: none; font-weight: 700; cursor: pointer; font-size: 14px;"><i class="bi bi-pencil-square"></i> Ingin mengubah data/tema? Edit Lagi</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     AREA RENDER KERTAS (DISEMBUNYIKAN DI LUAR LAYAR)
+     (Tidak boleh display:none agar fungsi html2pdf & html2canvas tetap bisa bekerja)
+══════════════════════════════════════════ -->
+<div class="hidden-render-area">
+  <div id="cvCanvas" class="theme-midnight">
+    <div class="cv-header-bar"></div>
+    <div class="cv-body">
+      <!-- SIDEBAR -->
+      <div id="cv-sidebar">
+        <div class="cv-photo-wrap">
+          <div id="cvPhotoWrap">
+            <div class="cv-photo-placeholder"><i class="bi bi-person-fill"></i></div>
+          </div>
+        </div>
+        <div class="cv-name" id="cv-name">Budi Santoso</div>
+        <div class="cv-position cv-accent" id="cv-position-sidebar">Senior UI/UX Designer</div>
+        <div class="cv-sidebar-divider"></div>
+        <div class="cv-sidebar-section">
+          <div class="cv-sidebar-title">Kontak</div>
+          <div id="cv-contact"></div>
+        </div>
+        <div class="cv-sidebar-divider"></div>
+        <div class="cv-sidebar-section" id="cv-skills-sidebar-wrap">
+          <div class="cv-sidebar-title">Keahlian</div>
+          <div id="cv-skills-sidebar"></div>
+        </div>
+        <div class="cv-sidebar-section" id="cv-lang-wrap" style="margin-top:8px">
+          <div class="cv-sidebar-title">Bahasa</div>
+          <div id="cv-langs"></div>
+        </div>
+        <div class="cv-sidebar-section" id="cv-hobbies-wrap" style="margin-top:8px">
+          <div class="cv-sidebar-title">Minat & Soft Skill</div>
+          <div class="cv-tags" id="cv-hobbies-tags"></div>
+        </div>
+      </div>
+
+      <!-- MAIN CONTENT -->
+      <div id="cv-main">
+        <div style="margin-bottom:22px">
+          <div class="cv-main-name" id="cv-main-name">Budi Santoso</div>
+          <div class="cv-main-position cv-accent" id="cv-main-position">Senior UI/UX Designer</div>
+          <p class="cv-summary-text" id="cv-summary"></p>
+        </div>
+        <div class="cv-section" id="cv-exp-section">
+          <div class="cv-section-title"><i class="bi bi-briefcase-fill"></i> Pengalaman Kerja</div>
+          <div id="cv-exp-list"></div>
+        </div>
+        <div class="cv-section" id="cv-edu-section">
+          <div class="cv-section-title"><i class="bi bi-mortarboard-fill"></i> Pendidikan</div>
+          <div id="cv-edu-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>© 2026 Rekan PDF. Dibuat untuk Indonesia. &nbsp;|&nbsp; CV Maker — Buat CV keren gratis, langsung di browser.</footer>
+
+<script>
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let state = {
+  photo: null,
+  name: 'Budi Santoso',
+  position: 'Senior UI/UX Designer',
+  summary: 'Desainer berpengalaman dengan passion dalam menciptakan pengalaman digital yang intuitif dan berdampak. Memiliki track record kuat dalam memimpin proyek desain dari konsep hingga implementasi untuk brand-brand terkemuka Indonesia.',
+  email: 'budi.santoso@email.com',
+  phone: '+62 812-3456-7890',
+  city: 'Jakarta',
+  country: 'Indonesia',
+  linkedin: '',
+  website: '',
+  experiences: [
+    { id:1, title:'Lead UI/UX Designer', company:'Tokopedia', period:'2021 – Sekarang', desc:'Memimpin tim desain 8 orang dalam perancangan ulang platform e-commerce. Meningkatkan konversi checkout sebesar 23%.'},
+    { id:2, title:'UI Designer', company:'Gojek', period:'2018 – 2021', desc:'Merancang antarmuka aplikasi super-app untuk jutaan pengguna harian di Asia Tenggara.'},
+  ],
+  educations: [
+    { id:1, degree:'S1 Desain Komunikasi Visual', school:'Institut Teknologi Bandung', year:'2014 – 2018'},
+    { id:2, degree:'Kursus UX Research', school:'Google UX Design Certificate', year:'2020'},
+  ],
+  skills: [
+    {id:1, name:'Figma', level:5},
+    {id:2, name:'Adobe XD', level:4},
+    {id:3, name:'Prototyping', level:5},
+    {id:4, name:'User Research', level:4},
+    {id:5, name:'HTML/CSS', level:3},
+    {id:6, name:'Design System', level:4},
+  ],
+  hobbies: ['Team Leadership','Critical Thinking','Public Speaking','Agile'],
+  languages: [
+    {id:1, name:'Bahasa Indonesia', level:'Native'},
+    {id:2, name:'Inggris', level:'Profesional'},
+  ],
+  theme: 'midnight'
+};
+
+let nextId = 100;
+
+// ══════════════════════════════════════
+// THEMES CONFIG
+// ══════════════════════════════════════
+const themes = [
+  { id:'midnight', name:'Midnight', sidebar:'#0F1923', accent:'#E8720C' },
+  { id:'slate',    name:'Slate',    sidebar:'#1E3A4A', accent:'#2DD4BF' },
+  { id:'burgundy', name:'Burgundy', sidebar:'#5C1A1A', accent:'#F4C430' },
+  { id:'forest',   name:'Forest',   sidebar:'#1A3A2A', accent:'#6EE7B7' },
+  { id:'violet',   name:'Violet',   sidebar:'#2D1B69', accent:'#A78BFA' },
+  { id:'ivory',    name:'Ivory',    sidebar:'#F5F0E8', accent:'#B8860B' },
+];
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+document.addEventListener('DOMContentLoaded', ()=>{
+  buildThemeGrid();
+  renderEditor();
+  updateCV();
+});
+
+// ══════════════════════════════════════
+// UI NAVIGATION LOGIC (GENERATE & EDIT)
+// ══════════════════════════════════════
+function confirmGenerate() {
+  // Update rendering satu kali lagi untuk memastikan semua data tersinkronisasi
+  updateCV();
+  // Sembunyikan form, tampilkan download panel
+  document.getElementById('formContainer').style.display = 'none';
+  document.getElementById('downloadPanel').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function editLagi() {
+  document.getElementById('downloadPanel').style.display = 'none';
+  document.getElementById('formContainer').style.display = 'block';
+}
+
+// ══════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════
+function switchTab(id){
+  document.querySelectorAll('.etab').forEach((t,i)=>{
+    const ids = ['profil','karir','skill','tema'];
+    t.classList.toggle('active', ids[i]===id);
+  });
+  document.querySelectorAll('.etab-body').forEach(b=> b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+}
+
+// ══════════════════════════════════════
+// THEME GRID
+// ══════════════════════════════════════
+function buildThemeGrid(){
+  const grid = document.getElementById('themeGrid');
+  grid.innerHTML = themes.map(t=>`
+    <div class="theme-opt ${t.id===state.theme?'selected':''}" onclick="setTheme('${t.id}')" id="theme-opt-${t.id}">
+      <div class="theme-swatch">
+        <div class="theme-swatch-l" style="background:${t.sidebar}"></div>
+        <div class="theme-swatch-r" style="background:#f8f8f8">
+          <div class="theme-swatch-line" style="background:${t.sidebar};width:70%"></div>
+          <div class="theme-swatch-line" style="background:${t.accent};width:50%"></div>
+          <div class="theme-swatch-line" style="width:85%"></div>
+          <div class="theme-swatch-line" style="width:60%"></div>
+        </div>
+      </div>
+      <div class="theme-name">${t.name}</div>
+    </div>
+  `).join('');
+}
+
+function setTheme(id){
+  state.theme = id;
+  document.querySelectorAll('.theme-opt').forEach(el=> el.classList.remove('selected'));
+  document.getElementById('theme-opt-'+id).classList.add('selected');
+  const cv = document.getElementById('cvCanvas');
+  themes.forEach(t=> cv.classList.remove('theme-'+t.id));
+  cv.classList.add('theme-'+id);
+}
+
+// ══════════════════════════════════════
+// RENDER EDITOR LISTS
+// ══════════════════════════════════════
+function renderEditor(){
+  renderExpItems();
+  renderEduItems();
+  renderSkillItems();
+  renderHobbyTags();
+  renderLangItems();
+}
+
+function renderExpItems(){
+  const c = document.getElementById('exp-items');
+  c.innerHTML = state.experiences.map(e=>`
+    <div class="exp-item">
+      <div class="exp-item-header">
+        <strong>${e.title||'(Posisi)'}</strong>
+        <button class="exp-item-del" onclick="delExp(${e.id})"><i class="bi bi-x-circle-fill"></i></button>
+      </div>
+      <div class="form-row" style="margin-bottom:10px">
+        <div class="form-group" style="margin:0"><label>Posisi/Jabatan</label><input value="${e.title}" oninput="updateExpField(${e.id},'title',this.value)" placeholder="ex: Manager"></div>
+        <div class="form-group" style="margin:0"><label>Perusahaan</label><input value="${e.company}" oninput="updateExpField(${e.id},'company',this.value)" placeholder="ex: Tokopedia"></div>
+      </div>
+      <div class="form-group"><label>Periode</label><input value="${e.period}" oninput="updateExpField(${e.id},'period',this.value)" placeholder="ex: 2020 – Sekarang"></div>
+      <div class="form-group" style="margin:0"><label>Deskripsi Singkat</label><textarea oninput="updateExpField(${e.id},'desc',this.value)" placeholder="Jelaskan tanggung jawab dan pencapaian...">${e.desc}</textarea></div>
+    </div>
+  `).join('');
+}
+
+function renderEduItems(){
+  const c = document.getElementById('edu-items');
+  c.innerHTML = state.educations.map(e=>`
+    <div class="exp-item">
+      <div class="exp-item-header">
+        <strong>${e.degree||'(Gelar/Sertifikasi)'}</strong>
+        <button class="exp-item-del" onclick="delEdu(${e.id})"><i class="bi bi-x-circle-fill"></i></button>
+      </div>
+      <div class="form-group"><label>Gelar / Program Studi</label><input value="${e.degree}" oninput="updateEduField(${e.id},'degree',this.value)" placeholder="ex: S1 Teknik Informatika"></div>
+      <div class="form-row">
+        <div class="form-group" style="margin:0"><label>Institusi</label><input value="${e.school}" oninput="updateEduField(${e.id},'school',this.value)" placeholder="ex: Universitas Indonesia"></div>
+        <div class="form-group" style="margin:0"><label>Tahun</label><input value="${e.year}" oninput="updateEduField(${e.id},'year',this.value)" placeholder="ex: 2016–2020"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderSkillItems(){
+  const c = document.getElementById('skill-items-list');
+  c.innerHTML = state.skills.map(s=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <input value="${s.name}" oninput="updateSkillField(${s.id},'name',this.value)" style="flex:1;padding:10px 12px;border:1.5px solid var(--border2);border-radius:6px;font-size:14px;font-family:'Nunito Sans',sans-serif;outline:none" placeholder="Nama skill">
+      <select onchange="updateSkillField(${s.id},'level',parseInt(this.value))" style="padding:10px;border:1.5px solid var(--border2);border-radius:6px;font-size:14px;font-family:'Nunito Sans',sans-serif;outline:none;background:var(--white)">
+        ${[5,4,3,2,1].map(l=>`<option value="${l}" ${s.level==l?'selected':''}>${l}★</option>`).join('')}
+      </select>
+      <button onclick="delSkill(${s.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;transition:color .2s" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--muted)'"><i class="bi bi-x-circle-fill"></i></button>
+    </div>
+  `).join('');
+}
+
+function renderHobbyTags(){
+  document.getElementById('hobby-tags').innerHTML = state.hobbies.map((h,i)=>`
+    <div class="skill-tag">${h}<button onclick="delHobby(${i})">×</button></div>
+  `).join('');
+}
+
+function renderLangItems(){
+  const c = document.getElementById('lang-items');
+  c.innerHTML = state.languages.map(l=>`
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <input value="${l.name}" oninput="updateLangField(${l.id},'name',this.value)" style="flex:1;padding:10px 12px;border:1.5px solid var(--border2);border-radius:6px;font-size:14px;font-family:'Nunito Sans',sans-serif;outline:none" placeholder="Bahasa">
+      <input value="${l.level}" oninput="updateLangField(${l.id},'level',this.value)" style="width:110px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:6px;font-size:14px;font-family:'Nunito Sans',sans-serif;outline:none" placeholder="Level">
+      <button onclick="delLang(${l.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--muted)'"><i class="bi bi-x-circle-fill"></i></button>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════
+// CRUD OPERATIONS
+// ══════════════════════════════════════
+function addExp(){ state.experiences.push({id:nextId++,title:'',company:'',period:'',desc:''}); renderExpItems(); }
+function delExp(id){ state.experiences=state.experiences.filter(e=>e.id!==id); renderExpItems(); updateCV(); }
+function updateExpField(id,f,v){ state.experiences.find(e=>e.id===id)[f]=v; updateCV(); }
+
+function addEdu(){ state.educations.push({id:nextId++,degree:'',school:'',year:''}); renderEduItems(); }
+function delEdu(id){ state.educations=state.educations.filter(e=>e.id!==id); renderEduItems(); updateCV(); }
+function updateEduField(id,f,v){ state.educations.find(e=>e.id===id)[f]=v; updateCV(); }
+
+function addSkill(){
+  const name=document.getElementById('new-skill-name').value.trim();
+  const level=parseInt(document.getElementById('new-skill-level').value);
+  if(!name) return;
+  state.skills.push({id:nextId++,name,level});
+  document.getElementById('new-skill-name').value='';
+  renderSkillItems(); updateCV();
+}
+function delSkill(id){ state.skills=state.skills.filter(s=>s.id!==id); renderSkillItems(); updateCV(); }
+function updateSkillField(id,f,v){ state.skills.find(s=>s.id===id)[f]=v; updateCV(); }
+
+function addHobby(){
+  const v=document.getElementById('hobby-input').value.trim();
+  if(!v) return;
+  state.hobbies.push(v);
+  document.getElementById('hobby-input').value='';
+  renderHobbyTags(); updateCV();
+}
+function delHobby(i){ state.hobbies.splice(i,1); renderHobbyTags(); updateCV(); }
+
+function addLang(){ state.languages.push({id:nextId++,name:'',level:''}); renderLangItems(); }
+function delLang(id){ state.languages=state.languages.filter(l=>l.id!==id); renderLangItems(); updateCV(); }
+function updateLangField(id,f,v){ state.languages.find(l=>l.id===id)[f]=v; updateCV(); }
+
+// ══════════════════════════════════════
+// PHOTO HANDLER
+// ══════════════════════════════════════
+function handlePhoto(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    state.photo = e.target.result;
+    const img = document.getElementById('photoPreviewCircle');
+    img.src = state.photo;
+    img.style.display = 'block';
+    document.getElementById('photoIcon').style.display = 'none';
+    updateCV();
+  };
+  reader.readAsDataURL(file);
+}
+
+// ══════════════════════════════════════
+// MAIN CV UPDATE FUNCTION
+// ══════════════════════════════════════
+function updateCV(){
+  state.name     = document.getElementById('f-name').value;
+  state.position = document.getElementById('f-position').value;
+  state.summary  = document.getElementById('f-summary').value;
+  state.email    = document.getElementById('f-email').value;
+  state.phone    = document.getElementById('f-phone').value;
+  state.city     = document.getElementById('f-city').value;
+  state.country  = document.getElementById('f-country').value;
+  state.linkedin = document.getElementById('f-linkedin').value;
+  state.website  = document.getElementById('f-website').value;
+
+  document.getElementById('cv-name').innerText        = state.name || 'Nama Anda';
+  document.getElementById('cv-position-sidebar').innerText = state.position || 'Posisi';
+  document.getElementById('cv-main-name').innerText   = state.name || 'Nama Anda';
+  document.getElementById('cv-main-position').innerText = state.position || 'Posisi';
+  document.getElementById('cv-summary').innerText     = state.summary;
+
+  const pw = document.getElementById('cvPhotoWrap');
+  if(state.photo){
+    pw.innerHTML = `<img class="cv-photo" src="${state.photo}" alt="foto profil">`;
+  } else {
+    pw.innerHTML = `<div class="cv-photo-placeholder"><i class="bi bi-person-fill"></i></div>`;
+  }
+
+  const contacts = [];
+  if(state.email)   contacts.push(`<div class="cv-contact-item"><i class="bi bi-envelope-fill"></i><span>${esc(state.email)}</span></div>`);
+  if(state.phone)   contacts.push(`<div class="cv-contact-item"><i class="bi bi-telephone-fill"></i><span>${esc(state.phone)}</span></div>`);
+  if(state.city||state.country) contacts.push(`<div class="cv-contact-item"><i class="bi bi-geo-alt-fill"></i><span>${esc([state.city,state.country].filter(Boolean).join(', '))}</span></div>`);
+  if(state.linkedin) contacts.push(`<div class="cv-contact-item"><i class="bi bi-linkedin"></i><span>${esc(state.linkedin)}</span></div>`);
+  if(state.website)  contacts.push(`<div class="cv-contact-item"><i class="bi bi-globe"></i><span>${esc(state.website)}</span></div>`);
+  document.getElementById('cv-contact').innerHTML = contacts.join('');
+
+  document.getElementById('cv-skills-sidebar').innerHTML = state.skills.map(s=>`
+    <div class="cv-skill-item">
+      <div class="cv-skill-name"><span>${esc(s.name)}</span></div>
+      <div class="cv-skill-bar"><div class="cv-skill-fill" style="width:${s.level*20}%"></div></div>
+    </div>
+  `).join('');
+
+  document.getElementById('cv-langs').innerHTML = state.languages.map(l=>`
+    <div class="cv-lang-item"><span>${esc(l.name)}</span><span style="opacity:0.65">${esc(l.level)}</span></div>
+  `).join('');
+
+  document.getElementById('cv-hobbies-tags').innerHTML = state.hobbies.map(h=>`
+    <span class="cv-tag">${esc(h)}</span>
+  `).join('');
+
+  document.getElementById('cv-exp-list').innerHTML = state.experiences.map(e=>`
+    <div class="cv-exp-entry">
+      <div class="cv-exp-title">${esc(e.title||'')}</div>
+      <div class="cv-exp-company"><i class="bi bi-building" style="font-size:10px"></i>${esc(e.company||'')}</div>
+      <div class="cv-exp-period"><i class="bi bi-calendar3" style="font-size:10px;margin-right:3px"></i>${esc(e.period||'')}</div>
+      <div class="cv-exp-desc">${esc(e.desc||'')}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('cv-edu-list').innerHTML = state.educations.map(e=>`
+    <div class="cv-edu-entry">
+      <div class="cv-edu-year">${esc(e.year||'')}</div>
+      <div class="cv-edu-right">
+        <div class="cv-edu-degree">${esc(e.degree||'')}</div>
+        <div class="cv-edu-school">${esc(e.school||'')}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ══════════════════════════════════════
+// EXPORT (Gambar & PDF)
+// Karena elemen disembunyikan, html2canvas tetap bisa me-render ukuran aslinya (794x1123)
+// ══════════════════════════════════════
+async function exportImage(){
+  showExportOverlay('Menyiapkan gambar...');
+  try {
+    const canvas = await html2canvas(document.getElementById('cvCanvas'),{
+      scale: 2, // Retained high quality
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      logging: false
+    });
+
+    const link = document.createElement('a');
+    link.download = `RekanPDF_CV_${(state.name||'cv').replace(/\s+/g,'-')}.jpg`;
+    link.href = canvas.toDataURL('image/jpeg', 0.95);
+    link.click();
+  } catch(e){
+    console.error(e);
+    alert('Gagal mengekspor gambar: '+e.message);
+  }
+  hideExportOverlay();
+}
+
+async function exportPDF(){
+  showExportOverlay('Membuat file PDF...');
+  try {
+    const canvas = await html2canvas(document.getElementById('cvCanvas'),{
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      logging: false
+    });
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.97);
+    const { jsPDF } = window.jspdf;
+    
+    // Inisiasi kertas A4
+    const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+    const pdfW = pdf.internal.pageSize.getWidth();
+    const pdfH = pdf.internal.pageSize.getHeight();
+    const ratio = canvas.height / canvas.width;
+    const imgH = pdfW * ratio;
+
+    if(imgH <= pdfH){
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, imgH);
+    } else {
+      let remaining = imgH;
+      let yOffset = 0;
+      let page = 0;
+      while(remaining > 0){
+        if(page > 0) pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, -yOffset, pdfW, imgH);
+        yOffset += pdfH;
+        remaining -= pdfH;
+        page++;
+      }
+    }
+
+    pdf.save(`RekanPDF_CV_${(state.name||'cv').replace(/\s+/g,'-')}.pdf`);
+  } catch(e){
+    console.error(e);
+    alert('Gagal membuat PDF: '+e.message);
+  }
+  hideExportOverlay();
+}
+
+function showExportOverlay(msg){
+  document.getElementById('exportMsg').innerText = msg;
+  document.getElementById('exportOverlay').classList.add('show');
+}
+function hideExportOverlay(){
+  document.getElementById('exportOverlay').classList.remove('show');
+}
+</script>
+</body>
+</html>

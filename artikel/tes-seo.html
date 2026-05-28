@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Cara Menggabungkan PDF di HP dengan Cepat | Rekan PDF</title>
+<meta name="description" content="Panduan lengkap cara menggabungkan file PDF langsung dari HP tanpa instal aplikasi."/>
+<meta name="keywords" content="gabung pdf, merge pdf, pdf di hp"/>
+<meta property="og:title" content="Cara Menggabungkan PDF di HP dengan Cepat"/>
+<meta property="og:description" content="Panduan lengkap cara menggabungkan file PDF langsung dari HP tanpa instal aplikasi."/>
+
+<link rel="icon" type="image/png" href="../img/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Cara Menggabungkan PDF di HP dengan Cepat",
+  "author": {
+    "@type": "Organization",
+    "name": "Rekan PDF"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Rekan PDF",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.rekanpdf.com/img/logo.png"
+    }
+  },
+  "description": "Panduan lengkap cara menggabungkan file PDF langsung dari HP tanpa instal aplikasi."
+}
+</script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E8720C;
+  --orange-dark:#C45F00;
+  --orange-light:#FF9235;
+  --orange-bg:#FFF4EB;
+  --navy:#0F1923;
+  --navy2:#1A2736;
+  --blue:#1B5FA8;
+  --blue-light:#2272C3;
+  --white:#FFFFFF;
+  --off:#F7F8FA;
+  --border:#DDE1E7;
+  --border2:#C8CDD5;
+  --text:#0F1923;
+  --text2:#3D4A5A;
+  --muted:#6B7A8D;
+  --green:#1A7A42;
+  --red:#C0392B;
+  --shadow:0 2px 8px rgba(15,25,35,0.10);
+  --shadow-md:0 4px 20px rgba(15,25,35,0.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.5;overflow-x:hidden;}
+
+/* --- CSS BAWAAN REKAN PDF --- */
+#pageLoader { position: fixed; inset: 0; background: rgba(255,255,255,0.92); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(4px); }
+#pageLoader.active { opacity: 1; visibility: visible; }
+.loader-spinner { width: 54px; height: 54px; border: 5px solid var(--border); border-top-color: var(--orange); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
+.loader-text { font-family: 'Barlow Condensed', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--navy); letter-spacing: 0.05em; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.topbar{background:var(--navy);color:#fff;font-size:12.5px;text-align:center;padding:7px 20px;font-weight:600;letter-spacing:0.01em}
+.topbar span{color:var(--orange-light)}
+
+nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-inner{display:flex;align-items:center;gap:0;max-width:1380px;margin:0 auto;padding:0 20px;height:62px}
+.mobile-menu-btn{display:none;background:transparent;border:none;color:#fff;font-size:1.8rem;cursor:pointer;margin-right:12px;padding:0;}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:28px;flex-shrink:0}
+.logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
+.logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
+.logo-sub span{color:var(--orange-light)}
+
+.nav-search{flex:1;display:flex;max-width:640px;height:40px}
+.nav-search input{flex:1;border:none;padding:0 14px;font-family:'Nunito Sans',sans-serif;font-size:14px;outline:none;border-radius:4px 0 0 4px;color:var(--text);width:100%;}
+.nav-search button{background:var(--orange);border:none;padding:0 16px;cursor:pointer;border-radius:0 4px 4px 0;font-size:1.1rem;transition:background .15s;color:#fff;}
+.nav-search button:hover{background:var(--orange-dark)}
+
+.nav-right{display:flex;align-items:center;gap:4px;margin-left:auto;padding-left:20px}
+.nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
+.nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+.nav-btn.primary{background:var(--orange);border-color:var(--orange-dark)}
+.nav-btn.primary:hover{background:var(--orange-dark)}
+
+.mobile-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:1000;opacity:0;visibility:hidden;transition:all .3s ease;}
+.mobile-overlay.active{opacity:1;visibility:visible;}
+.mobile-drawer{position:fixed;top:0;left:-320px;width:300px;height:100%;background:#fff;z-index:1001;box-shadow:4px 0 20px rgba(0,0,0,0.15);transition:all .3s ease;display:flex;flex-direction:column;overflow-y:auto;}
+.mobile-drawer.active{left:0;}
+.md-header{display:flex;justify-content:flex-end;padding:12px 16px;}
+.md-close{background:transparent;border:none;font-size:1.6rem;color:var(--text2);cursor:pointer;}
+.md-content{padding:0 20px 30px;}
+.md-cat{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:800;color:var(--muted);margin:16px 0 10px;letter-spacing:0.04em;}
+.md-link{display:flex;align-items:center;gap:12px;padding:10px 0;color:var(--text);text-decoration:none;font-weight:700;font-size:14px;border-bottom:1px solid var(--border);}
+.md-link:hover{color:var(--orange);}
+
+.subnav{background:#23344A;border-top:1px solid rgba(255,255,255,0.06)}
+.subnav-inner{display:flex;align-items:center;gap:2px;max-width:1380px;margin:0 auto;padding:0 20px;height:40px;overflow-x:auto;scrollbar-width:none}
+.subnav-inner::-webkit-scrollbar{display:none}
+.subnav-link{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.82);text-decoration:none;font-size:13px;font-weight:600;padding:6px 14px;border-radius:3px;white-space:nowrap;transition:all .15s}
+.subnav-link:hover,.subnav-link.active{background:rgba(255,255,255,0.12);color:#fff}
+
+.page-body{max-width:1380px;margin:0 auto;padding:28px 20px;display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start}
+
+.sidebar{position:sticky;top:110px}
+.sidebar-box{background:var(--white);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.sidebar-head{background:var(--navy);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.06em;padding:11px 16px;text-transform:uppercase}
+.sidebar-list{list-style:none}
+.sidebar-list li a{display:flex;align-items:center;gap:10px;padding:10px 16px;color:var(--text2);text-decoration:none;font-size:13.5px;font-weight:600;border-bottom:1px solid var(--border);transition:all .15s}
+.sidebar-list li a:hover,.sidebar-list li a.active{background:var(--orange-bg);color:var(--orange-dark);border-left:3px solid var(--orange)}
+.sidebar-ico{font-size:1rem;width:22px;text-align:center}
+
+.trust-box{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:16px;margin-top:14px}
+.trust-title{font-weight:800;font-size:13px;margin-bottom:12px;color:var(--text);text-transform:uppercase;letter-spacing:0.05em;display:flex;align-items:center;gap:6px}
+.trust-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:11px}
+.trust-ico{font-size:1.2rem;flex-shrink:0;margin-top:1px}
+.trust-txt{font-size:12.5px;color:var(--text2);line-height:1.45}
+.trust-txt strong{color:var(--text);font-weight:700}
+
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);margin-bottom:20px}
+.breadcrumb a{display:flex;align-items:center;gap:4px;color:var(--blue-light);text-decoration:none;font-weight:600}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb span{color:var(--border2)}
+
+/* --- STYLING KHUSUS ARTIKEL SEO --- */
+.article-container { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 40px; margin-bottom: 32px; box-shadow: var(--shadow); }
+.article-header h1 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(2.2rem, 4vw, 3rem); font-weight: 800; color: var(--navy); line-height: 1.15; margin-bottom: 24px; letter-spacing: -0.01em; }
+.article-meta { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; flex-wrap: wrap; }
+
+.article-content h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--navy); margin: 32px 0 16px; display: flex; align-items: center; gap: 10px; }
+.article-content h2::before { content: ''; display: block; width: 4px; height: 22px; background: var(--orange); border-radius: 2px; }
+.article-content h3 { font-family: 'Nunito Sans', sans-serif; font-size: 1.25rem; font-weight: 800; color: var(--text); margin: 24px 0 12px; }
+.article-content p { color: var(--text2); font-size: 1.08rem; line-height: 1.7; margin-bottom: 16px; }
+.article-content ul, .article-content ol { margin-left: 24px; margin-bottom: 24px; color: var(--text2); font-size: 1.08rem; line-height: 1.7; }
+.article-content li { margin-bottom: 8px; }
+.article-content strong { color: var(--text); font-weight: 800; }
+
+.alert-box { background: #E8F0FE; border-left: 4px solid var(--blue); padding: 16px 20px; border-radius: 0 6px 6px 0; margin-bottom: 28px; display: flex; gap: 12px; align-items: flex-start; }
+.alert-box i { color: var(--blue); font-size: 1.4rem; margin-top: -2px; }
+.alert-box p { margin: 0; color: #1B5FA8; font-weight: 700; font-size: 1.05rem; }
+
+/* Call To Action */
+.cta-tool { background: linear-gradient(100deg, var(--navy) 0%, #1B2F45 100%); border-radius: 8px; padding: 36px 32px; text-align: center; margin: 36px 0; position: relative; overflow: hidden; box-shadow: var(--shadow-md); border: 1px solid rgba(255,255,255,0.1); }
+.cta-tool::after { content: ''; position: absolute; right: -60px; top: -60px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(232,114,12,0.25), transparent 70%); pointer-events: none; }
+.cta-tool h3 { color: #fff; font-family: 'Barlow Condensed', sans-serif; font-size: 2.2rem; font-weight: 800; margin-bottom: 12px; letter-spacing: 0.02em; }
+.cta-tool p { color: rgba(255,255,255,0.75); font-size: 1.1rem; max-width: 500px; margin: 0 auto 24px; line-height: 1.5; }
+.cta-btn { display: inline-flex; align-items: center; gap: 10px; background: var(--orange); color: #fff; font-size: 1.1rem; font-weight: 800; padding: 14px 32px; border-radius: 6px; text-decoration: none; transition: all .18s; border: 2px solid var(--orange-dark); position: relative; z-index: 2; }
+.cta-btn:hover { background: var(--orange-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,114,12,0.4); color: #fff; }
+.cta-guarantee { color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-top: 16px; font-weight: 600; }
+
+.faq-wrap { margin-top: 48px; border-top: 1px solid var(--border); padding-top: 32px; }
+.faq-item { background: var(--off); border: 1px solid var(--border); border-radius: 6px; padding: 20px; margin-bottom: 16px; }
+.faq-item h4 { font-family: 'Nunito Sans', sans-serif; font-weight: 800; color: var(--navy); margin-bottom: 10px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+.faq-item h4 i { color: var(--orange); }
+.faq-item p { margin: 0; font-size: 1.05rem; }
+
+/* --- FOOTER CSS --- */
+footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:40px;border-top:3px solid var(--orange)}
+.footer-main{max-width:1380px;margin:0 auto;padding:48px 20px 36px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:36px}
+.footer-logo-text{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;letter-spacing:0.06em}
+.footer-logo-text span{color:var(--orange-light)}
+.footer-brand p{font-size:13px;margin-top:10px;line-height:1.6;max-width:240px;color:rgba(255,255,255,0.6)}
+.footer-col h5{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.12);padding-bottom:8px}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:9px}
+.footer-col ul li a{color:rgba(255,255,255,0.62);text-decoration:none;font-size:13px;transition:color .15s}
+.footer-col ul li a:hover{color:var(--orange-light)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.1);max-width:1380px;margin:0 auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;font-size:12.5px}
+.footer-bottom a{color:rgba(255,255,255,0.5);text-decoration:none;margin-left:16px}
+.footer-bottom a:hover{color:var(--orange-light)}
+
+@media(max-width:900px){
+  .mobile-menu-btn{display:block;}
+  .logo{margin-right:auto;}
+  .page-body{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .nav-right{display:none}
+  .footer-main{grid-template-columns:1fr 1fr;gap:24px}
+  .article-container { padding: 24px; }
+  .cta-tool { padding: 28px 20px; }
+}
+@media(max-width:580px){
+  .nav-inner { flex-wrap: wrap; height: auto; padding: 12px 16px; gap: 10px; justify-content: flex-start;}
+  .nav-search { flex: 1 1 100%; max-width: 100%; margin-bottom: 4px; order: 3;}
+  .footer-main{grid-template-columns:1fr; text-align: center;}
+  .footer-brand p { margin: 10px auto; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; justify-content: center;}
+}
+</style>
+</head>
+<body>
+
+<div id="pageLoader">
+  <div class="loader-spinner"></div>
+  <div class="loader-text">MEMBUAT RUANG KERJA...</div>
+</div>
+
+<div class="topbar"><i class="bi bi-stars"></i> <span>100% GRATIS</span> — Tidak perlu daftar, tidak ada watermark, tidak ada batas ukuran file!</div>
+
+<nav>
+  <div class="nav-inner">
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><i class="bi bi-list"></i></button>
+    <a href="../index.html" class="logo">
+      <span class="logo-mark">PDF</span>
+      <span class="logo-sub">Rekan<span>PDF</span></span>
+    </a>
+    <div class="nav-search">
+      <input type="text" id="navSearch" placeholder="Cari alat PDF... kompres, gabung, OCR, konversi..."/>
+      <button><i class="bi bi-search"></i></button>
+    </div>
+    <div class="nav-right">
+      <a href="../index.html#alat" class="nav-btn">Semua Alat</a>
+      <a href="../index.html#kenapa" class="nav-btn">Keunggulan</a>
+      <a href="../alat/jpg-to-pdf.html" class="nav-btn primary">Ubah Foto ke PDF →</a>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
+<div class="mobile-drawer" id="mobileMenuDrawer">
+  <div class="md-header">
+    <button class="md-close" onclick="toggleMobileMenu()"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <div class="md-content">
+    <div class="md-cat">KONVERSI PDF</div>
+    <a href="../alat/jpg-to-pdf.html" class="md-link"><i class="bi bi-image-fill" style="color:var(--pink)"></i> JPG ke PDF</a>
+    <a href="../index.html" class="md-link"><i class="bi bi-arrow-left-circle" style="color:var(--blue)"></i> Kembali ke Beranda</a>
+  </div>
+</div>
+
+<div class="subnav">
+  <div class="subnav-inner">
+    <a href="../index.html" class="subnav-link">Semua Alat</a>
+    <a href="../index.html" class="subnav-link"><i class="bi bi-scissors"></i> Edit PDF</a>
+    <a href="../index.html" class="subnav-link active"><i class="bi bi-arrow-repeat"></i> Konversi</a>
+    <a href="../index.html" class="subnav-link"><i class="bi bi-lightning-charge"></i> Optimasi</a>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <aside class="sidebar">
+    <div class="sidebar-box">
+      <div class="sidebar-head">Kategori Alat</div>
+      <ul class="sidebar-list">
+        <li><a href="../index.html"><span class="sidebar-ico"><i class="bi bi-folder2-open"></i></span>Semua Alat</a></li>
+        <li><a href="../index.html"><span class="sidebar-ico"><i class="bi bi-scissors"></i></span>Edit PDF</a></li>
+        <li><a href="../index.html" class="active"><span class="sidebar-ico"><i class="bi bi-arrow-repeat"></i></span>Konversi PDF</a></li>
+        <li><a href="../index.html"><span class="sidebar-ico"><i class="bi bi-lightning-charge"></i></span>Optimalkan PDF</a></li>
+      </ul>
+    </div>
+    <div class="trust-box">
+      <div class="trust-title"><i class="bi bi-shield-check" style="font-size: 1.15rem; color: var(--orange)"></i> Jaminan Rekan PDF</div>
+      <div class="trust-row">
+        <span class="trust-ico"><i class="bi bi-check-circle-fill" style="color: #2ECC71;"></i></span>
+        <div class="trust-txt"><strong>100% Gratis</strong> — tidak ada biaya tersembunyi</div>
+      </div>
+      <div class="trust-row">
+        <span class="trust-ico"><i class="bi bi-shield-lock-fill" style="color: #F1C40F;"></i></span>
+        <div class="trust-txt"><strong>File aman</strong> — tidak kami simpan, diproses lokal</div>
+      </div>
+      <div class="trust-row">
+        <span class="trust-ico"><i class="bi bi-phone-fill" style="color: #3498DB;"></i></span>
+        <div class="trust-txt"><strong>Ramah HP</strong> — proses mulus langsung di galeri</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    
+    <div class="breadcrumb">
+      <a href="../index.html"><i class="bi bi-house-door-fill"></i> Beranda</a>
+      <span>/</span>
+      <a href="#">Blog & Solusi</a>
+      <span>/</span>
+      <span>Tutorial PDF</span>
+    </div>
+
+    <article class="article-container">
+      
+      <header class="article-header">
+        <h1>Cara Menggabungkan PDF di HP dengan Cepat</h1>
+        <div class="article-meta">
+          <span><i class="bi bi-calendar3"></i> 28 Mei 2026</span>
+          <span><i class="bi bi-person-fill"></i> Tim Rekan PDF</span>
+          <span><i class="bi bi-folder2-open"></i> Tutorial PDF</span>
+          <span><i class="bi bi-clock"></i> Waktu Baca: 3 Menit</span>
+        </div>
+      </header>
+
+      <div class="article-content">
+        <!-- Konten Artikel dari CMS bakal dirender di sini -->
+        <p>Ini adalah paragraf pembuka untuk artikel percobaan kita. Menggabungkan file PDF ternyata sangat mudah dan bisa dilakukan dari <em>smartphone</em> kamu.</p>
+<h2>Kenapa Harus Menggabungkan PDF?</h2>
+<p>Biasanya saat melamar kerja, HRD meminta dokumen dijadikan satu. Kalau dokumenmu masih terpisah, kamu butuh alat <strong>Merge PDF</strong>.</p>
+<h3>Keunggulan Rekan PDF</h3>
+<ul>
+<li>Proses cepat</li>
+<li>100% Gratis</li>
+<li>Privasi terjamin karena diproses secara lokal</li>
+</ul>
+<p>Yuk, langsung dicoba fiturnya!</p>
+
+      </div>
+    </article>
+  </main>
+
+</div>
+
+<footer>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="footer-logo-text">Rekan<span>PDF</span></div>
+      <p>Platform alat PDF nomor 1 untuk pengguna Indonesia. Mengutamakan privasi, kecepatan, dan bebas biaya tanpa syarat apapun.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Edit PDF</h5>
+      <ul>
+        <li><a href="../alat/merge.html">Gabung PDF</a></li>
+        <li><a href="../alat/split-pdf.html">Pisah PDF</a></li>
+        <li><a href="../alat/extract-pages.html">Ambil Halaman</a></li>
+        <li><a href="../alat/remove-pages.html">Hapus Halaman</a></li>
+        <li><a href="../alat/organize-pdf.html">Atur Halaman</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Konversi</h5>
+      <ul>
+        <li><a href="../alat/word-to-pdf.html">Word ke PDF</a></li>
+        <li><a href="../alat/jpg-to-pdf.html">JPG ke PDF</a></li>
+        <li><a href="../alat/pdf-to-images.html">PDF ke JPG</a></li>
+        <li><a href="../alat/excel-to-pdf.html">Excel ke PDF</a></li>
+        <li><a href="../alat/ocr-pdf.html">OCR PDF</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Optimasi</h5>
+      <ul>
+        <li><a href="../alat/compress-pdf.html">Kompres PDF</a></li>
+        <li><a href="../alat/repair-pdf.html">Perbaiki PDF</a></li>
+        <li><a href="../alat/scan-to-pdf.html">Scan ke PDF</a></li>
+        <li><a href="../alat/powerpoint-to-pdf.html">PPT ke PDF</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Perusahaan</h5>
+      <ul>
+        <li><a href="../halaman/about.html">Tentang Kami</a></li>
+        <li><a href="../halaman/faq.html">FAQ</a></li>
+        <li><a href="../halaman/privacy-policy.html">Kebijakan Privasi</a></li>
+        <li><a href="../halaman/terms.html">Syarat Layanan</a></li>
+        <li><a href="../halaman/contact.html">Kontak Developer</a></li>
+        <li><a href="../status.html">Status Sistem</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Rekan PDF. Dibuat dengan ☕ di Indonesia.</span>
+    <div>
+      <a href="../halaman/privacy-policy.html">Privasi</a>
+      <a href="../halaman/terms.html">Syarat Layanan</a>
+      <a href="../sitemap.xml">Sitemap</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleMobileMenu() {
+  const overlay = document.getElementById('mobileMenuOverlay');
+  const drawer = document.getElementById('mobileMenuDrawer');
+  overlay.classList.toggle('active');
+  drawer.classList.toggle('active');
+  document.body.style.overflow = drawer.classList.contains('active') ? 'hidden' : '';
+}
+
+// Page Loader behavior
+document.querySelectorAll('a').forEach(card => {
+  card.addEventListener('click', function(e) {
+    if (e.ctrlKey || e.shiftKey || e.metaKey || e.button === 1 || this.getAttribute('href') === '#' || this.getAttribute('href').startsWith('.')) return;
+    e.preventDefault(); 
+    const targetUrl = this.getAttribute('href');
+    const loader = document.getElementById('pageLoader');
+    loader.classList.add('active');
+    setTimeout(() => { window.location.href = targetUrl; }, 300);
+  });
+});
+window.addEventListener('pageshow', function (event) {
+  if (event.persisted) document.getElementById('pageLoader').classList.remove('active');
+});
+</script>
+</body>
+</html>

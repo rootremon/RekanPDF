@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Buat Surat Lamaran Kerja Otomatis - Rekan PDF</title>
+<meta name="description" content="Buat surat lamaran kerja format PDF dan Gambar secara otomatis, gratis, dan cepat. Tinggal isi data diri, langsung jadi."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E8720C;
+  --orange-dark:#C45F00;
+  --orange-light:#FF9235;
+  --orange-bg:#FFF4EB;
+  --navy:#0F1923;
+  --navy2:#1A2736;
+  --blue:#1B5FA8;
+  --blue-light:#2272C3;
+  --white:#FFFFFF;
+  --off:#F7F8FA;
+  --border:#DDE1E7;
+  --border2:#C8CDD5;
+  --text:#0F1923;
+  --text2:#3D4A5A;
+  --muted:#6B7A8D;
+  --green:#1A7A42;
+  --red:#C0392B;
+  --shadow:0 2px 8px rgba(15,25,35,0.10);
+  --shadow-md:0 4px 20px rgba(15,25,35,0.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.5;overflow-x:hidden}
+
+/* ── TOP BAR & NAVBAR ── */
+.topbar{background:var(--navy);color:#fff;font-size:12.5px;text-align:center;padding:7px 20px;font-weight:600;letter-spacing:0.01em}
+.topbar span{color:var(--orange-light)}
+nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-inner{display:flex;align-items:center;gap:0;max-width:1380px;margin:0 auto;padding:0 20px;height:62px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:28px;flex-shrink:0}
+.logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
+.logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
+.logo-sub span{color:var(--orange-light)}
+.nav-right{display:flex;align-items:center;gap:4px;margin-left:auto;padding-left:20px}
+.nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
+.nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+
+/* ── LAYOUT WRAPPER ── */
+.page-body{max-width:800px; /* Dipersempit agar form terlihat rapi di tengah */ margin:40px auto; padding:0 20px; display:block;}
+
+/* Breadcrumb */
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:24px; justify-content: center;}
+.breadcrumb a{display:flex;align-items:center;gap:4px;color:var(--blue-light);text-decoration:none;font-weight:600}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb span{color:var(--border2)}
+
+/* ── TOOL HEADER ── */
+.tool-header{text-align:center;margin-bottom:32px}
+.tool-icon{width:64px;height:64px;background:#E8F0FE;color:var(--blue);font-size:2rem;display:flex;align-items:center;justify-content:center;border-radius:12px;margin:0 auto 16px}
+.tool-header h1{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:var(--text);margin-bottom:8px}
+.tool-header p{color:var(--text2);font-size:1.1rem;max-width:600px;margin:0 auto}
+
+/* ── WORKSPACE (SINGLE COLUMN) ── */
+.form-box { background: var(--white); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); padding: 32px; }
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px; color: var(--navy); }
+.form-label span { color: var(--red); }
+.form-control { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 6px; font-family: 'Nunito Sans', sans-serif; font-size: 15px; color: var(--text); background: var(--white); transition: border-color 0.2s; box-sizing: border-box; }
+.form-control:focus { outline: none; border-color: var(--orange); }
+textarea.form-control { resize: vertical; min-height: 80px; }
+.help-text { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+
+.btn-primary { width: 100%; background: var(--orange); color: #fff; padding: 16px 20px; font-size: 1.1rem; font-weight: 800; border: none; border-radius: 6px; cursor: pointer; transition: background .2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 20px; }
+.btn-primary:hover { background: var(--orange-dark); }
+
+/* ── DOWNLOAD PANEL (MUNcul SETELAH GENERATE) ── */
+.download-panel { display: none; background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%); border-radius: 12px; padding: 32px; text-align: center; box-shadow: var(--shadow-md); margin-top: 24px; animation: slideDown 0.4s ease forwards; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+.download-panel .success-icon { font-size: 3rem; color: var(--green); margin-bottom: 12px; }
+.download-panel h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 8px; }
+.download-panel p { color: rgba(255,255,255,0.7); font-size: 15px; margin-bottom: 24px; }
+.download-actions { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.btn-dl { padding: 14px 24px; font-weight: 800; font-size: 15px; border-radius: 6px; text-decoration: none; cursor: pointer; transition: all 0.2s; border: none; display: inline-flex; align-items: center; gap: 8px; flex: 1; min-width: 200px; justify-content: center; }
+.btn-dl.pdf { background: var(--red); color: #fff; }
+.btn-dl.pdf:hover { background: #a83226; transform: translateY(-2px); }
+.btn-dl.img { background: var(--blue); color: #fff; }
+.btn-dl.img:hover { background: #154c87; transform: translateY(-2px); }
+
+/* ── AREA RENDER KERTAS (DISEMBUNYIKAN DARI LAYAR) ── */
+.hidden-render-area {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  /* Jangan gunakan display: none, karena library tidak akan bisa merendernya */
+}
+.a4-paper { background: #fff; width: 210mm; min-height: 297mm; padding: 25.4mm; box-sizing: border-box; font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5; color: #000; }
+.a4-paper p { margin-bottom: 12pt; }
+.a4-paper .right-align { text-align: right; }
+.a4-paper .mt-4 { margin-top: 24pt; }
+.a4-paper .mb-4 { margin-bottom: 24pt; }
+
+/* ── MODAL POPUP ── */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,25,35,0.7); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s; backdrop-filter: blur(4px); }
+.modal-overlay.active { opacity: 1; visibility: visible; }
+.modal-box { background: #fff; width: 90%; max-width: 420px; padding: 32px 24px; border-radius: 12px; text-align: center; box-shadow: var(--shadow-md); transform: translateY(20px); transition: all 0.3s; }
+.modal-overlay.active .modal-box { transform: translateY(0); }
+.modal-icon { font-size: 3rem; color: var(--orange); margin-bottom: 16px; }
+.modal-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+.modal-text { color: var(--text2); font-size: 14px; margin-bottom: 24px; }
+.modal-actions { display: flex; gap: 12px; flex-direction: column; }
+.btn-modal { width: 100%; padding: 14px; border-radius: 6px; font-weight: 800; font-size: 15px; cursor: pointer; transition: all 0.2s; border: none; }
+.btn-yakin { background: var(--orange); color: #fff; }
+.btn-yakin:hover { background: var(--orange-dark); }
+.btn-koreksi { background: var(--off); color: var(--text2); border: 1px solid var(--border); }
+.btn-koreksi:hover { background: var(--border); color: var(--text); }
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;border-top:3px solid var(--orange);padding:24px 20px;text-align:center;font-size:14px}
+
+/* ── MOBILE RESPONSIVE FIXES ── */
+@media (max-width: 768px) {
+  .topbar { font-size: 11px; padding: 6px 10px; }
+  .page-body { margin: 20px auto; padding: 0 16px; }
+  .tool-header h1 { font-size: 2.2rem; }
+  .tool-header p { font-size: 1rem; }
+  .form-box { padding: 24px 16px; }
+  .download-panel { padding: 24px 16px; }
+  .download-actions { flex-direction: column; }
+  .btn-dl { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"><i class="bi bi-shield-check"></i> <span>Privasi 100% Aman</span> — Data diproses langsung di peramban Anda.</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="logo">
+      <span class="logo-mark">PDF</span>
+      <span class="logo-sub">Rekan<span>PDF</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="../index.html" class="nav-btn"><i class="bi bi-grid-fill"></i> Semua Alat</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-body">
+
+  <div class="breadcrumb">
+    <a href="../index.html"><i class="bi bi-house-door-fill"></i> Beranda</a>
+    <span>/</span>
+    <span>Alat PDF</span>
+    <span>/</span>
+    <span>Cover Letter Generator</span>
+  </div>
+
+  <div class="tool-header">
+    <div class="tool-icon"><i class="bi bi-file-earmark-person-fill"></i></div>
+    <h1>Cover Letter Generator</h1>
+    <p>Buat surat lamaran kerja format PDF dan Gambar secara otomatis. Tinggal isi formulir, langsung unduh hasilnya.</p>
+  </div>
+
+  <div class="form-box" id="formContainer">
+    <form id="lamaranForm">
+      <div class="form-group">
+        <label class="form-label">Kota dan Tanggal <span>*</span></label>
+        <input type="text" id="inKotaTanggal" class="form-control" placeholder="Contoh: Jakarta, 7 Juli 2025" required oninput="updatePreview()">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Tujuan Perusahaan (Nama HRD/Instansi) <span>*</span></label>
+        <input type="text" id="inPerusahaan" class="form-control" placeholder="Contoh: PT. Rekan PDF Indonesia" required oninput="updatePreview()">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nama Lengkap <span>*</span></label>
+        <input type="text" id="inNama" class="form-control" placeholder="Contoh: Andi Husein" required oninput="updatePreview()">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Alamat Lengkap <span>*</span></label>
+        <textarea id="inAlamat" class="form-control" placeholder="Contoh: Jakarta, Jl Manggis No.83" required oninput="updatePreview()"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email <span>*</span></label>
+        <input type="email" id="inEmail" class="form-control" placeholder="Contoh: andihusain@gmail.com" required oninput="updatePreview()">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">No HP / WhatsApp <span>*</span></label>
+        <input type="text" id="inPhone" class="form-control" placeholder="Contoh: 08123456789" required oninput="updatePreview()">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Pendidikan Terakhir <span>*</span></label>
+        <input type="text" id="inPendidikan" class="form-control" placeholder="Contoh: SMAN 9 Jakarta atau S1 Sistem Informasi" required oninput="updatePreview()">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Posisi yang Dilamar <span>*</span></label>
+        <input type="text" id="inPosisi" class="form-control" placeholder="Contoh: Admin Sosial Media" required oninput="updatePreview()">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Isi Lampiran Berkas <span>*</span></label>
+        <textarea id="inLampiran" class="form-control" placeholder="Contoh: CV, KTP, Ijazah Terakhir, Pas Foto, SKCK, Surat Sehat" required oninput="updatePreview()"></textarea>
+        <div class="help-text">Pisahkan dengan koma.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Menemukan Lowongan di Mana? <span>*</span></label>
+        <input type="text" id="inSumber" class="form-control" placeholder="Contoh: Media Sosial Instagram LokerJakarta" required oninput="updatePreview()">
+      </div>
+
+      <button type="submit" class="btn-primary"><i class="bi bi-magic"></i> Generate Surat Lamaran Sekarang</button>
+    </form>
+  </div>
+
+  <div class="download-panel" id="downloadPanel">
+    <div class="success-icon"><i class="bi bi-check-circle-fill"></i></div>
+    <h3>Surat Lamaran Anda Berhasil Dibuat!</h3>
+    <p>Silakan pilih format unduhan dokumen Anda di bawah ini. Anda bisa mengunduhnya sebagai PDF atau Gambar (JPG).</p>
+    <div class="download-actions">
+      <button class="btn-dl pdf" onclick="downloadAsPDF()"><i class="bi bi-file-earmark-pdf-fill"></i> Unduh File PDF</button>
+      <button class="btn-dl img" onclick="downloadAsImage()"><i class="bi bi-image-fill"></i> Unduh Gambar JPG</button>
+    </div>
+    <div style="margin-top: 24px;">
+        <button onclick="editLagi()" style="background: transparent; color: var(--orange-light); border: none; font-weight: 700; cursor: pointer; font-size: 14px;"><i class="bi bi-pencil-square"></i> Edit Data Lamaran</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="hidden-render-area">
+  <div class="a4-paper" id="suratRender">
+    <p class="right-align" id="outKotaTanggal">[kota dan tanggal]</p>
+    
+    <p class="mt-4">
+      Kepada Yth,<br>
+      Bapak/Ibu HRD, Pimpinan Perusahaan<br>
+      <strong id="outPerusahaan">[Tujuan Perusahaan]</strong>
+    </p>
+
+    <p class="mt-4">Dengan Hormat,</p>
+    
+    <p style="text-align: justify;">
+      Perkenalkan nama saya <strong id="outNama">[Nama]</strong> seorang yang memiliki semangat kerja tinggi, disiplin, dan bertanggung jawab. Melalui surat ini, saya bermaksud mengajukan lamaran kerja untuk posisi <strong id="outPosisi">[posisi lamaran]</strong> di <span id="outPerusahaan2">[tujuan perusahaan]</span> sebagaimana informasi yang saya peroleh di <span id="outSumber">[menemukan lowongan dimana]</span>.
+    </p>
+
+    <p style="text-align: justify;">
+      Saya merupakan lulusan <strong id="outPendidikan">[pendidikan terakhir]</strong> dan memiliki kondisi fisik yang sehat serta mampu bekerja secara mandiri maupun dalam tim. Saya memiliki kedisiplinan yang tinggi, memiliki jiwa ingin belajar dan selalu bekerja keras untuk membantu perusahaan.
+    </p>
+
+    <p style="text-align: justify;">Sebagai bahan pertimbangan bersama itu juga saya lampirkan:</p>
+    <p style="padding-left: 20px; font-style: italic;" id="outLampiran">
+      [isi lampiran berkas]
+    </p>
+
+    <p style="text-align: justify;">
+      Demikian surat lamaran kerja ini saya buat dengan sebenar-benarnya. Besar harapan saya untuk diberikan kesempatan wawancara sehingga dapat menjelaskan lebih lanjut mengenai kemampuan yang saya miliki.
+    </p>
+
+    <p>Atas perhatian dan kesempatan yang diberikan, saya ucapkan terima kasih.</p>
+
+    <p class="mt-4 mb-4">
+      Hormat saya,<br><br><br><br>
+      <strong id="outNama2">[nama]</strong>
+    </p>
+
+    <div style="border-top: 1px solid #000; padding-top: 10pt; font-size: 10pt;">
+      No HP/WhatsApp: <span id="outPhone">[no hp/wa]</span><br>
+      Email: <span id="outEmail">[email]</span><br>
+      Alamat: <span id="outAlamat">[alamat]</span>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-icon"><i class="bi bi-question-circle-fill"></i></div>
+    <div class="modal-title">Apakah Anda Sudah Yakin?</div>
+    <div class="modal-text">Pastikan data lamaran Anda diisi dengan benar, terutama nomor HP dan Email agar HRD bisa menghubungi Anda.</div>
+    <div class="modal-actions">
+      <button class="btn-modal btn-yakin" onclick="confirmSubmit()">Ya, Saya Yakin</button>
+      <button class="btn-modal btn-koreksi" onclick="closeModal()">Koreksi Lagi</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2026 Rekan PDF. Dibuat untuk Indonesia.
+</footer>
+
+<script>
+// --- FUNGSI UPDATE DATA KE KERTAS RENDER (DI BELAKANG LAYAR) ---
+function updatePreview() {
+  const getText = (id, fallback) => document.getElementById(id).value.trim() || fallback;
+  
+  document.getElementById('outKotaTanggal').innerText = getText('inKotaTanggal', '[kota dan tanggal]');
+  document.getElementById('outPerusahaan').innerText = getText('inPerusahaan', '[Tujuan Perusahaan]');
+  document.getElementById('outPerusahaan2').innerText = getText('inPerusahaan', '[tujuan perusahaan]');
+  document.getElementById('outNama').innerText = getText('inNama', '[Nama]');
+  document.getElementById('outNama2').innerText = getText('inNama', '[nama]');
+  document.getElementById('outAlamat').innerText = getText('inAlamat', '[alamat]');
+  document.getElementById('outEmail').innerText = getText('inEmail', '[email]');
+  document.getElementById('outPhone').innerText = getText('inPhone', '[no hp/wa]');
+  document.getElementById('outPendidikan').innerText = getText('inPendidikan', '[pendidikan terakhir]');
+  document.getElementById('outPosisi').innerText = getText('inPosisi', '[posisi lamaran]');
+  document.getElementById('outSumber').innerText = getText('inSumber', '[menemukan lowongan dimana]');
+  document.getElementById('outLampiran').innerText = getText('inLampiran', '[isi lampiran berkas]');
+}
+
+// --- LOGIKA FORM SUBMIT & MODAL ---
+document.getElementById('lamaranForm').addEventListener('submit', function(e) {
+  e.preventDefault(); 
+  document.getElementById('confirmModal').classList.add('active'); 
+});
+
+function closeModal() {
+  document.getElementById('confirmModal').classList.remove('active');
+}
+
+function confirmSubmit() {
+  closeModal();
+  // Sembunyikan form dan tampilkan panel sukses unduh
+  document.getElementById('formContainer').style.display = 'none';
+  document.getElementById('downloadPanel').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function editLagi() {
+  // Kembali ke form jika user ingin mengedit
+  document.getElementById('downloadPanel').style.display = 'none';
+  document.getElementById('formContainer').style.display = 'block';
+}
+
+// --- FUNGSI DOWNLOAD PDF MENGGUNAKAN HTML2PDF ---
+function downloadAsPDF() {
+  const element = document.getElementById('suratRender');
+  const namaUser = document.getElementById('inNama').value.trim() || 'Pelamar';
+  const opt = {
+    margin:       0,
+    filename:     `Surat_Lamaran_Kerja_${namaUser}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, useCORS: true },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  
+  const btn = document.querySelector('.btn-dl.pdf');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Memproses...';
+  
+  html2pdf().set(opt).from(element).save().then(() => {
+    btn.innerHTML = originalText;
+  });
+}
+
+// --- FUNGSI DOWNLOAD IMAGE MENGGUNAKAN HTML2CANVAS ---
+function downloadAsImage() {
+  const element = document.getElementById('suratRender');
+  const namaUser = document.getElementById('inNama').value.trim() || 'Pelamar';
+  
+  const btn = document.querySelector('.btn-dl.img');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Memproses...';
+
+  html2canvas(element, { scale: 2 }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = `Surat_Lamaran_Kerja_${namaUser}.jpg`;
+    link.href = canvas.toDataURL("image/jpeg", 0.95);
+    link.click();
+    btn.innerHTML = originalText;
+  });
+}
+
+// Render data fallback di awal
+updatePreview();
+</script>
+</body>
+</html>

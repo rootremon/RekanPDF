@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>JPG ke PDF - Rekan PDF</title>
+<meta name="description" content="Konversi banyak gambar JPG, PNG ke satu file PDF. Bisa atur urutan halaman dengan mudah. Gratis, cepat, dan aman."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E8720C;
+  --orange-dark:#C45F00;
+  --orange-light:#FF9235;
+  --orange-bg:#FFF4EB;
+  --navy:#0F1923;
+  --navy2:#1A2736;
+  --blue:#1B5FA8;
+  --blue-light:#2272C3;
+  --white:#FFFFFF;
+  --off:#F7F8FA;
+  --border:#DDE1E7;
+  --border2:#C8CDD5;
+  --text:#0F1923;
+  --text2:#3D4A5A;
+  --muted:#6B7A8D;
+  --green:#1A7A42;
+  --red:#C0392B;
+  --shadow:0 2px 8px rgba(15,25,35,0.10);
+  --shadow-md:0 4px 20px rgba(15,25,35,0.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.5}
+
+/* ── TOP BAR & NAVBAR ── */
+.topbar{background:var(--navy);color:#fff;font-size:12.5px;text-align:center;padding:7px 20px;font-weight:600;letter-spacing:0.01em}
+.topbar span{color:var(--orange-light)}
+nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-inner{display:flex;align-items:center;gap:0;max-width:1380px;margin:0 auto;padding:0 20px;height:62px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:28px;flex-shrink:0}
+.logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
+.logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
+.logo-sub span{color:var(--orange-light)}
+.nav-right{display:flex;align-items:center;gap:4px;margin-left:auto;padding-left:20px}
+.nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
+.nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+
+/* ── LAYOUT WRAPPER ── */
+.page-body{max-width:1100px;margin:40px auto;padding:0 20px;display:block;}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:24px}
+.breadcrumb a{display:flex;align-items:center;gap:4px;color:var(--blue-light);text-decoration:none;font-weight:600}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb span{color:var(--border2)}
+
+/* ── TOOL HEADER ── */
+.tool-header{text-align:center;margin-bottom:32px}
+.tool-icon{width:64px;height:64px;background:#FDE8F3;color:var(--red);font-size:2rem;display:flex;align-items:center;justify-content:center;border-radius:12px;margin:0 auto 16px}
+.tool-header h1{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:var(--text);margin-bottom:8px}
+.tool-header p{color:var(--text2);font-size:1.1rem;max-width:600px;margin:0 auto}
+
+/* ── WORKSPACE ── */
+.workspace{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:40px;min-height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+
+/* 1. Upload Area */
+.upload-area{width:100%;max-width:600px;border:2.5px dashed var(--border2);border-radius:12px;padding:50px 20px;text-align:center;background:var(--off);transition:all .2s ease;cursor:pointer}
+.upload-area:hover, .upload-area.dragover{border-color:var(--orange);background:var(--orange-bg)}
+.upload-area i{font-size:3.5rem;color:var(--orange);margin-bottom:16px;display:block}
+.upload-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.upload-area p{color:var(--muted);font-size:14px;margin-bottom:24px}
+.btn-upload{background:var(--orange);color:#fff;padding:12px 32px;font-size:1rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-upload:hover{background:var(--orange-dark)}
+#fileInput{display:none}
+
+/* 2. Preview & Sort Area */
+.preview-area{display:none;width:100%}
+.preview-header{text-align:center;margin-bottom:24px}
+.preview-header h3{font-size:1.4rem;font-weight:800;margin-bottom:6px}
+.preview-header p{color:var(--muted);font-size:14px}
+.image-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));gap:16px;width:100%;max-width:900px;margin:0 auto 32px;padding:10px}
+.img-card{background:var(--off);border:1px solid var(--border);border-radius:8px;aspect-ratio:1/1;position:relative;cursor:grab;overflow:hidden;box-shadow:var(--shadow)}
+.img-card:active{cursor:grabbing}
+.img-card img{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.img-card .badge-num{position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px}
+.btn-remove{position:absolute;top:6px;right:6px;background:var(--red);color:#fff;border:none;width:26px;height:26px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:background .2s}
+.btn-remove:hover{background:#900}
+.preview-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.btn-sec{background:var(--off);color:var(--text);padding:12px 24px;font-size:1rem;font-weight:700;border:1px solid var(--border2);border-radius:6px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-sec:hover{background:var(--border)}
+.btn-primary-action{background:var(--orange);color:#fff;padding:12px 32px;font-size:1.05rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary-action:hover{background:var(--orange-dark);box-shadow:var(--shadow-md)}
+
+/* 3. Loading Area */
+.loading-area{display:none;text-align:center;width:100%}
+.spinner{width:60px;height:60px;border:5px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.loading-area p{color:var(--muted);font-size:14px}
+.progress-bar{width:100%;max-width:400px;height:8px;background:var(--border);border-radius:4px;margin:20px auto 0;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:var(--orange);transition:width 0.3s ease}
+
+/* 4. Result Area */
+.result-area{display:none;text-align:center;width:100%}
+.result-icon{width:70px;height:70px;background:#E6F4EA;color:var(--green);font-size:2.5rem;display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 20px}
+.result-area h3{font-size:1.5rem;font-weight:800;margin-bottom:10px}
+.stats-box{display:flex;justify-content:center;gap:40px;background:var(--off);border:1px solid var(--border);padding:20px;border-radius:8px;max-width:500px;margin:20px auto}
+.stat{text-align:center}
+.stat span{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.stat strong{font-size:1.5rem;color:var(--text);font-family:'Barlow Condensed',sans-serif;}
+.result-actions{display:flex;justify-content:center;gap:12px;margin-top:24px}
+.btn-download{background:var(--green);color:#fff;padding:14px 36px;font-size:1.05rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;text-decoration:none;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-download:hover{background:#146134;color:#fff}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;border-top:3px solid var(--orange);padding:24px 20px;text-align:center;font-size:14px}
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+  .topbar { font-size: 11px; padding: 6px 10px; }
+  .page-body { margin: 20px auto; }
+  .tool-header h1 { font-size: 2rem; }
+  .workspace { padding: 24px 16px; min-height: auto; }
+  .upload-area { padding: 30px 16px; }
+  .upload-area i { font-size: 2.5rem; margin-bottom: 12px; }
+  
+  .image-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  
+  .preview-actions, .result-actions { flex-direction: column; width: 100%; }
+  .btn-sec, .btn-primary-action, .btn-download, .btn-reset { width: 100%; justify-content: center; }
+  
+  .stats-box { gap: 20px; flex-direction: column; }
+}
+
+/* Ghost class saat di-drag */
+.sortable-ghost { opacity: 0.4; background: var(--orange-bg); border: 2px dashed var(--orange); }
+</style>
+</head>
+<body>
+
+<div class="topbar"><i class="bi bi-shield-check"></i> <span>Privasi 100% Aman</span> — Diproses langsung di perangkat Anda!</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="logo">
+      <span class="logo-mark">PDF</span>
+      <span class="logo-sub">Rekan<span>PDF</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="../index.html" class="nav-btn"><i class="bi bi-grid-fill"></i> Semua Alat</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-body">
+
+  <div class="breadcrumb">
+    <a href="../index.html"><i class="bi bi-house-door-fill"></i> Beranda</a>
+    <span>/</span>
+    <span>Alat Konversi</span>
+    <span>/</span>
+    <span>JPG ke PDF</span>
+  </div>
+
+  <div class="tool-header">
+    <div class="tool-icon"><i class="bi bi-images" style="color: #D81B60;"></i></div>
+    <h1>Ubah JPG ke PDF</h1>
+    <p>Konversi foto dan gambar ke dokumen PDF. Atur urutannya dengan mudah. Mendukung JPG, PNG, dan WEBP.</p>
+  </div>
+
+  <div class="workspace">
+    
+    <div class="upload-area" id="viewUpload" onclick="document.getElementById('fileInput').click()">
+      <i class="bi bi-cloud-arrow-up-fill"></i>
+      <h3>Pilih gambar JPG/PNG</h3>
+      <p>atau seret dan lepas banyak gambar ke sini sekaligus</p>
+      <button class="btn-upload"><i class="bi bi-folder-fill"></i> Pilih Gambar</button>
+      <input type="file" id="fileInput" accept="image/jpeg, image/png, image/webp" multiple>
+    </div>
+
+    <div class="preview-area" id="viewPreview">
+      <div class="preview-header">
+        <h3>Susun Urutan Halaman</h3>
+        <p>Tahan dan geser gambar untuk mengatur urutan halaman di PDF.</p>
+      </div>
+      
+      <div class="image-grid" id="imageGrid"></div>
+
+      <div class="preview-actions">
+        <button class="btn-sec" onclick="document.getElementById('addMoreInput').click()">
+          <i class="bi bi-plus-lg"></i> Tambah Gambar
+        </button>
+        <button class="btn-primary-action" onclick="generatePDF()">
+          Konversi ke PDF <i class="bi bi-arrow-right"></i>
+        </button>
+        <input type="file" id="addMoreInput" accept="image/jpeg, image/png, image/webp" multiple style="display:none">
+      </div>
+    </div>
+
+    <div class="loading-area" id="viewLoading">
+      <div class="spinner"></div>
+      <h3>Membangun PDF...</h3>
+      <p id="loadingText">Sedang menyatukan gambar. Mohon tunggu...</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="result-area" id="viewResult">
+      <div class="result-icon"><i class="bi bi-check-lg"></i></div>
+      <h3>Selesai! PDF Berhasil Dibuat</h3>
+      
+      <div class="stats-box">
+        <div class="stat">
+          <span>Total Halaman</span>
+          <strong id="statPages">-</strong>
+        </div>
+        <div class="stat">
+          <span>Ukuran File</span>
+          <strong id="statSize">-</strong>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <a href="#" id="btnDownload" class="btn-download"><i class="bi bi-download"></i> Unduh PDF Sekarang</a>
+        <button class="btn-sec" onclick="resetTool()"><i class="bi bi-arrow-counterclockwise"></i> Buat Baru</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  © 2025 Rekan PDF. Dibuat untuk Indonesia.
+</footer>
+
+<script>
+// State Management
+let imagesData = []; 
+let imageCounter = 0; // ID unik per gambar
+
+// Elements
+const viewUpload = document.getElementById('viewUpload');
+const viewPreview = document.getElementById('viewPreview');
+const viewLoading = document.getElementById('viewLoading');
+const viewResult = document.getElementById('viewResult');
+const fileInput = document.getElementById('fileInput');
+const addMoreInput = document.getElementById('addMoreInput');
+const imageGrid = document.getElementById('imageGrid');
+const progressBar = document.getElementById('progressBar');
+
+// Inisialisasi SortableJS (Fitur Drag & Drop)
+const sortable = new Sortable(imageGrid, {
+  animation: 200,
+  ghostClass: 'sortable-ghost',
+  onEnd: updateBadgeNumbers // Update nomor saat selesai digeser
+});
+
+// Drag & Drop Area Handlers (Upload Area)
+viewUpload.addEventListener('dragover', (e) => { e.preventDefault(); viewUpload.classList.add('dragover'); });
+viewUpload.addEventListener('dragleave', () => { viewUpload.classList.remove('dragover'); });
+viewUpload.addEventListener('drop', (e) => {
+  e.preventDefault();
+  viewUpload.classList.remove('dragover');
+  if (e.dataTransfer.files.length) processFiles(e.dataTransfer.files);
+});
+
+// File Input Handlers
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length) processFiles(e.target.files);
+  fileInput.value = '';
+});
+addMoreInput.addEventListener('change', (e) => {
+  if (e.target.files.length) processFiles(e.target.files);
+  addMoreInput.value = '';
+});
+
+// Baca file gambar
+async function processFiles(files) {
+  viewUpload.style.display = 'none';
+  viewPreview.style.display = 'block';
+
+  const validFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+  
+  if(validFiles.length === 0) {
+    alert("Harap pilih file gambar (JPG/PNG/WEBP).");
+    if(imagesData.length === 0) resetTool();
+    return;
+  }
+
+  // Tampilkan loading sebentar kalau gambarnya banyak
+  for (let file of validFiles) {
+    try {
+      const dataUrl = await readFileAsDataURL(file);
+      const dimensions = await getImageDimensions(dataUrl);
+      
+      const id = 'img_' + (imageCounter++);
+      imagesData.push({
+        id: id,
+        name: file.name,
+        dataUrl: dataUrl,
+        width: dimensions.width,
+        height: dimensions.height
+      });
+
+      appendImageToGrid(id, dataUrl);
+    } catch(err) {
+      console.error("Gagal memuat gambar", err);
+    }
+  }
+  updateBadgeNumbers();
+}
+
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.onerror = e => reject(e);
+    reader.readAsDataURL(file);
+  });
+}
+
+function getImageDimensions(dataUrl) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve({ width: img.width, height: img.height });
+    img.src = dataUrl;
+  });
+}
+
+// Render ke UI
+function appendImageToGrid(id, src) {
+  const div = document.createElement('div');
+  div.className = 'img-card';
+  div.dataset.id = id;
+  
+  div.innerHTML = `
+    <span class="badge-num"></span>
+    <img src="${src}" alt="Preview">
+    <button class="btn-remove" onclick="removeImage('${id}')"><i class="bi bi-x"></i></button>
+  `;
+  imageGrid.appendChild(div);
+}
+
+function updateBadgeNumbers() {
+  const cards = imageGrid.querySelectorAll('.img-card');
+  cards.forEach((card, index) => {
+    card.querySelector('.badge-num').innerText = index + 1;
+  });
+}
+
+// Hapus Gambar
+function removeImage(id) {
+  // Hapus dari DOM
+  const card = document.querySelector(`.img-card[data-id="${id}"]`);
+  if(card) card.remove();
+  
+  // Hapus dari State
+  imagesData = imagesData.filter(img => img.id !== id);
+  
+  updateBadgeNumbers();
+
+  // Kalau habis, kembali ke awal
+  if (imagesData.length === 0) {
+    resetTool();
+  }
+}
+
+// Format Ukuran File
+function formatBytes(bytes, decimals = 2) {
+  if (!+bytes) return '0 Bytes';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
+
+// Reset 
+function resetTool() {
+  imagesData = [];
+  imageGrid.innerHTML = '';
+  viewResult.style.display = 'none';
+  viewPreview.style.display = 'none';
+  viewLoading.style.display = 'none';
+  viewUpload.style.display = 'block';
+  progressBar.style.width = '0%';
+}
+
+// Eksekusi Pembuatan PDF
+async function generatePDF() {
+  if(imagesData.length === 0) return;
+
+  viewPreview.style.display = 'none';
+  viewLoading.style.display = 'block';
+  progressBar.style.width = '10%';
+
+  // Ambil urutan berdasarkan tampilan DOM saat ini (setelah di-drag)
+  const currentDOMIds = Array.from(imageGrid.children).map(el => el.dataset.id);
+  const sortedImages = currentDOMIds.map(id => imagesData.find(img => img.id === id));
+
+  try {
+    const { jsPDF } = window.jspdf;
+    let doc = null;
+
+    // Timeout untuk memberi ruang UI update sebelum JS memblokir thread
+    await new Promise(r => setTimeout(r, 100));
+
+    for (let i = 0; i < sortedImages.length; i++) {
+      document.getElementById('loadingText').innerText = `Memproses halaman ${i+1} dari ${sortedImages.length}...`;
+      
+      const img = sortedImages[i];
+      // Tentukan orientasi berdasarkan dimensi asli gambar
+      const orientation = img.width > img.height ? 'l' : 'p';
+      
+      // jsPDF menggunakan satuan pt/px/mm. Kita set 'px' agar akurat 1:1 dengan gambar
+      if (i === 0) {
+        doc = new jsPDF({ orientation: orientation, unit: 'px', format: [img.width, img.height] });
+      } else {
+        doc.addPage([img.width, img.height], orientation);
+      }
+
+      // Masukkan gambar full seukuran halaman (borderless)
+      doc.addImage(img.dataUrl, 'JPEG', 0, 0, img.width, img.height);
+      
+      progressBar.style.width = Math.round(((i+1) / sortedImages.length) * 100) + '%';
+      await new Promise(r => setTimeout(r, 50)); // Jeda agar animasi progress bar terlihat
+    }
+
+    document.getElementById('loadingText').innerText = "Menyelesaikan dokumen...";
+    
+    // Generate File
+    const blob = doc.output('blob');
+    const url = URL.createObjectURL(blob);
+    
+    // Tampilkan Hasil
+    const btnDownload = document.getElementById('btnDownload');
+    btnDownload.href = url;
+    btnDownload.download = 'RekanPDF_Gambar.pdf';
+
+    document.getElementById('statPages').innerText = sortedImages.length;
+    document.getElementById('statSize').innerText = formatBytes(blob.size);
+
+    setTimeout(() => {
+      viewLoading.style.display = 'none';
+      viewResult.style.display = 'block';
+    }, 500);
+
+  } catch (error) {
+    alert("Terjadi kesalahan saat membuat PDF.");
+    console.error(error);
+    viewLoading.style.display = 'none';
+    viewPreview.style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>

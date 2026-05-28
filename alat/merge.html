@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Gabung PDF - Rekan PDF</title>
+<meta name="description" content="Gabungkan dua atau lebih file PDF menjadi satu dokumen dengan mudah. Atur urutan file secara drag & drop. 100% Gratis dan aman!"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E8720C;
+  --orange-dark:#C45F00;
+  --orange-light:#FF9235;
+  --orange-bg:#FFF4EB;
+  --navy:#0F1923;
+  --navy2:#1A2736;
+  --blue:#1B5FA8;
+  --blue-light:#2272C3;
+  --white:#FFFFFF;
+  --off:#F7F8FA;
+  --border:#DDE1E7;
+  --border2:#C8CDD5;
+  --text:#0F1923;
+  --text2:#3D4A5A;
+  --muted:#6B7A8D;
+  --green:#1A7A42;
+  --red:#C0392B;
+  --shadow:0 2px 8px rgba(15,25,35,0.10);
+  --shadow-md:0 4px 20px rgba(15,25,35,0.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.5}
+
+/* ── TOP BAR & NAVBAR ── */
+.topbar{background:var(--navy);color:#fff;font-size:12.5px;text-align:center;padding:7px 20px;font-weight:600;letter-spacing:0.01em}
+.topbar span{color:var(--orange-light)}
+nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-inner{display:flex;align-items:center;gap:0;max-width:1380px;margin:0 auto;padding:0 20px;height:62px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:28px;flex-shrink:0}
+.logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
+.logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
+.logo-sub span{color:var(--orange-light)}
+.nav-right{display:flex;align-items:center;gap:4px;margin-left:auto;padding-left:20px}
+.nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
+.nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+
+/* ── LAYOUT WRAPPER ── */
+.page-body{max-width:1100px;margin:40px auto;padding:0 20px;display:block;}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:24px}
+.breadcrumb a{display:flex;align-items:center;gap:4px;color:var(--blue-light);text-decoration:none;font-weight:600}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb span{color:var(--border2)}
+
+/* ── TOOL HEADER ── */
+.tool-header{text-align:center;margin-bottom:32px}
+.tool-icon{width:64px;height:64px;background:#E8F0FE;color:var(--blue-light);font-size:2rem;display:flex;align-items:center;justify-content:center;border-radius:12px;margin:0 auto 16px}
+.tool-header h1{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:var(--text);margin-bottom:8px}
+.tool-header p{color:var(--text2);font-size:1.1rem;max-width:600px;margin:0 auto}
+
+/* ── WORKSPACE ── */
+.workspace{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:40px;min-height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+
+/* 1. Upload Area */
+.upload-area{width:100%;max-width:600px;border:2.5px dashed var(--border2);border-radius:12px;padding:50px 20px;text-align:center;background:var(--off);transition:all .2s ease;cursor:pointer}
+.upload-area:hover, .upload-area.dragover{border-color:var(--blue-light);background:#F4F8FD}
+.upload-area i{font-size:3.5rem;color:var(--blue-light);margin-bottom:16px;display:block}
+.upload-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.upload-area p{color:var(--muted);font-size:14px;margin-bottom:24px}
+.btn-upload{background:var(--blue-light);color:#fff;padding:12px 32px;font-size:1rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-upload:hover{background:#17508B}
+#fileInput{display:none}
+
+/* 2. Sort & Preview Area */
+.preview-area{display:none;width:100%}
+.preview-header{text-align:center;margin-bottom:24px}
+.preview-header h3{font-size:1.4rem;font-weight:800;margin-bottom:6px}
+.preview-header p{color:var(--muted);font-size:14px}
+
+.pdf-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));gap:16px;width:100%;max-width:900px;margin:0 auto 32px;padding:10px}
+.pdf-card{background:var(--off);border:1px solid var(--border);border-radius:8px;padding:20px 16px;text-align:center;position:relative;cursor:grab;transition:transform .1s, box-shadow .1s;box-shadow:var(--shadow)}
+.pdf-card:active{cursor:grabbing;transform:scale(0.98)}
+.pdf-card i.main-icon{font-size:3rem;color:var(--red);margin-bottom:12px;display:block}
+.pdf-card .file-name{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.pdf-card .file-size{font-size:11px;color:var(--muted)}
+.pdf-card .badge-num{position:absolute;top:10px;left:10px;background:var(--navy);color:#fff;font-size:11px;font-weight:700;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.btn-remove{position:absolute;top:8px;right:8px;background:var(--off);color:var(--muted);border:1px solid var(--border2);width:26px;height:26px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s}
+.btn-remove:hover{background:var(--red);color:#fff;border-color:var(--red)}
+
+.preview-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.btn-sec{background:var(--off);color:var(--text);padding:12px 24px;font-size:1rem;font-weight:700;border:1px solid var(--border2);border-radius:6px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-sec:hover{background:var(--border)}
+.btn-primary-action{background:var(--orange);color:#fff;padding:12px 32px;font-size:1.05rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary-action:hover{background:var(--orange-dark);box-shadow:var(--shadow-md)}
+
+/* 3. Loading Area */
+.loading-area{display:none;text-align:center;width:100%}
+.spinner{width:60px;height:60px;border:5px solid var(--border);border-top-color:var(--blue-light);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.loading-area p{color:var(--muted);font-size:14px}
+.progress-bar{width:100%;max-width:400px;height:8px;background:var(--border);border-radius:4px;margin:20px auto 0;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:var(--blue-light);transition:width 0.3s ease}
+
+/* 4. Result Area */
+.result-area{display:none;text-align:center;width:100%}
+.result-icon{width:70px;height:70px;background:#E6F4EA;color:var(--green);font-size:2.5rem;display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 20px}
+.result-area h3{font-size:1.5rem;font-weight:800;margin-bottom:10px}
+.stats-box{display:flex;justify-content:center;gap:40px;background:var(--off);border:1px solid var(--border);padding:20px;border-radius:8px;max-width:500px;margin:20px auto}
+.stat{text-align:center}
+.stat span{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.stat strong{font-size:1.5rem;color:var(--text);font-family:'Barlow Condensed',sans-serif;}
+.result-actions{display:flex;justify-content:center;gap:12px;margin-top:24px}
+.btn-download{background:var(--green);color:#fff;padding:14px 36px;font-size:1.05rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;text-decoration:none;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-download:hover{background:#146134;color:#fff}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;border-top:3px solid var(--orange);padding:24px 20px;text-align:center;font-size:14px}
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+  .topbar { font-size: 11px; padding: 6px 10px; }
+  .page-body { margin: 20px auto; }
+  .tool-header h1 { font-size: 2rem; }
+  
+  .workspace { padding: 24px 16px; min-height: auto; }
+  .upload-area { padding: 30px 16px; }
+  .upload-area i { font-size: 2.5rem; margin-bottom: 12px; }
+  
+  .pdf-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 5px; }
+  .pdf-card { padding: 16px 10px; }
+  .pdf-card i.main-icon { font-size: 2.2rem; }
+  
+  .preview-actions, .result-actions { flex-direction: column; width: 100%; }
+  .btn-sec, .btn-primary-action, .btn-download, .btn-reset { width: 100%; justify-content: center; }
+  
+  .stats-box { gap: 20px; flex-direction: column; }
+}
+
+/* Ghost class SortableJS */
+.sortable-ghost { opacity: 0.4; background: #F4F8FD; border: 2px dashed var(--blue-light); }
+</style>
+</head>
+<body>
+
+<div class="topbar"><i class="bi bi-shield-check"></i> <span>Privasi 100% Aman</span> — Diproses langsung di browser Anda, tidak ada file yang dikirim ke server!</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="logo">
+      <span class="logo-mark">PDF</span>
+      <span class="logo-sub">Rekan<span>PDF</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="../index.html" class="nav-btn"><i class="bi bi-grid-fill"></i> Semua Alat</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-body">
+
+  <div class="breadcrumb">
+    <a href="../index.html"><i class="bi bi-house-door-fill"></i> Beranda</a>
+    <span>/</span>
+    <span>Alat Edit</span>
+    <span>/</span>
+    <span>Gabung PDF</span>
+  </div>
+
+  <div class="tool-header">
+    <div class="tool-icon"><i class="bi bi-union"></i></div>
+    <h1>Gabung PDF</h1>
+    <p>Satukan beberapa file PDF menjadi satu dokumen berurutan. Geser untuk mengatur letak dokumen.</p>
+  </div>
+
+  <div class="workspace">
+    
+    <div class="upload-area" id="viewUpload" onclick="document.getElementById('fileInput').click()">
+      <i class="bi bi-files"></i>
+      <h3>Pilih file PDF</h3>
+      <p>atau seret dan lepas beberapa file PDF sekaligus</p>
+      <button class="btn-upload"><i class="bi bi-folder-fill"></i> Tambahkan File</button>
+      <input type="file" id="fileInput" accept="application/pdf" multiple>
+    </div>
+
+    <div class="preview-area" id="viewPreview">
+      <div class="preview-header">
+        <h3>Susun Urutan File</h3>
+        <p>Tahan dan geser kotak di bawah untuk mengatur file mana yang tampil lebih dulu.</p>
+      </div>
+      
+      <div class="pdf-grid" id="pdfGrid"></div>
+
+      <div class="preview-actions">
+        <button class="btn-sec" onclick="document.getElementById('addMoreInput').click()">
+          <i class="bi bi-plus-lg"></i> Tambah File
+        </button>
+        <button class="btn-primary-action" onclick="mergePDFs()">
+          Gabungkan PDF <i class="bi bi-link-45deg"></i>
+        </button>
+        <input type="file" id="addMoreInput" accept="application/pdf" multiple style="display:none">
+      </div>
+    </div>
+
+    <div class="loading-area" id="viewLoading">
+      <div class="spinner"></div>
+      <h3>Menyatukan Dokumen...</h3>
+      <p id="loadingText">Sedang menyalin halaman. Mohon tunggu...</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="result-area" id="viewResult">
+      <div class="result-icon"><i class="bi bi-check-lg"></i></div>
+      <h3>Selesai! PDF Berhasil Digabung</h3>
+      
+      <div class="stats-box">
+        <div class="stat">
+          <span>Total File Asal</span>
+          <strong id="statFiles">-</strong>
+        </div>
+        <div class="stat">
+          <span>Ukuran Total</span>
+          <strong id="statSize">-</strong>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <a href="#" id="btnDownload" class="btn-download"><i class="bi bi-download"></i> Unduh PDF Sekarang</a>
+        <button class="btn-sec" onclick="resetTool()"><i class="bi bi-arrow-counterclockwise"></i> Buat Baru</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  © 2025 Rekan PDF. Dibuat untuk Indonesia.
+</footer>
+
+<script>
+// State Management
+let pdfFilesData = []; 
+let fileCounter = 0;
+
+// Elements
+const viewUpload = document.getElementById('viewUpload');
+const viewPreview = document.getElementById('viewPreview');
+const viewLoading = document.getElementById('viewLoading');
+const viewResult = document.getElementById('viewResult');
+const fileInput = document.getElementById('fileInput');
+const addMoreInput = document.getElementById('addMoreInput');
+const pdfGrid = document.getElementById('pdfGrid');
+const progressBar = document.getElementById('progressBar');
+const loadingText = document.getElementById('loadingText');
+
+// Inisialisasi SortableJS
+const sortable = new Sortable(pdfGrid, {
+  animation: 200,
+  ghostClass: 'sortable-ghost',
+  onEnd: updateBadgeNumbers
+});
+
+// Drag & Drop (Upload Area)
+viewUpload.addEventListener('dragover', (e) => { e.preventDefault(); viewUpload.classList.add('dragover'); });
+viewUpload.addEventListener('dragleave', () => { viewUpload.classList.remove('dragover'); });
+viewUpload.addEventListener('drop', (e) => {
+  e.preventDefault();
+  viewUpload.classList.remove('dragover');
+  if (e.dataTransfer.files.length) processFiles(e.dataTransfer.files);
+});
+
+// File Input Listeners
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length) processFiles(e.target.files);
+  fileInput.value = '';
+});
+addMoreInput.addEventListener('change', (e) => {
+  if (e.target.files.length) processFiles(e.target.files);
+  addMoreInput.value = '';
+});
+
+// Format Bytes
+function formatBytes(bytes, decimals = 2) {
+  if (!+bytes) return '0 Bytes';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
+
+// Proses Tambah File ke UI
+async function processFiles(files) {
+  const validFiles = Array.from(files).filter(file => file.type === 'application/pdf');
+  
+  if(validFiles.length === 0) {
+    alert("Harap pilih file dengan format PDF.");
+    return;
+  }
+
+  viewUpload.style.display = 'none';
+  viewPreview.style.display = 'block';
+
+  for (let file of validFiles) {
+    const id = 'pdf_' + (fileCounter++);
+    
+    // Simpan data file murni (File object) untuk diproses nanti
+    pdfFilesData.push({
+      id: id,
+      fileObj: file,
+      name: file.name,
+      size: file.size
+    });
+
+    appendPDFToGrid(id, file.name, file.size);
+  }
+  updateBadgeNumbers();
+}
+
+function appendPDFToGrid(id, name, size) {
+  const div = document.createElement('div');
+  div.className = 'pdf-card';
+  div.dataset.id = id;
+  
+  div.innerHTML = `
+    <div class="badge-num"></div>
+    <i class="bi bi-file-earmark-pdf-fill main-icon"></i>
+    <div class="file-name" title="${name}">${name}</div>
+    <div class="file-size">${formatBytes(size)}</div>
+    <button class="btn-remove" onclick="removeFile('${id}')"><i class="bi bi-x"></i></button>
+  `;
+  pdfGrid.appendChild(div);
+}
+
+function updateBadgeNumbers() {
+  const cards = pdfGrid.querySelectorAll('.pdf-card');
+  cards.forEach((card, index) => {
+    card.querySelector('.badge-num').innerText = index + 1;
+  });
+}
+
+function removeFile(id) {
+  const card = document.querySelector(`.pdf-card[data-id="${id}"]`);
+  if(card) card.remove();
+  
+  pdfFilesData = pdfFilesData.filter(pdf => pdf.id !== id);
+  updateBadgeNumbers();
+
+  if (pdfFilesData.length === 0) {
+    resetTool();
+  }
+}
+
+function resetTool() {
+  pdfFilesData = [];
+  pdfGrid.innerHTML = '';
+  viewResult.style.display = 'none';
+  viewPreview.style.display = 'none';
+  viewLoading.style.display = 'none';
+  viewUpload.style.display = 'block';
+  progressBar.style.width = '0%';
+}
+
+// Eksekusi Penggabungan (Merge)
+async function mergePDFs() {
+  if(pdfFilesData.length < 2) {
+    alert("Silakan masukkan minimal 2 file PDF untuk digabungkan.");
+    return;
+  }
+
+  viewPreview.style.display = 'none';
+  viewLoading.style.display = 'block';
+  progressBar.style.width = '5%';
+
+  // Ambil urutan ID dari DOM (hasil drag & drop user)
+  const currentDOMIds = Array.from(pdfGrid.children).map(el => el.dataset.id);
+  const sortedFiles = currentDOMIds.map(id => pdfFilesData.find(pdf => pdf.id === id));
+
+  try {
+    const { PDFDocument } = PDFLib;
+    
+    // Buat Dokumen PDF Baru Kosong
+    const mergedPdf = await PDFDocument.create();
+
+    // Loop setiap file sesuai urutan
+    for (let i = 0; i < sortedFiles.length; i++) {
+      loadingText.innerText = `Menggabungkan file ${i+1} dari ${sortedFiles.length}...`;
+      
+      const fileData = sortedFiles[i];
+      const arrayBuffer = await fileData.fileObj.arrayBuffer();
+      
+      // Load file PDF sumber
+      const pdf = await PDFDocument.load(arrayBuffer);
+      
+      // Copy semua halaman dari sumber ke dokumen gabungan
+      const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+      copiedPages.forEach((page) => mergedPdf.addPage(page));
+
+      // Update Progress
+      progressBar.style.width = Math.round(((i+1) / sortedFiles.length) * 90) + '%';
+    }
+
+    loadingText.innerText = "Menyimpan file gabungan...";
+    progressBar.style.width = '95%';
+
+    // Eksekusi Save
+    const pdfBytes = await mergedPdf.save();
+    
+    // Siapkan Unduhan
+    progressBar.style.width = '100%';
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    
+    const btnDown = document.getElementById('btnDownload');
+    btnDown.href = url;
+    btnDown.download = `RekanPDF_Merged_${Date.now()}.pdf`;
+
+    document.getElementById('statFiles').innerText = sortedFiles.length;
+    document.getElementById('statSize').innerText = formatBytes(blob.size);
+
+    setTimeout(() => {
+      viewLoading.style.display = 'none';
+      viewResult.style.display = 'block';
+    }, 600);
+
+  } catch (error) {
+    alert("Terjadi kesalahan saat menggabungkan PDF. Pastikan file tidak terkunci (password).");
+    console.error(error);
+    viewLoading.style.display = 'none';
+    viewPreview.style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>

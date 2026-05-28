@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HTML ke PDF - Rekan PDF</title>
+<meta name="description" content="Konversi file HTML atau kode web menjadi dokumen PDF berkualitas tinggi secara online dan gratis. Diproses langsung di browser!"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E8720C;
+  --orange-dark:#C45F00;
+  --orange-light:#FF9235;
+  --orange-bg:#FFF4EB;
+  --navy:#0F1923;
+  --navy2:#1A2736;
+  --blue:#1B5FA8;
+  --blue-light:#2272C3;
+  --white:#FFFFFF;
+  --off:#F7F8FA;
+  --border:#DDE1E7;
+  --border2:#C8CDD5;
+  --text:#0F1923;
+  --text2:#3D4A5A;
+  --muted:#6B7A8D;
+  --green:#1A7A42;
+  --red:#C0392B;
+  --shadow:0 2px 8px rgba(15,25,35,0.10);
+  --shadow-md:0 4px 20px rgba(15,25,35,0.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.5}
+
+/* ── TOP BAR & NAVBAR ── */
+.topbar{background:var(--navy);color:#fff;font-size:12.5px;text-align:center;padding:7px 20px;font-weight:600;letter-spacing:0.01em}
+.topbar span{color:var(--orange-light)}
+nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-inner{display:flex;align-items:center;gap:0;max-width:1380px;margin:0 auto;padding:0 20px;height:62px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:28px;flex-shrink:0}
+.logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
+.logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
+.logo-sub span{color:var(--orange-light)}
+.nav-right{display:flex;align-items:center;gap:4px;margin-left:auto;padding-left:20px}
+.nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
+.nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+
+/* ── LAYOUT WRAPPER ── */
+.page-body{max-width:1100px;margin:40px auto;padding:0 20px;display:block;}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:24px}
+.breadcrumb a{display:flex;align-items:center;gap:4px;color:var(--blue-light);text-decoration:none;font-weight:600}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb span{color:var(--border2)}
+
+/* ── TOOL HEADER ── */
+.tool-header{text-align:center;margin-bottom:32px}
+.tool-icon{width:64px;height:64px;background:#E8F0FE;color:#1B5FA8;font-size:2rem;display:flex;align-items:center;justify-content:center;border-radius:12px;margin:0 auto 16px}
+.tool-header h1{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:var(--text);margin-bottom:8px}
+.tool-header p{color:var(--text2);font-size:1.1rem;max-width:600px;margin:0 auto}
+
+/* ── WORKSPACE ── */
+.workspace{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:40px;min-height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+
+/* Tabs */
+.tabs{display:flex;gap:10px;margin-bottom:24px;background:var(--off);padding:6px;border-radius:8px;border:1px solid var(--border)}
+.tab-btn{background:transparent;border:none;padding:10px 20px;font-size:14px;font-weight:700;color:var(--text2);border-radius:6px;cursor:pointer;transition:all .2s;font-family:'Nunito Sans',sans-serif}
+.tab-btn.active{background:var(--white);color:var(--blue-light);box-shadow:var(--shadow)}
+.tab-btn:hover:not(.active){color:var(--text)}
+
+/* 1. Upload Area */
+.upload-area{width:100%;max-width:600px;border:2.5px dashed var(--border2);border-radius:12px;padding:50px 20px;text-align:center;background:var(--off);transition:all .2s ease;cursor:pointer}
+.upload-area:hover, .upload-area.dragover{border-color:var(--blue-light);background:#F4F8FD}
+.upload-area i{font-size:3.5rem;color:var(--blue-light);margin-bottom:16px;display:block}
+.upload-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.upload-area p{color:var(--muted);font-size:14px;margin-bottom:24px}
+.btn-upload{background:var(--blue-light);color:#fff;padding:12px 32px;font-size:1rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-upload:hover{background:#1B5FA8}
+#fileInput{display:none}
+
+/* 2. Text Code Area */
+.code-area{display:none;width:100%;max-width:700px;flex-direction:column;gap:16px;align-items:center}
+.code-area textarea{width:100%;height:220px;padding:16px;font-family:monospace;font-size:13px;border:1px solid var(--border2);border-radius:8px;resize:vertical;background:var(--off);color:var(--navy);outline:none;transition:border .2s}
+.code-area textarea:focus{border-color:var(--blue-light);background:var(--white)}
+.btn-process{background:var(--blue-light);color:#fff;padding:12px 36px;font-size:1.05rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-process:hover{background:#1B5FA8}
+
+/* 3. Loading Area */
+.loading-area{display:none;text-align:center;width:100%}
+.spinner{width:60px;height:60px;border:5px solid var(--border);border-top-color:var(--blue-light);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.loading-area p{color:var(--muted);font-size:14px}
+.progress-bar{width:100%;max-width:400px;height:8px;background:var(--border);border-radius:4px;margin:20px auto 0;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:var(--blue-light);transition:width 0.3s ease}
+
+/* 4. Result Area */
+.result-area{display:none;text-align:center;width:100%}
+.result-icon{width:70px;height:70px;background:#E6F4EA;color:var(--green);font-size:2.5rem;display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 20px}
+.result-area h3{font-size:1.5rem;font-weight:800;margin-bottom:10px}
+.stats-box{display:flex;justify-content:center;gap:40px;background:var(--off);border:1px solid var(--border);padding:20px;border-radius:8px;max-width:400px;margin:20px auto}
+.stat{text-align:center}
+.stat span{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.stat strong{font-size:1.5rem;color:var(--text);font-family:'Barlow Condensed',sans-serif;}
+.result-actions{display:flex;justify-content:center;gap:12px;margin-top:24px}
+.btn-download{background:var(--green);color:#fff;padding:14px 36px;font-size:1.05rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;text-decoration:none;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-download:hover{background:#146134;color:#fff}
+.btn-reset{background:var(--off);color:var(--text2);padding:14px 24px;font-size:1rem;font-weight:700;border:1px solid var(--border2);border-radius:6px;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-reset:hover{background:var(--border);color:var(--text)}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;border-top:3px solid var(--orange);padding:24px 20px;text-align:center;font-size:14px}
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+  .topbar { font-size: 11px; padding: 6px 10px; }
+  .page-body { margin: 20px auto; }
+  .tool-header h1 { font-size: 2rem; }
+  
+  .workspace { padding: 24px 16px; min-height: auto; }
+  .tabs { width: 100%; justify-content: center; }
+  
+  .upload-area { padding: 30px 16px; }
+  .upload-area i { font-size: 2.5rem; margin-bottom: 12px; }
+  
+  .result-actions { flex-direction: column; width: 100%; }
+  .btn-download, .btn-reset, .btn-process { width: 100%; justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"><i class="bi bi-shield-check"></i> <span>Privasi 100% Aman</span> — Tidak ada data HTML yang dikirim ke server. Semua diproses di browsermu!</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="logo">
+      <span class="logo-mark">PDF</span>
+      <span class="logo-sub">Rekan<span>PDF</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="../index.html" class="nav-btn"><i class="bi bi-grid-fill"></i> Semua Alat</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-body">
+
+  <div class="breadcrumb">
+    <a href="../index.html"><i class="bi bi-house-door-fill"></i> Beranda</a>
+    <span>/</span>
+    <span>Alat Konversi</span>
+    <span>/</span>
+    <span>HTML ke PDF</span>
+  </div>
+
+  <div class="tool-header">
+    <div class="tool-icon"><i class="bi bi-globe"></i></div>
+    <h1>HTML ke PDF</h1>
+    <p>Ubah file HTML atau struktur kode web kamu menjadi dokumen PDF yang rapi (format A4) dengan sangat mudah.</p>
+  </div>
+
+  <div class="workspace">
+    
+    <div class="tabs" id="tabs">
+      <button class="tab-btn active" onclick="switchTab('upload')"><i class="bi bi-filetype-html"></i> Unggah File HTML</button>
+      <button class="tab-btn" onclick="switchTab('code')"><i class="bi bi-code-slash"></i> Tempel Kode</button>
+    </div>
+
+    <div class="upload-area" id="viewUpload" onclick="document.getElementById('fileInput').click()">
+      <i class="bi bi-cloud-arrow-up-fill"></i>
+      <h3>Pilih file .html</h3>
+      <p>atau seret dan lepas file web Anda di sini</p>
+      <button class="btn-upload"><i class="bi bi-folder-fill"></i> Cari File HTML</button>
+      <input type="file" id="fileInput" accept=".html, .htm">
+    </div>
+
+    <div class="code-area" id="viewCode">
+      <textarea id="htmlInput" placeholder='<!DOCTYPE html>&#10;<html>&#10;<head>&#10;  <title>Dokumenku</title>&#10;</head>&#10;<body>&#10;  <h1>Halo Dunia!</h1>&#10;  <p>Tulis kode HTML lengkap di sini...</p>&#10;</body>&#10;</html>'></textarea>
+      <button class="btn-process" onclick="processRawHTML()"><i class="bi bi-arrow-right-circle-fill"></i> Konversi ke PDF</button>
+    </div>
+
+    <div class="loading-area" id="viewLoading">
+      <div class="spinner"></div>
+      <h3>Merender Halaman...</h3>
+      <p id="loadingText">Sedang mengubah struktur web menjadi format PDF.</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="result-area" id="viewResult">
+      <div class="result-icon"><i class="bi bi-check-lg"></i></div>
+      <h3>Selesai! PDF Berhasil Dibuat</h3>
+      
+      <div class="stats-box">
+        <div class="stat">
+          <span>Ukuran File PDF</span>
+          <strong id="statSize">-</strong>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <a href="#" id="btnDownload" class="btn-download"><i class="bi bi-download"></i> Unduh PDF Sekarang</a>
+        <button class="btn-reset" onclick="resetTool()"><i class="bi bi-arrow-counterclockwise"></i> Konversi Baru</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  © 2025 Rekan PDF. Dibuat untuk Indonesia.
+</footer>
+
+<script>
+// Elements
+const tabs = document.getElementById('tabs');
+const viewUpload = document.getElementById('viewUpload');
+const viewCode = document.getElementById('viewCode');
+const viewLoading = document.getElementById('viewLoading');
+const viewResult = document.getElementById('viewResult');
+const fileInput = document.getElementById('fileInput');
+const htmlInput = document.getElementById('htmlInput');
+const progressBar = document.getElementById('progressBar');
+const loadingText = document.getElementById('loadingText');
+
+let currentFileName = "Dokumen_HTML";
+
+// --- Tab Switching Logic ---
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  
+  if(tab === 'upload') {
+    tabs.children[0].classList.add('active');
+    viewUpload.style.display = 'block';
+    viewCode.style.display = 'none';
+  } else {
+    tabs.children[1].classList.add('active');
+    viewUpload.style.display = 'none';
+    viewCode.style.display = 'flex';
+  }
+}
+
+// --- Drag & Drop (Upload Area) ---
+viewUpload.addEventListener('dragover', (e) => { e.preventDefault(); viewUpload.classList.add('dragover'); });
+viewUpload.addEventListener('dragleave', () => { viewUpload.classList.remove('dragover'); });
+viewUpload.addEventListener('drop', (e) => {
+  e.preventDefault();
+  viewUpload.classList.remove('dragover');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length) handleFile(e.target.files[0]);
+});
+
+// Format Bytes
+function formatBytes(bytes, decimals = 2) {
+  if (!+bytes) return '0 Bytes';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
+
+// Reset UI
+function resetTool() {
+  fileInput.value = '';
+  viewResult.style.display = 'none';
+  viewLoading.style.display = 'none';
+  tabs.style.display = 'flex';
+  
+  // Return to currently active tab
+  if(tabs.children[0].classList.contains('active')) {
+    viewUpload.style.display = 'block';
+  } else {
+    viewCode.style.display = 'flex';
+  }
+  
+  progressBar.style.width = '0%';
+}
+
+// Fake Progress
+function animateProgress() {
+  let width = 0;
+  const interval = setInterval(() => {
+    if (width >= 85) clearInterval(interval);
+    else {
+      width += Math.random() * 15;
+      if(width > 85) width = 85;
+      progressBar.style.width = width + '%';
+    }
+  }, 300);
+  return interval;
+}
+
+// --- Handler File ---
+function handleFile(file) {
+  if (!file.name.toLowerCase().endsWith('.html') && !file.name.toLowerCase().endsWith('.htm')) {
+    alert("Harap pilih file berekstensi .html atau .htm");
+    return;
+  }
+
+  currentFileName = file.name.split('.')[0];
+  const reader = new FileReader();
+  
+  reader.onload = (e) => {
+    executeConversion(e.target.result);
+  };
+  
+  reader.readAsText(file);
+}
+
+// --- Handler Raw HTML ---
+function processRawHTML() {
+  const code = htmlInput.value.trim();
+  if(!code) {
+    alert("Kode HTML tidak boleh kosong!");
+    return;
+  }
+  currentFileName = "Dokumen_Kode_HTML";
+  executeConversion(code);
+}
+
+// --- Inti Proses HTML ke PDF ---
+async function executeConversion(htmlString) {
+  // Update UI ke Loading
+  tabs.style.display = 'none';
+  viewUpload.style.display = 'none';
+  viewCode.style.display = 'none';
+  viewLoading.style.display = 'block';
+  
+  const progInterval = animateProgress();
+
+  try {
+    // 1. Buat Iframe tersembunyi untuk merender HTML secara utuh (termasuk CSS <head>)
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '794px'; // Lebar A4 standar
+    iframe.style.position = 'absolute';
+    iframe.style.left = '-9999px';
+    iframe.style.top = '0';
+    document.body.appendChild(iframe);
+
+    // 2. Masukkan kode ke dalam iframe
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(htmlString);
+    doc.close();
+
+    // Tunggu sebentar agar browser sempat me-render style dan gambar di dalam iframe
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    // 3. Opsi html2pdf
+    const opt = {
+      margin:       10, // margin 10mm
+      filename:     `RekanPDF_${currentFileName}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, logging: false },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    loadingText.innerText = "Mengekspor halaman ke PDF...";
+
+    // 4. Proses Eksekusi Render
+    // Gunakan body iframe sebagai target
+    const worker = html2pdf().set(opt).from(doc.body);
+    
+    // Ambil output berupa Blob (supaya kita bisa kalkulasi ukurannya)
+    const pdfBlob = await worker.output('blob');
+
+    // Hapus iframe sampah
+    document.body.removeChild(iframe);
+
+    // 5. Finalisasi Tampilan Hasil
+    clearInterval(progInterval);
+    progressBar.style.width = '100%';
+
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    const btnDown = document.getElementById('btnDownload');
+    
+    btnDown.href = pdfUrl;
+    btnDown.download = `RekanPDF_${currentFileName}.pdf`;
+    
+    document.getElementById('statSize').innerText = formatBytes(pdfBlob.size);
+
+    setTimeout(() => {
+      viewLoading.style.display = 'none';
+      viewResult.style.display = 'block';
+    }, 400);
+
+  } catch (error) {
+    clearInterval(progInterval);
+    alert("Terjadi kesalahan saat mengonversi HTML ke PDF. Pastikan kode HTML kamu valid.");
+    console.error(error);
+    resetTool();
+  }
+}
+</script>
+</body>
+</html>

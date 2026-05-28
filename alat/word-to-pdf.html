@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Word ke PDF - Rekan PDF</title>
+<meta name="description" content="Konversi dokumen Word (DOC, DOCX) ke PDF dengan format dan layout yang 100% terjaga. Proses cepat, rapi, dan mudah digunakan."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E8720C;
+  --orange-dark:#C45F00;
+  --orange-light:#FF9235;
+  --navy:#0F1923;
+  --navy2:#1A2736;
+  --blue:#1B5FA8;
+  --blue-light:#2874C7;
+  --blue-bg:#EBF3FC;
+  --white:#FFFFFF;
+  --off:#F7F8FA;
+  --border:#DDE1E7;
+  --border2:#C8CDD5;
+  --text:#0F1923;
+  --text2:#3D4A5A;
+  --muted:#6B7A8D;
+  --green:#1A7A42;
+  --red:#C0392B;
+  --shadow:0 2px 8px rgba(15,25,35,0.10);
+  --shadow-md:0 4px 20px rgba(15,25,35,0.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.5}
+
+/* ── TOP BAR & NAVBAR ── */
+.topbar{background:var(--navy);color:#fff;font-size:12.5px;text-align:center;padding:7px 20px;font-weight:600;letter-spacing:0.01em}
+.topbar span{color:var(--blue-light)}
+nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-inner{display:flex;align-items:center;gap:0;max-width:1380px;margin:0 auto;padding:0 20px;height:62px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:28px;flex-shrink:0}
+.logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
+.logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
+.logo-sub span{color:var(--orange-light)}
+.nav-right{display:flex;align-items:center;gap:4px;margin-left:auto;padding-left:20px}
+.nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
+.nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+
+/* ── LAYOUT WRAPPER ── */
+.page-body{max-width:1100px;margin:40px auto;padding:0 20px;display:block;}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:24px}
+.breadcrumb a{display:flex;align-items:center;gap:4px;color:var(--orange);text-decoration:none;font-weight:600}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb span{color:var(--border2)}
+
+/* ── TOOL HEADER ── */
+.tool-header{text-align:center;margin-bottom:32px}
+.tool-icon{width:64px;height:64px;background:var(--blue-bg);color:var(--blue);font-size:2rem;display:flex;align-items:center;justify-content:center;border-radius:12px;margin:0 auto 16px}
+.tool-header h1{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:var(--text);margin-bottom:8px}
+.tool-header p{color:var(--text2);font-size:1.1rem;max-width:600px;margin:0 auto}
+
+/* ── WORKSPACE ── */
+.workspace{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:40px;min-height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+
+/* 1. Upload Area */
+.upload-area{width:100%;max-width:600px;border:2.5px dashed var(--border2);border-radius:12px;padding:50px 20px;text-align:center;background:var(--off);transition:all .2s ease;cursor:pointer}
+.upload-area:hover, .upload-area.dragover{border-color:var(--blue-light);background:var(--blue-bg)}
+.upload-area i{font-size:3.5rem;color:var(--blue-light);margin-bottom:16px;display:block}
+.upload-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.upload-area p{color:var(--muted);font-size:14px;margin-bottom:24px}
+.btn-upload{background:var(--blue);color:#fff;padding:12px 32px;font-size:1rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-upload:hover{background:#154C86}
+#fileInput{display:none}
+
+/* 2. Loading Area */
+.loading-area{display:none;text-align:center;width:100%}
+.spinner{width:60px;height:60px;border:5px solid var(--border);border-top-color:var(--blue-light);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.loading-area p{color:var(--muted);font-size:14px}
+.progress-bar{width:100%;max-width:400px;height:8px;background:var(--border);border-radius:4px;margin:20px auto 0;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:var(--blue-light);transition:width 0.3s ease}
+
+/* 3. Result Area */
+.result-area{display:none;text-align:center;width:100%}
+.result-icon{width:70px;height:70px;background:#E6F4EA;color:var(--green);font-size:2.5rem;display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 20px}
+.result-area h3{font-size:1.5rem;font-weight:800;margin-bottom:10px}
+.stats-box{display:flex;justify-content:center;gap:40px;background:var(--off);border:1px solid var(--border);padding:20px;border-radius:8px;max-width:500px;margin:20px auto}
+.stat{text-align:center}
+.stat span{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.stat strong{font-size:1.25rem;color:var(--text);font-family:'Barlow Condensed',sans-serif;}
+.result-actions{display:flex;justify-content:center;gap:12px;margin-top:24px}
+.btn-download{background:var(--blue);color:#fff;padding:14px 36px;font-size:1.05rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;text-decoration:none;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-download:hover{background:#154C86;color:#fff}
+.btn-reset{background:var(--off);color:var(--text2);padding:14px 24px;font-size:1rem;font-weight:700;border:1px solid var(--border2);border-radius:6px;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-reset:hover{background:var(--border);color:var(--text)}
+
+/* Hidden render container */
+#docxRenderContainer{
+  position:fixed;
+  left:-9999px;
+  top:0;
+  width:794px; /* A4 width in px at 96dpi */
+  background:#fff;
+  z-index:-1;
+  font-family:'Nunito Sans',sans-serif;
+}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;border-top:3px solid var(--orange);padding:24px 20px;text-align:center;font-size:14px}
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+  .topbar { font-size: 11px; padding: 6px 10px; }
+  .page-body { margin: 20px auto; }
+  .tool-header h1 { font-size: 2rem; }
+  
+  .workspace { padding: 24px 16px; min-height: auto; }
+  .upload-area { padding: 30px 16px; }
+  .upload-area i { font-size: 2.5rem; margin-bottom: 12px; }
+  
+  .result-actions { flex-direction: column; width: 100%; }
+  .btn-download, .btn-reset { width: 100%; justify-content: center; }
+  .stats-box { gap: 20px; flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"><i class="bi bi-cpu-fill"></i> <span style="color: #63b3ff">Diproses Langsung di Browser Kamu</span> — File tidak pernah dikirim ke server manapun. 100% Privat & Aman!</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="logo">
+      <span class="logo-mark">PDF</span>
+      <span class="logo-sub">Rekan<span>PDF</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="../index.html" class="nav-btn"><i class="bi bi-grid-fill"></i> Semua Alat</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-body">
+
+  <div class="breadcrumb">
+    <a href="../index.html"><i class="bi bi-house-door-fill"></i> Beranda</a>
+    <span>/</span>
+    <span>Alat Konversi</span>
+    <span>/</span>
+    <span>Word ke PDF</span>
+  </div>
+
+  <div class="tool-header">
+    <div class="tool-icon"><i class="bi bi-file-earmark-word-fill"></i></div>
+    <h1>Word ke PDF</h1>
+    <p>Ubah dokumen Microsoft Word (.doc / .docx) ke file PDF dengan akurasi tinggi. Bebas watermark & tanpa API.</p>
+  </div>
+
+  <div class="workspace">
+    
+    <div class="upload-area" id="viewUpload" onclick="document.getElementById('fileInput').click()">
+      <i class="bi bi-file-earmark-word"></i>
+      <h3>Pilih Dokumen Word</h3>
+      <p>atau seret dan lepas file .docx di sini</p>
+      <button class="btn-upload" onclick="event.stopPropagation();document.getElementById('fileInput').click()"><i class="bi bi-folder-fill"></i> Buka File Word</button>
+      <input type="file" id="fileInput" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+    </div>
+
+    <div class="loading-area" id="viewLoading">
+      <div class="spinner"></div>
+      <h3>Menyimpan ke PDF...</h3>
+      <p id="loadingText">Sedang merender tata letak dokumen Word. Mohon tunggu...</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="result-area" id="viewResult">
+      <div class="result-icon"><i class="bi bi-check-lg"></i></div>
+      <h3>Selesai! PDF Berhasil Dibuat</h3>
+      
+      <div class="stats-box">
+        <div class="stat">
+          <span>File Asal</span>
+          <strong id="statOrigName">-</strong>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button id="btnDownload" class="btn-download"><i class="bi bi-download"></i> Unduh PDF Sekarang</button>
+        <button class="btn-reset" onclick="resetTool()"><i class="bi bi-arrow-counterclockwise"></i> Konversi Lagi</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  © 2025 Rekan PDF. Dibuat untuk Indonesia.
+</footer>
+
+<!-- Hidden container for rendering DOCX -->
+<div id="docxRenderContainer"></div>
+
+<!-- ═══════════════════════════════════════════
+     LIBRARIES (CDN - no API key needed)
+     - mammoth.js  : parse DOCX → HTML
+     - html2canvas : render HTML → canvas
+     - jsPDF       : canvas → PDF
+════════════════════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+// ─── Elements ───────────────────────────────
+const viewUpload   = document.getElementById('viewUpload');
+const viewLoading  = document.getElementById('viewLoading');
+const viewResult   = document.getElementById('viewResult');
+const fileInput    = document.getElementById('fileInput');
+const btnDownload  = document.getElementById('btnDownload');
+const statOrigName = document.getElementById('statOrigName');
+const progressBar  = document.getElementById('progressBar');
+const loadingText  = document.getElementById('loadingText');
+const renderBox    = document.getElementById('docxRenderContainer');
+
+let generatedPdfBlob = null;
+let outputFileName   = 'RekanPDF_output.pdf';
+
+// ─── Drag & Drop ────────────────────────────
+viewUpload.addEventListener('dragover',  (e) => { e.preventDefault(); viewUpload.classList.add('dragover'); });
+viewUpload.addEventListener('dragleave', ()  => { viewUpload.classList.remove('dragover'); });
+viewUpload.addEventListener('drop',      (e) => {
+  e.preventDefault();
+  viewUpload.classList.remove('dragover');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length) handleFile(e.target.files[0]);
+});
+
+// ─── Download button ────────────────────────
+btnDownload.addEventListener('click', () => {
+  if (!generatedPdfBlob) return;
+  const url = URL.createObjectURL(generatedPdfBlob);
+  const a   = document.createElement('a');
+  a.href     = url;
+  a.download = outputFileName;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+});
+
+// ─── Reset ──────────────────────────────────
+function resetTool() {
+  fileInput.value    = '';
+  generatedPdfBlob   = null;
+  renderBox.innerHTML = '';
+  viewResult.style.display  = 'none';
+  viewLoading.style.display = 'none';
+  viewUpload.style.display  = 'block';
+  progressBar.style.width   = '0%';
+}
+
+// ─── Progress animation ─────────────────────
+function animateProgress(targetPct) {
+  let current = parseFloat(progressBar.style.width) || 0;
+  const step = () => {
+    if (current >= targetPct) return;
+    current = Math.min(current + (Math.random() * 4 + 1), targetPct);
+    progressBar.style.width = current + '%';
+    if (current < targetPct) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+// ─── Set progress to exact value ────────────
+function setProgress(pct) {
+  progressBar.style.width = pct + '%';
+}
+
+// ─── Main handler ───────────────────────────
+async function handleFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+
+  // Only DOCX supported client-side (DOC is binary/legacy)
+  if (ext !== 'docx') {
+    alert('Format .doc lama tidak didukung secara offline.\nSilakan simpan ulang file sebagai .docx di Microsoft Word, lalu coba lagi.');
+    return;
+  }
+
+  outputFileName = `RekanPDF_${file.name.replace(/\.[^.]+$/, '')}.pdf`;
+
+  // Switch to loading view
+  viewUpload.style.display  = 'none';
+  viewLoading.style.display = 'block';
+  setProgress(0);
+
+  try {
+    // ── Step 1: Read file as ArrayBuffer ──────
+    loadingText.innerText = 'Membaca file Word...';
+    animateProgress(20);
+    const arrayBuffer = await file.arrayBuffer();
+
+    // ── Step 2: Convert DOCX → HTML via mammoth ──
+    loadingText.innerText = 'Mengurai isi dokumen Word...';
+    animateProgress(45);
+
+    const result = await mammoth.convertToHtml(
+      { arrayBuffer },
+      {
+        styleMap: [
+          "p[style-name='Heading 1'] => h1:fresh",
+          "p[style-name='Heading 2'] => h2:fresh",
+          "p[style-name='Heading 3'] => h3:fresh",
+          "p[style-name='Heading 4'] => h4:fresh",
+          "b => strong",
+          "i => em",
+          "u => u",
+          "strike => s",
+          "p[style-name='List Paragraph'] => li:fresh",
+        ]
+      }
+    );
+
+    const htmlContent = result.value;
+
+    // ── Step 3: Render HTML in hidden container ──
+    loadingText.innerText = 'Merender tampilan halaman...';
+    animateProgress(65);
+
+    renderBox.innerHTML = `
+      <style>
+        #docxRenderContainer {
+          padding: 60px 70px;
+          font-family: 'Calibri', 'Nunito Sans', sans-serif;
+          font-size: 13pt;
+          line-height: 1.6;
+          color: #000;
+          background: #fff;
+        }
+        #docxRenderContainer h1 { font-size: 22pt; font-weight: bold; margin: 18px 0 10px; }
+        #docxRenderContainer h2 { font-size: 18pt; font-weight: bold; margin: 16px 0 8px; }
+        #docxRenderContainer h3 { font-size: 14pt; font-weight: bold; margin: 14px 0 6px; }
+        #docxRenderContainer h4 { font-size: 12pt; font-weight: bold; margin: 12px 0 4px; }
+        #docxRenderContainer p  { margin: 0 0 8px; }
+        #docxRenderContainer table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        #docxRenderContainer td, #docxRenderContainer th { border: 1px solid #999; padding: 6px 10px; }
+        #docxRenderContainer th { background: #f0f0f0; font-weight: bold; }
+        #docxRenderContainer ul, #docxRenderContainer ol { margin: 6px 0 10px 24px; }
+        #docxRenderContainer li { margin-bottom: 4px; }
+        #docxRenderContainer strong { font-weight: bold; }
+        #docxRenderContainer em { font-style: italic; }
+        #docxRenderContainer u  { text-decoration: underline; }
+        #docxRenderContainer s  { text-decoration: line-through; }
+        #docxRenderContainer img { max-width: 100%; height: auto; margin: 8px 0; }
+      </style>
+      ${htmlContent}
+    `;
+
+    // Wait for images/fonts to settle
+    await new Promise(r => setTimeout(r, 600));
+    animateProgress(80);
+
+    // ── Step 4: Capture to canvas via html2canvas ──
+    loadingText.innerText = 'Mengambil gambar halaman...';
+
+    const canvas = await html2canvas(renderBox, {
+      scale: 2,          // 2x for crisp PDF
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      windowWidth: 794,
+      logging: false,
+    });
+
+    animateProgress(92);
+    loadingText.innerText = 'Menyusun file PDF...';
+
+    // ── Step 5: Build PDF with jsPDF ──────────
+    const { jsPDF } = window.jspdf;
+
+    const A4_W_MM = 210;
+    const A4_H_MM = 297;
+    const MARGIN_MM = 10;
+
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+
+    const imgData  = canvas.toDataURL('image/jpeg', 0.92);
+    const imgW_mm  = A4_W_MM - MARGIN_MM * 2;
+    const imgH_mm  = (canvas.height / canvas.width) * imgW_mm;
+
+    let yOffset = MARGIN_MM;
+    let remainH = imgH_mm;
+    let pageH   = A4_H_MM - MARGIN_MM * 2;
+    let srcY    = 0; // top of canvas in px
+
+    // Slice canvas into A4 pages
+    while (remainH > 0) {
+      const sliceH_mm  = Math.min(remainH, pageH);
+      const sliceH_px  = (sliceH_mm / imgH_mm) * canvas.height;
+
+      // Create a slice canvas
+      const sliceCanvas    = document.createElement('canvas');
+      sliceCanvas.width    = canvas.width;
+      sliceCanvas.height   = sliceH_px;
+      const sliceCtx       = sliceCanvas.getContext('2d');
+      sliceCtx.drawImage(canvas, 0, -srcY);
+
+      const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.92);
+      pdf.addImage(sliceData, 'JPEG', MARGIN_MM, yOffset, imgW_mm, sliceH_mm);
+
+      srcY    += sliceH_px;
+      remainH -= sliceH_mm;
+
+      if (remainH > 0) {
+        pdf.addPage();
+        yOffset = MARGIN_MM;
+      }
+    }
+
+    // ── Step 6: Output as Blob ─────────────────
+    generatedPdfBlob = pdf.output('blob');
+    setProgress(100);
+
+    // ── Show result ───────────────────────────
+    statOrigName.innerText = file.name;
+
+    await new Promise(r => setTimeout(r, 500));
+    viewLoading.style.display = 'none';
+    viewResult.style.display  = 'block';
+
+  } catch (err) {
+    console.error('Conversion error:', err);
+    alert('Terjadi kesalahan saat mengonversi file.\n\nPastikan file .docx tidak terkunci sandi dan tidak rusak, lalu coba lagi.');
+    resetTool();
+  }
+}
+</script>
+</body>
+</html>

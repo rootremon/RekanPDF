@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PowerPoint ke PDF - Rekan PDF</title>
+<meta name="description" content="Konversi file presentasi PowerPoint (PPT, PPTX) ke PDF dengan tata letak yang sempurna. Cepat, aman, dan mudah digunakan."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E8720C;
+  --orange-dark:#C45F00;
+  --orange-light:#FF9235;
+  --orange-bg:#FFF4EB;
+  --navy:#0F1923;
+  --navy2:#1A2736;
+  --blue:#1B5FA8;
+  --blue-light:#2272C3;
+  --white:#FFFFFF;
+  --off:#F7F8FA;
+  --border:#DDE1E7;
+  --border2:#C8CDD5;
+  --text:#0F1923;
+  --text2:#3D4A5A;
+  --muted:#6B7A8D;
+  --green:#1A7A42;
+  --red:#C0392B;
+  --shadow:0 2px 8px rgba(15,25,35,0.10);
+  --shadow-md:0 4px 20px rgba(15,25,35,0.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.5}
+
+/* ── TOP BAR & NAVBAR ── */
+.topbar{background:var(--navy);color:#fff;font-size:12.5px;text-align:center;padding:7px 20px;font-weight:600;letter-spacing:0.01em}
+.topbar span{color:var(--orange-light)}
+nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-inner{display:flex;align-items:center;gap:0;max-width:1380px;margin:0 auto;padding:0 20px;height:62px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:28px;flex-shrink:0}
+.logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
+.logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
+.logo-sub span{color:var(--orange-light)}
+.nav-right{display:flex;align-items:center;gap:4px;margin-left:auto;padding-left:20px}
+.nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
+.nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+
+/* ── LAYOUT WRAPPER ── */
+.page-body{max-width:1100px;margin:40px auto;padding:0 20px;display:block;}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:24px}
+.breadcrumb a{display:flex;align-items:center;gap:4px;color:var(--blue-light);text-decoration:none;font-weight:600}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb span{color:var(--border2)}
+
+/* ── TOOL HEADER ── */
+.tool-header{text-align:center;margin-bottom:32px}
+.tool-icon{width:64px;height:64px;background:#FFF0E0;color:var(--orange);font-size:2rem;display:flex;align-items:center;justify-content:center;border-radius:12px;margin:0 auto 16px}
+.tool-header h1{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:var(--text);margin-bottom:8px}
+.tool-header p{color:var(--text2);font-size:1.1rem;max-width:600px;margin:0 auto}
+
+/* ── WORKSPACE ── */
+.workspace{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:40px;min-height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+
+/* 1. Upload Area */
+.upload-area{width:100%;max-width:600px;border:2.5px dashed var(--border2);border-radius:12px;padding:50px 20px;text-align:center;background:var(--off);transition:all .2s ease;cursor:pointer}
+.upload-area:hover, .upload-area.dragover{border-color:var(--orange);background:var(--orange-bg)}
+.upload-area i{font-size:3.5rem;color:var(--orange);margin-bottom:16px;display:block}
+.upload-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.upload-area p{color:var(--muted);font-size:14px;margin-bottom:24px}
+.btn-upload{background:var(--orange);color:#fff;padding:12px 32px;font-size:1rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-upload:hover{background:var(--orange-dark)}
+#fileInput{display:none}
+
+/* 2. Loading Area */
+.loading-area{display:none;text-align:center;width:100%}
+.spinner{width:60px;height:60px;border:5px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.loading-area p{color:var(--muted);font-size:14px}
+.progress-bar{width:100%;max-width:400px;height:8px;background:var(--border);border-radius:4px;margin:20px auto 0;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:var(--orange);transition:width 0.3s ease}
+
+/* 3. Result Area */
+.result-area{display:none;text-align:center;width:100%}
+.result-icon{width:70px;height:70px;background:#E6F4EA;color:var(--green);font-size:2.5rem;display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 20px}
+.result-area h3{font-size:1.5rem;font-weight:800;margin-bottom:10px}
+.stats-box{display:flex;justify-content:center;gap:40px;background:var(--off);border:1px solid var(--border);padding:20px;border-radius:8px;max-width:500px;margin:20px auto}
+.stat{text-align:center}
+.stat span{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.stat strong{font-size:1.25rem;color:var(--text);font-family:'Barlow Condensed',sans-serif;}
+.result-actions{display:flex;justify-content:center;gap:12px;margin-top:24px}
+.btn-download{background:var(--green);color:#fff;padding:14px 36px;font-size:1.05rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;text-decoration:none;transition:background .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-download:hover{background:#146134;color:#fff}
+.btn-reset{background:var(--off);color:var(--text2);padding:14px 24px;font-size:1rem;font-weight:700;border:1px solid var(--border2);border-radius:6px;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-reset:hover{background:var(--border);color:var(--text)}
+
+/* Hidden slide render stage */
+#slideStage{
+  position:fixed;
+  left:-9999px;
+  top:0;
+  width:960px;
+  height:540px;
+  background:#fff;
+  overflow:hidden;
+  z-index:-1;
+}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;border-top:3px solid var(--orange);padding:24px 20px;text-align:center;font-size:14px}
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+  .topbar { font-size: 11px; padding: 6px 10px; }
+  .page-body { margin: 20px auto; }
+  .tool-header h1 { font-size: 2rem; }
+  .workspace { padding: 24px 16px; min-height: auto; }
+  .upload-area { padding: 30px 16px; }
+  .upload-area i { font-size: 2.5rem; margin-bottom: 12px; }
+  .result-actions { flex-direction: column; width: 100%; }
+  .btn-download, .btn-reset { width: 100%; justify-content: center; }
+  .stats-box { gap: 20px; flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"><i class="bi bi-cpu-fill"></i> <span>Diproses Langsung di Browser Kamu</span> — File tidak pernah dikirim ke server manapun. 100% Privat & Aman!</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="logo">
+      <span class="logo-mark">PDF</span>
+      <span class="logo-sub">Rekan<span>PDF</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="../index.html" class="nav-btn"><i class="bi bi-grid-fill"></i> Semua Alat</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-body">
+
+  <div class="breadcrumb">
+    <a href="../index.html"><i class="bi bi-house-door-fill"></i> Beranda</a>
+    <span>/</span>
+    <span>Alat Konversi</span>
+    <span>/</span>
+    <span>PowerPoint ke PDF</span>
+  </div>
+
+  <div class="tool-header">
+    <div class="tool-icon"><i class="bi bi-file-earmark-slides-fill"></i></div>
+    <h1>PowerPoint ke PDF</h1>
+    <p>Simpan slide presentasi PPTX menjadi file PDF tanpa merusak font, gambar, atau tata letak. Bebas API & watermark.</p>
+  </div>
+
+  <div class="workspace">
+    
+    <div class="upload-area" id="viewUpload" onclick="document.getElementById('fileInput').click()">
+      <i class="bi bi-file-earmark-slides"></i>
+      <h3>Pilih file PowerPoint</h3>
+      <p>Mendukung format .pptx — seret & lepas atau klik tombol di bawah</p>
+      <button class="btn-upload" onclick="event.stopPropagation();document.getElementById('fileInput').click()"><i class="bi bi-folder-fill"></i> Buka File Presentasi</button>
+      <input type="file" id="fileInput" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation">
+    </div>
+
+    <div class="loading-area" id="viewLoading">
+      <div class="spinner"></div>
+      <h3>Mengonversi Dokumen...</h3>
+      <p id="loadingText">Sedang merender layout slide PowerPoint. Mohon tunggu beberapa saat.</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="result-area" id="viewResult">
+      <div class="result-icon"><i class="bi bi-check-lg"></i></div>
+      <h3>Selesai! PDF Berhasil Dibuat</h3>
+      
+      <div class="stats-box">
+        <div class="stat">
+          <span>File Asli</span>
+          <strong id="statOrigName">-</strong>
+        </div>
+        <div class="stat">
+          <span>Jumlah Slide</span>
+          <strong id="statSlides">-</strong>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button id="btnDownload" class="btn-download"><i class="bi bi-download"></i> Unduh PDF Sekarang</button>
+        <button class="btn-reset" onclick="resetTool()"><i class="bi bi-arrow-counterclockwise"></i> Konversi Lagi</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  © 2025 Rekan PDF. Dibuat untuk Indonesia.
+</footer>
+
+<!-- Hidden stage for rendering slides -->
+<div id="slideStage"></div>
+
+<!-- ═══════════════════════════════════════════
+     LIBRARIES (CDN — no API key needed)
+     - JSZip       : unzip the .pptx file
+     - html2canvas : render each slide → canvas
+     - jsPDF       : assemble canvases → PDF
+════════════════════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+// ─── Elements ───────────────────────────────
+const viewUpload  = document.getElementById('viewUpload');
+const viewLoading = document.getElementById('viewLoading');
+const viewResult  = document.getElementById('viewResult');
+const fileInput   = document.getElementById('fileInput');
+const btnDownload = document.getElementById('btnDownload');
+const statOrigName = document.getElementById('statOrigName');
+const statSlides  = document.getElementById('statSlides');
+const progressBar = document.getElementById('progressBar');
+const loadingText = document.getElementById('loadingText');
+const slideStage  = document.getElementById('slideStage');
+
+let generatedPdfBlob = null;
+let outputFileName   = 'RekanPDF_output.pdf';
+
+// Slide dimensions (widescreen 16:9)
+const SLIDE_W = 960;
+const SLIDE_H = 540;
+
+// ─── Drag & Drop ────────────────────────────
+viewUpload.addEventListener('dragover',  (e) => { e.preventDefault(); viewUpload.classList.add('dragover'); });
+viewUpload.addEventListener('dragleave', ()  => { viewUpload.classList.remove('dragover'); });
+viewUpload.addEventListener('drop', (e) => {
+  e.preventDefault();
+  viewUpload.classList.remove('dragover');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length) handleFile(e.target.files[0]);
+});
+
+// ─── Download button ────────────────────────
+btnDownload.addEventListener('click', () => {
+  if (!generatedPdfBlob) return;
+  const url = URL.createObjectURL(generatedPdfBlob);
+  const a   = document.createElement('a');
+  a.href     = url;
+  a.download = outputFileName;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+});
+
+// ─── Reset ──────────────────────────────────
+function resetTool() {
+  fileInput.value       = '';
+  generatedPdfBlob      = null;
+  slideStage.innerHTML  = '';
+  viewResult.style.display  = 'none';
+  viewLoading.style.display = 'none';
+  viewUpload.style.display  = 'block';
+  progressBar.style.width   = '0%';
+}
+
+// ─── Progress helpers ───────────────────────
+function setProgress(pct) {
+  progressBar.style.width = Math.min(pct, 100) + '%';
+}
+
+// ─── Parse color from XML hex ───────────────
+function parseColor(val) {
+  if (!val) return null;
+  const hex = val.replace(/^#/, '');
+  if (/^[0-9A-Fa-f]{6}$/.test(hex)) return '#' + hex;
+  return null;
+}
+
+// ─── Get text value from XML node ───────────
+function getText(node, tag) {
+  const el = node.querySelector(tag);
+  return el ? el.textContent.trim() : '';
+}
+
+// ─── Parse EMU → px (914400 EMU = 1 inch, 96dpi) ──
+function emuToPx(emu) {
+  return Math.round(parseInt(emu || 0) / 914400 * 96);
+}
+
+// ─── Build a slide HTML from XML ────────────
+function buildSlideHtml(slideXml, slideRelXml, mediaMap, themeXml) {
+  const parser = new DOMParser();
+  const doc    = parser.parseFromString(slideXml, 'text/xml');
+  const relDoc = slideRelXml ? parser.parseFromString(slideRelXml, 'text/xml') : null;
+
+  // Background color from theme or slide
+  let bgColor = '#FFFFFF';
+  const bgRef = doc.querySelector('bg bgPr solidFill srgbClr');
+  if (bgRef) bgColor = '#' + bgRef.getAttribute('val');
+
+  // Build relationship map (rId → media filename)
+  const relsMap = {};
+  if (relDoc) {
+    relDoc.querySelectorAll('Relationship').forEach(r => {
+      const target = r.getAttribute('Target') || '';
+      relsMap[r.getAttribute('Id')] = target.split('/').pop();
+    });
+  }
+
+  // Collect shapes
+  const shapes = [];
+  doc.querySelectorAll('sp, pic, graphicFrame').forEach(el => {
+    const tagName = el.tagName.split(':').pop();
+
+    // ── Position & size ──
+    const xfrm = el.querySelector('xfrm') || el.querySelector('spPr xfrm');
+    let x = 0, y = 0, w = SLIDE_W, h = 50;
+    if (xfrm) {
+      const off = xfrm.querySelector('off');
+      const ext = xfrm.querySelector('ext');
+      if (off) { x = emuToPx(off.getAttribute('x')); y = emuToPx(off.getAttribute('y')); }
+      if (ext) { w = emuToPx(ext.getAttribute('cx')); h = emuToPx(ext.getAttribute('cy')); }
+    }
+
+    if (tagName === 'pic') {
+      // ── Image ──
+      const blip = el.querySelector('blip');
+      if (blip) {
+        const rId = blip.getAttribute('r:embed') || blip.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships','embed');
+        const fname = relsMap[rId];
+        const dataUrl = fname ? mediaMap[fname] : null;
+        if (dataUrl) {
+          shapes.push({ type: 'img', x, y, w, h, dataUrl });
+        }
+      }
+    } else if (tagName === 'sp') {
+      // ── Text shape ──
+      const paragraphs = [];
+      el.querySelectorAll('p').forEach(p => {
+        const runs = [];
+        p.querySelectorAll('r').forEach(r => {
+          const t = r.querySelector('t');
+          if (!t) return;
+          const rPr  = r.querySelector('rPr');
+          const bold  = rPr && (rPr.getAttribute('b') === '1' || rPr.getAttribute('b') === 'true');
+          const italic = rPr && (rPr.getAttribute('i') === '1' || rPr.getAttribute('i') === 'true');
+          const underline = rPr && rPr.getAttribute('u') && rPr.getAttribute('u') !== 'none';
+          const szAttr = rPr ? rPr.getAttribute('sz') : null;
+          const fontSize = szAttr ? Math.round(parseInt(szAttr) / 100) : null;
+          let color = null;
+          if (rPr) {
+            const srgb = rPr.querySelector('solidFill srgbClr');
+            if (srgb) color = '#' + srgb.getAttribute('val');
+          }
+          runs.push({ text: t.textContent, bold, italic, underline, fontSize, color });
+        });
+
+        // Paragraph-level alignment
+        const pPr = p.querySelector('pPr');
+        const align = pPr ? (pPr.getAttribute('algn') || 'l') : 'l';
+        const alignMap = { l: 'left', ctr: 'center', r: 'right', just: 'justify', dist: 'justify' };
+
+        paragraphs.push({ runs, align: alignMap[align] || 'left' });
+      });
+
+      // Shape fill
+      let fillColor = 'transparent';
+      const solidFill = el.querySelector('spPr solidFill srgbClr');
+      if (solidFill) fillColor = '#' + solidFill.getAttribute('val');
+
+      shapes.push({ type: 'text', x, y, w, h, paragraphs, fillColor });
+    }
+  });
+
+  // ── Compose HTML ──
+  let html = `<div style="
+    position:relative;
+    width:${SLIDE_W}px;
+    height:${SLIDE_H}px;
+    background:${bgColor};
+    overflow:hidden;
+    font-family:'Calibri','Nunito Sans',sans-serif;
+  ">`;
+
+  shapes.forEach(s => {
+    const pos = `position:absolute;left:${s.x}px;top:${s.y}px;width:${s.w}px;height:${s.h}px;`;
+
+    if (s.type === 'img') {
+      html += `<img src="${s.dataUrl}" style="${pos}object-fit:contain;" />`;
+    } else if (s.type === 'text') {
+      let inner = '';
+      s.paragraphs.forEach(para => {
+        let pHtml = '';
+        para.runs.forEach(run => {
+          let style = '';
+          if (run.bold)      style += 'font-weight:bold;';
+          if (run.italic)    style += 'font-style:italic;';
+          if (run.underline) style += 'text-decoration:underline;';
+          if (run.fontSize)  style += `font-size:${run.fontSize}pt;`;
+          if (run.color)     style += `color:${run.color};`;
+          const escaped = run.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          pHtml += style ? `<span style="${style}">${escaped}</span>` : escaped;
+        });
+        inner += `<p style="margin:0;padding:0;text-align:${para.align};line-height:1.3;">${pHtml || '&nbsp;'}</p>`;
+      });
+      html += `<div style="${pos}background:${s.fillColor};overflow:hidden;padding:4px 6px;">${inner}</div>`;
+    }
+  });
+
+  html += '</div>';
+  return html;
+}
+
+// ─── Main handler ───────────────────────────
+async function handleFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+
+  if (ext !== 'pptx') {
+    alert('Format .ppt lama tidak didukung secara offline.\nSilakan simpan ulang file sebagai .pptx di PowerPoint, lalu coba lagi.');
+    return;
+  }
+
+  outputFileName = `RekanPDF_${file.name.replace(/\.[^.]+$/, '')}.pdf`;
+  viewUpload.style.display  = 'none';
+  viewLoading.style.display = 'block';
+  setProgress(0);
+
+  try {
+    // ── Step 1: Unzip PPTX ────────────────────
+    loadingText.innerText = 'Membaca file presentasi...';
+    setProgress(10);
+    const zip = await JSZip.loadAsync(await file.arrayBuffer());
+
+    // ── Step 2: Extract media files as data URLs ──
+    loadingText.innerText = 'Memuat gambar dan aset...';
+    setProgress(20);
+    const mediaMap = {};
+    const mediaFiles = Object.keys(zip.files).filter(n => n.startsWith('ppt/media/'));
+    await Promise.all(mediaFiles.map(async (name) => {
+      const fname = name.split('/').pop();
+      const blob  = await zip.files[name].async('blob');
+      mediaMap[fname] = await new Promise(res => {
+        const r = new FileReader();
+        r.onload = () => res(r.result);
+        r.readAsDataURL(blob);
+      });
+    }));
+
+    // ── Step 3: Get slide list ─────────────────
+    const slideNames = Object.keys(zip.files)
+      .filter(n => /^ppt\/slides\/slide\d+\.xml$/.test(n))
+      .sort((a, b) => {
+        const na = parseInt(a.match(/\d+/)[0]);
+        const nb = parseInt(b.match(/\d+/)[0]);
+        return na - nb;
+      });
+
+    const totalSlides = slideNames.length;
+    if (totalSlides === 0) throw new Error('Tidak ada slide ditemukan di file PPTX ini.');
+
+    // ── Step 4: Init jsPDF ────────────────────
+    const { jsPDF } = window.jspdf;
+    // Landscape PDF sized to match 16:9 slide ratio
+    const PDF_W = 297; // A4 landscape mm
+    const PDF_H = 210;
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'landscape' });
+
+    // ── Step 5: Render each slide ─────────────
+    for (let i = 0; i < totalSlides; i++) {
+      const pct = 25 + Math.round((i / totalSlides) * 70);
+      setProgress(pct);
+      loadingText.innerText = `Merender slide ${i + 1} dari ${totalSlides}...`;
+
+      const slideName = slideNames[i];
+      const slideXml  = await zip.files[slideName].async('string');
+
+      // Get relationship file
+      const relPath   = slideName.replace('slides/slide', 'slides/_rels/slide').replace('.xml', '.xml.rels');
+      const slideRelXml = zip.files[relPath] ? await zip.files[relPath].async('string') : null;
+
+      // Build slide HTML
+      const slideHtml = buildSlideHtml(slideXml, slideRelXml, mediaMap, null);
+      slideStage.innerHTML = slideHtml;
+
+      // Wait for images
+      await new Promise(r => setTimeout(r, 150));
+
+      // Capture canvas
+      const canvas = await html2canvas(slideStage.firstChild || slideStage, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        width: SLIDE_W,
+        height: SLIDE_H,
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+      if (i > 0) pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, 0, PDF_W, PDF_H);
+    }
+
+    // ── Step 6: Output Blob ───────────────────
+    setProgress(98);
+    loadingText.innerText = 'Menyusun file PDF...';
+    generatedPdfBlob = pdf.output('blob');
+    setProgress(100);
+
+    // ── Show result ───────────────────────────
+    statOrigName.innerText = file.name;
+    statSlides.innerText   = totalSlides + ' slide';
+    slideStage.innerHTML   = '';
+
+    await new Promise(r => setTimeout(r, 500));
+    viewLoading.style.display = 'none';
+    viewResult.style.display  = 'block';
+
+  } catch (err) {
+    console.error('Conversion error:', err);
+    alert('Terjadi kesalahan saat mengonversi file.\n\nPastikan file .pptx tidak terkunci sandi dan tidak rusak, lalu coba lagi.\n\nDetail: ' + err.message);
+    resetTool();
+  }
+}
+</script>
+</body>
+</html>

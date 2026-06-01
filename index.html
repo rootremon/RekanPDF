@@ -175,45 +175,73 @@ nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6
 
 /* ── ODOMETER CONTAINER ── */
 .odometer-wrap{
-  display:flex;align-items:center;gap:2px;
-  height:44px;overflow:hidden;
+  display:flex;
+  align-items:center;
+  gap:3px;
+  /* NO overflow:hidden di sini — biarkan slot sendiri yang clip */
 }
 
 /* Satu slot digit dengan "drum" rolling */
 .odo-slot{
-  width:30px;height:44px;
-  overflow:hidden;
-  border-radius:5px;
-  background:rgba(232,114,12,0.18);
-  border:1px solid rgba(232,114,12,0.38);
-  position:relative;
+  --odo-h: 40px;
+  --odo-w: 28px;
+  width: var(--odo-w);
+  height: var(--odo-h);
+  overflow: hidden;           /* clip drum di dalam slot */
+  border-radius: 5px;
+  background: rgba(232,114,12,0.18);
+  border: 1px solid rgba(232,114,12,0.38);
+  position: relative;
+  flex-shrink: 0;             /* jangan biarkan slot menciut */
 }
-/* Drum: kolom 0-9 yang digeser secara vertikal */
-.odo-drum{
-  display:flex;flex-direction:column;
-  transition:transform 0.55s cubic-bezier(0.23,1,0.32,1);
-  will-change:transform;
-}
-.odo-drum-digit{
-  width:30px;height:44px;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Barlow Condensed',monospace;
-  font-size:1.6rem;font-weight:800;
-  color:#FF9235;
-  flex-shrink:0;
-}
-/* Top/bottom fade mask */
-.odo-slot::before,.odo-slot::after{
-  content:'';position:absolute;left:0;right:0;height:10px;z-index:2;pointer-events:none;
-}
-.odo-slot::before{top:0;background:linear-gradient(to bottom,rgba(15,25,35,0.55),transparent);}
-.odo-slot::after{bottom:0;background:linear-gradient(to top,rgba(15,25,35,0.55),transparent);}
 
+/* Drum: 10 digit (0-9) yang bergerak vertikal */
+.odo-drum{
+  display: flex;
+  flex-direction: column;
+  /* transform di-set oleh JS — no transition default */
+  will-change: transform;
+  /* posisi awal = digit 0 tampil */
+  transform: translateY(0px);
+}
+
+/* Setiap cell digit di dalam drum */
+.odo-drum-digit{
+  width: var(--odo-w, 28px);
+  height: var(--odo-h, 40px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', monospace;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #FF9235;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* Fade mask atas & bawah tiap slot */
+.odo-slot::before,
+.odo-slot::after{
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 10px;
+  z-index: 2;
+  pointer-events: none;
+}
+.odo-slot::before{ top:0;    background: linear-gradient(to bottom, rgba(15,25,35,0.6), transparent); }
+.odo-slot::after { bottom:0; background: linear-gradient(to top,   rgba(15,25,35,0.6), transparent); }
+
+/* Separator titik antar grup 3 digit */
 .odo-sep{
-  color:rgba(255,255,255,0.3);
-  font-size:1.2rem;font-weight:700;
-  padding-bottom:4px;align-self:flex-end;
-  margin:0 1px;line-height:1;
+  color: rgba(255,255,255,0.35);
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1;
+  align-self: center;
+  margin: 0 1px;
+  flex-shrink: 0;
 }
 
 .visitor-badge-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;}
@@ -224,9 +252,13 @@ nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6
 
 @media(max-width:700px){
   .visitor-label{display:none;}
-  .visitor-inner{gap:10px;}
-  .odo-slot{width:25px;height:38px;}
-  .odo-drum-digit{width:25px;height:38px;font-size:1.3rem;}
+  .visitor-inner{gap:8px;}
+  .odo-slot{
+    --odo-h: 34px;
+    --odo-w: 23px;
+  }
+  .odo-drum-digit{ font-size:1.2rem; }
+  .odo-sep{ font-size:1rem; }
 }
 
 /* ═══════════════════════════════════════════
@@ -801,127 +833,156 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;borde
 
 <!-- 1. Firebase ES Module — Live Visitor Counter -->
 <script type="module">
-  import { initializeApp }          from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-  import { getDatabase, ref, onValue, runTransaction, increment, set, get }
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+  import { getDatabase, ref, onValue, runTransaction }
     from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
 
-  /* ── Config ── */
-  const firebaseConfig = {
+  /* ── Firebase Config ── */
+  const app = initializeApp({
     apiKey:      "AIzaSyAyS2rwuV1Rx49yXmGuLfHFYHG5YYijyw8",
     authDomain:  "rekanpdf.firebaseapp.com",
     projectId:   "rekanpdf",
     databaseURL: "https://rekanpdf-default-rtdb.asia-southeast1.firebasedatabase.app"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db  = getDatabase(app);
+  });
+  const db = getDatabase(app);
 
-  /* ── Refs ── */
+  /* ── DB Refs ── */
   const totalRef = ref(db, 'statistik/total_pengunjung');
   const todayKey = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const todayRef = ref(db, `statistik/harian/${todayKey}`);
 
-  /* ════════════════════════════════════════
-     ODOMETER — CSS Rolling Digit Engine
-  ════════════════════════════════════════ */
-  const SLOTS    = 7;          // jumlah digit yang ditampilkan
-  const DIGITS   = ['0','1','2','3','4','5','6','7','8','9'];
-  let   domSlots = [];         // simpan referensi drum tiap slot
+  /* ════════════════════════════════════════════════════
+     ODOMETER ENGINE — Pure CSS transform, no hardcode px
+     Cara kerja:
+     - Setiap slot punya drum berisi 10 div (digit 0–9)
+     - Untuk menampilkan digit N, drum digeser translateY = -(N × tinggiSlot)
+     - Tinggi slot dibaca dari DOM saat runtime → responsive otomatis
+  ════════════════════════════════════════════════════ */
+  const TOTAL_DIGITS = 7;            // total slot angka yang ditampilkan
+  let   drums        = [];           // array referensi elemen .odo-drum
+  let   slotHeight   = 40;          // fallback; di-update setelah build
 
+  /* Bangun markup odometer */
   function buildOdometer() {
     const wrap = document.getElementById('odometerWrap');
     if (!wrap) return;
     wrap.innerHTML = '';
-    domSlots = [];
+    drums = [];
 
-    for (let i = 0; i < SLOTS; i++) {
-      /* Separator titik setiap 3 digit dari kanan */
-      if (i > 0 && (SLOTS - i) % 3 === 0) {
+    for (let i = 0; i < TOTAL_DIGITS; i++) {
+      /* Titik pemisah: muncul sebelum grup 3 digit dari kanan */
+      /* posisi separator: sebelum digit index 1 (antara juta & ratusan ribu)
+         dan sebelum digit index 4 (antara ribuan & ratusan) */
+      if (i === 1 || i === 4) {
         const sep = document.createElement('span');
-        sep.className = 'odo-sep';
+        sep.className  = 'odo-sep';
         sep.textContent = '.';
+        sep.setAttribute('aria-hidden', 'true');
         wrap.appendChild(sep);
       }
 
-      const slot  = document.createElement('div');
+      /* Slot container */
+      const slot = document.createElement('div');
       slot.className = 'odo-slot';
 
+      /* Drum — berisi digit 0 sampai 9 */
       const drum = document.createElement('div');
       drum.className = 'odo-drum';
+      drum.style.transform  = 'translateY(0px)'; // inisialisasi ke 0
+      drum.style.transition = 'none';
 
-      /* Drum berisi 0-9 lalu 0 lagi (untuk loop seamless) */
-      [...DIGITS, '0'].forEach(ch => {
-        const d = document.createElement('div');
-        d.className = 'odo-drum-digit';
-        d.textContent = ch;
-        drum.appendChild(d);
-      });
+      for (let d = 0; d <= 9; d++) {
+        const cell = document.createElement('div');
+        cell.className   = 'odo-drum-digit';
+        cell.textContent = String(d);
+        drum.appendChild(cell);
+      }
 
       slot.appendChild(drum);
       wrap.appendChild(slot);
-      domSlots.push(drum);
+      drums.push(drum);
     }
+
+    /* Baca tinggi slot dari DOM setelah render (responsive!) */
+    const firstSlot = wrap.querySelector('.odo-slot');
+    if (firstSlot) slotHeight = firstSlot.offsetHeight || 40;
   }
 
-  /**
-   * Geser drum slot ke angka target
-   * @param {number} slotIdx   - index slot (0 = paling kiri)
-   * @param {number} digitVal  - nilai digit 0-9
-   * @param {boolean} animate  - pakai transisi atau langsung
-   */
-  function setSlotDigit(slotIdx, digitVal, animate = true) {
-    const drum = domSlots[slotIdx];
+  /* Set satu digit di slot tertentu */
+  function setDigit(slotIndex, digitValue, animate) {
+    const drum = drums[slotIndex];
     if (!drum) return;
-    const slotH = 44; // tinggi satu cell (sync dengan CSS .odo-slot height)
-    const targetY = -(digitVal * slotH);
-    drum.style.transition = animate ? 'transform 0.55s cubic-bezier(0.23,1,0.32,1)' : 'none';
-    drum.style.transform  = `translateY(${targetY}px)`;
+
+    /* Pastikan slotHeight terbaca */
+    if (slotHeight <= 0) {
+      const slot = drum.parentElement;
+      slotHeight = slot ? (slot.offsetHeight || 40) : 40;
+    }
+
+    const targetY = -(digitValue * slotHeight);
+
+    if (animate) {
+      drum.style.transition = 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+    } else {
+      drum.style.transition = 'none';
+    }
+    drum.style.transform = `translateY(${targetY}px)`;
   }
 
-  /**
-   * Update seluruh odometer dengan nilai baru
-   * @param {number} newVal
-   * @param {number} oldVal
-   */
-  function updateOdometer(newVal, oldVal = -1) {
-    const str    = String(newVal).padStart(SLOTS, '0');
-    const oldStr = oldVal >= 0 ? String(oldVal).padStart(SLOTS, '0') : null;
+  /* Update seluruh odometer ke nilai tertentu */
+  function renderOdometer(newVal, oldVal, animateAll) {
+    const newStr = String(Math.max(0, newVal)).padStart(TOTAL_DIGITS, '0');
+    const oldStr = oldVal >= 0
+      ? String(Math.max(0, oldVal)).padStart(TOTAL_DIGITS, '0')
+      : null;
 
-    str.split('').forEach((ch, i) => {
+    newStr.split('').forEach((ch, i) => {
       const digit   = parseInt(ch, 10);
-      const animate = oldStr ? oldStr[i] !== ch : false;
-      setSlotDigit(i, digit, animate);
+      /* Animasikan hanya digit yang berubah, kecuali animateAll = true */
+      const doAnim  = animateAll || (oldStr !== null && oldStr[i] !== ch);
+      setDigit(i, digit, doAnim);
     });
   }
 
-  /* ════════════════════════════════════════
-     LOGIKA KUNJUNGAN
-  ════════════════════════════════════════ */
-  const SESSION_KEY = 'rpdf_firebase_session';
+  /* ════════════════════════════════════════════════════
+     LOGIKA KUNJUNGAN — 1 sesi = 1 hitungan
+  ════════════════════════════════════════════════════ */
+  const SESSION_KEY    = 'rpdf_fb_session_v2';
   const alreadyCounted = sessionStorage.getItem(SESSION_KEY);
 
-  /* Bangun odometer dulu dengan 0 */
+  /* Build odometer dengan semua digit = 0, tanpa animasi */
   buildOdometer();
-  updateOdometer(0, -1);
+  renderOdometer(0, -1, false);
 
+  /* Tambah counter jika sesi baru */
   if (!alreadyCounted) {
-    /* Sesi baru — tambah +1 ke total dan hari ini pakai transaction */
-    runTransaction(totalRef, current => (current || 0) + 1);
-    runTransaction(todayRef, current => (current || 0) + 1);
+    runTransaction(totalRef, cur => (cur || 0) + 1);
+    runTransaction(todayRef, cur => (cur || 0) + 1);
     sessionStorage.setItem(SESSION_KEY, '1');
   }
 
-  /* Dengarkan total realtime — update odometer saat ada perubahan */
-  let lastTotal = 0;
+  /* Realtime listener — update odometer setiap ada perubahan */
+  let prevTotal = -1;
   onValue(totalRef, snapshot => {
     const val = snapshot.val() || 0;
-    updateOdometer(val, lastTotal === 0 ? -1 : lastTotal);
-    lastTotal = val;
+    /* Saat pertama kali load: tampilkan langsung tanpa animasi,
+       lalu bila ada kenaikan: animasi rolling */
+    renderOdometer(val, prevTotal, prevTotal >= 0);
+    prevTotal = val;
   });
 
-  /* Dengarkan hitungan hari ini */
+  /* Listener hitungan hari ini */
   onValue(todayRef, snapshot => {
     const el = document.getElementById('vcTodayCount');
     if (el) el.textContent = (snapshot.val() || 0).toLocaleString('id-ID');
+  });
+
+  /* Re-baca tinggi slot saat resize (misal rotasi layar HP) */
+  window.addEventListener('resize', () => {
+    const firstSlot = document.querySelector('.odo-slot');
+    if (firstSlot) slotHeight = firstSlot.offsetHeight || 40;
+    if (prevTotal >= 0) renderOdometer(prevTotal, -1, false);
   });
 </script>
 

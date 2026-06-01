@@ -20,7 +20,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 <style>
+/* ═══════════════════════════════════════════
+   BASE & VARIABLES
+═══════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --orange:#E8720C;
@@ -46,7 +50,9 @@
 html{scroll-behavior:smooth}
 body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.5;overflow-x:hidden;}
 
-/* ── PAGE LOADER ── */
+/* ═══════════════════════════════════════════
+   PAGE LOADER
+═══════════════════════════════════════════ */
 #pageLoader{position:fixed;inset:0;background:rgba(255,255,255,0.92);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all 0.3s ease;backdrop-filter:blur(4px);}
 #pageLoader.active{opacity:1;visibility:visible;}
 .loader-spinner{width:54px;height:54px;border:5px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px;}
@@ -54,11 +60,15 @@ body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text
 @keyframes pulse{0%{opacity:0.7}50%{opacity:1}100%{opacity:0.7}}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── TOP BAR ── */
+/* ═══════════════════════════════════════════
+   TOP BAR
+═══════════════════════════════════════════ */
 .topbar{background:var(--navy);color:#fff;font-size:12.5px;text-align:center;padding:7px 20px;font-weight:600;letter-spacing:0.01em}
 .topbar span{color:var(--orange-light)}
 
-/* ── NAVBAR ── */
+/* ═══════════════════════════════════════════
+   NAVBAR
+═══════════════════════════════════════════ */
 nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
 .nav-inner{display:flex;align-items:center;gap:0;max-width:1380px;margin:0 auto;padding:0 20px;height:62px}
 .mobile-menu-btn{display:none;background:transparent;border:none;color:#fff;font-size:1.8rem;cursor:pointer;margin-right:16px;padding:0;}
@@ -66,10 +76,37 @@ nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6
 .logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
 .logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
 .logo-sub span{color:var(--orange-light)}
-.nav-right{display:flex;align-items:center;gap:4px;}
+.nav-right{display:flex;align-items:center;gap:6px;}
 .nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
 .nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
-.search-toggle-btn{background:transparent;border:none;color:#fff;font-size:1.3rem;cursor:pointer;margin-left:16px;display:flex;align-items:center;transition:color 0.2s}
+
+/* ── Trakteer Button (Navbar) ── */
+.btn-trakteer-nav{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:7px 16px;border-radius:6px;
+  font-size:13px;font-weight:800;
+  color:#fff;text-decoration:none;
+  border:none;cursor:pointer;
+  white-space:nowrap;
+  background:linear-gradient(135deg,#f59e0b 0%,#E8720C 60%,#c2410c 100%);
+  box-shadow:0 2px 12px rgba(232,114,12,0.45),0 0 0 1px rgba(255,255,255,0.08) inset;
+  transition:all .2s ease;
+  position:relative;overflow:hidden;
+}
+.btn-trakteer-nav::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.18),transparent 60%);
+  pointer-events:none;
+}
+.btn-trakteer-nav:hover{
+  transform:translateY(-1px);
+  box-shadow:0 4px 20px rgba(232,114,12,0.6),0 0 0 1px rgba(255,255,255,0.1) inset;
+  color:#fff;
+}
+.btn-trakteer-nav:active{transform:translateY(0);}
+
+/* ── Search ── */
+.search-toggle-btn{background:transparent;border:none;color:#fff;font-size:1.3rem;cursor:pointer;margin-left:10px;display:flex;align-items:center;transition:color 0.2s}
 .search-toggle-btn:hover{color:var(--orange-light)}
 .search-dropdown{position:absolute;top:100%;left:0;width:100%;background:var(--navy2);padding:12px 20px;display:none;border-top:1px solid rgba(255,255,255,0.08);box-shadow:0 4px 12px rgba(0,0,0,0.2);}
 .search-dropdown.active{display:block;animation:slideDown 0.2s ease;}
@@ -80,7 +117,9 @@ nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6
 .search-inner button{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1.4rem;transition:color 0.2s;display:flex;align-items:center;}
 .search-inner button:hover{color:var(--red);}
 
-/* ── MOBILE DRAWER ── */
+/* ═══════════════════════════════════════════
+   MOBILE DRAWER
+═══════════════════════════════════════════ */
 .mobile-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:1000;opacity:0;visibility:hidden;transition:all .3s ease;}
 .mobile-overlay.active{opacity:1;visibility:visible;}
 .mobile-drawer{position:fixed;top:0;left:-320px;width:300px;height:100%;background:#fff;z-index:1001;box-shadow:4px 0 20px rgba(0,0,0,0.15);transition:all .3s ease;display:flex;flex-direction:column;overflow-y:auto;}
@@ -94,7 +133,14 @@ nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6
 .md-link:hover{color:var(--orange);}
 .md-link i{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
 
-/* ── HERO BANNER ── */
+/* Trakteer link di mobile drawer */
+.md-trakteer{display:flex;align-items:center;gap:12px;padding:12px 16px;margin:8px -20px;text-decoration:none;font-weight:800;font-size:14px;background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(232,114,12,0.12));border-top:1px solid rgba(232,114,12,0.2);border-bottom:1px solid rgba(232,114,12,0.2);color:var(--orange-dark);}
+.md-trakteer:hover{background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(232,114,12,0.2));}
+.md-trakteer .trakteer-ico{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,#f59e0b,#E8720C);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;color:#fff;}
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
 .hero{background:linear-gradient(100deg,var(--navy) 0%,#1B2F45 55%,#0F3460 100%);padding:48px 20px 48px;text-align:center;position:relative;overflow:hidden}
 .hero::after{content:'';position:absolute;right:-80px;top:-80px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(232,114,12,0.18),transparent 65%);pointer-events:none}
 .hero-eyebrow{display:inline-flex;align-items:center;gap:7px;background:rgba(232,114,12,0.18);border:1px solid rgba(232,114,12,0.4);color:var(--orange-light);font-size:12.5px;font-weight:700;padding:5px 14px;border-radius:100px;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:20px}
@@ -102,39 +148,99 @@ nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6
 .hero h1 em{color:var(--orange-light);font-style:normal}
 .hero p{color:rgba(255,255,255,0.72);font-size:1.05rem;max-width:540px;margin:0 auto 0;line-height:1.65;font-weight:400}
 
-/* ── VISITOR COUNTER STRIP ── */
-.visitor-strip{background:linear-gradient(135deg,var(--navy2) 0%,#0F3460 100%);border-top:1px solid rgba(232,114,12,0.2);border-bottom:1px solid rgba(232,114,12,0.2);padding:16px 20px;text-align:center;position:relative;overflow:hidden;}
+/* ═══════════════════════════════════════════
+   FIREBASE LIVE VISITOR COUNTER STRIP
+   — Odometer CSS rolling digit style
+═══════════════════════════════════════════ */
+.visitor-strip{
+  background:linear-gradient(135deg,var(--navy2) 0%,#0F3460 100%);
+  border-top:1px solid rgba(232,114,12,0.2);
+  border-bottom:1px solid rgba(232,114,12,0.2);
+  padding:16px 20px;
+  text-align:center;position:relative;overflow:hidden;
+}
 .visitor-strip::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(232,114,12,0.07),transparent 70%);pointer-events:none;}
 .visitor-inner{max-width:1380px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;position:relative;z-index:1;}
 .visitor-icon-wrap{display:flex;align-items:center;gap:7px;color:rgba(255,255,255,0.7);font-size:12.5px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;}
-.live-dot{width:8px;height:8px;background:#4CAF50;border-radius:50%;display:inline-block;animation:pulseGreen 2s infinite;flex-shrink:0;}
-@keyframes pulseGreen{0%,100%{opacity:1;transform:scale(1);box-shadow:0 0 0 0 rgba(76,175,80,0.5);}50%{opacity:0.85;transform:scale(1.2);box-shadow:0 0 0 5px rgba(76,175,80,0);}}
+
+/* Live dot */
+.live-dot{width:9px;height:9px;background:#4CAF50;border-radius:50%;display:inline-block;animation:pulseGreen 2s infinite;flex-shrink:0;}
+@keyframes pulseGreen{
+  0%,100%{opacity:1;transform:scale(1);box-shadow:0 0 0 0 rgba(76,175,80,0.5);}
+  50%{opacity:0.85;transform:scale(1.15);box-shadow:0 0 0 6px rgba(76,175,80,0);}
+}
+
 .visitor-counter-block{display:flex;align-items:center;gap:14px;}
 .visitor-label{color:rgba(255,255,255,0.62);font-size:13px;font-weight:600;}
-.visitor-number-wrap{display:flex;align-items:center;gap:3px;}
-.vn-digit{background:rgba(232,114,12,0.18);border:1px solid rgba(232,114,12,0.38);color:#FF9235;font-family:'Barlow Condensed',monospace;font-size:1.65rem;font-weight:800;width:32px;height:42px;border-radius:5px;display:flex;align-items:center;justify-content:center;transition:background 0.25s;}
-.vn-digit.bump{animation:digitBump 0.38s ease;background:rgba(232,114,12,0.38);}
-@keyframes digitBump{0%{transform:scale(1);}40%{transform:scale(1.28) translateY(-2px);}100%{transform:scale(1);}}
-.vn-sep{color:rgba(255,255,255,0.28);font-size:1.15rem;font-weight:700;margin:0 1px;align-self:flex-end;padding-bottom:6px;}
-.visitor-badge-wrap{display:flex;align-items:center;gap:8px;}
+
+/* ── ODOMETER CONTAINER ── */
+.odometer-wrap{
+  display:flex;align-items:center;gap:2px;
+  height:44px;overflow:hidden;
+}
+
+/* Satu slot digit dengan "drum" rolling */
+.odo-slot{
+  width:30px;height:44px;
+  overflow:hidden;
+  border-radius:5px;
+  background:rgba(232,114,12,0.18);
+  border:1px solid rgba(232,114,12,0.38);
+  position:relative;
+}
+/* Drum: kolom 0-9 yang digeser secara vertikal */
+.odo-drum{
+  display:flex;flex-direction:column;
+  transition:transform 0.55s cubic-bezier(0.23,1,0.32,1);
+  will-change:transform;
+}
+.odo-drum-digit{
+  width:30px;height:44px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Barlow Condensed',monospace;
+  font-size:1.6rem;font-weight:800;
+  color:#FF9235;
+  flex-shrink:0;
+}
+/* Top/bottom fade mask */
+.odo-slot::before,.odo-slot::after{
+  content:'';position:absolute;left:0;right:0;height:10px;z-index:2;pointer-events:none;
+}
+.odo-slot::before{top:0;background:linear-gradient(to bottom,rgba(15,25,35,0.55),transparent);}
+.odo-slot::after{bottom:0;background:linear-gradient(to top,rgba(15,25,35,0.55),transparent);}
+
+.odo-sep{
+  color:rgba(255,255,255,0.3);
+  font-size:1.2rem;font-weight:700;
+  padding-bottom:4px;align-self:flex-end;
+  margin:0 1px;line-height:1;
+}
+
+.visitor-badge-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;}
 .v-badge{display:flex;align-items:center;gap:5px;background:rgba(76,175,80,0.14);border:1px solid rgba(76,175,80,0.28);color:#81C784;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:100px;letter-spacing:0.04em;}
 .v-badge-blink{animation:blinkDot 1.5s infinite;}
 @keyframes blinkDot{0%,100%{opacity:1;}50%{opacity:0.15;}}
 .v-badge-total{background:rgba(232,114,12,0.13);border-color:rgba(232,114,12,0.28);color:#FF9235;}
+
 @media(max-width:700px){
   .visitor-label{display:none;}
-  .visitor-inner{gap:12px;}
-  .vn-digit{width:27px;height:36px;font-size:1.35rem;}
+  .visitor-inner{gap:10px;}
+  .odo-slot{width:25px;height:38px;}
+  .odo-drum-digit{width:25px;height:38px;font-size:1.3rem;}
 }
 
-/* ── LAYOUT ── */
+/* ═══════════════════════════════════════════
+   LAYOUT & FILTER
+═══════════════════════════════════════════ */
 .page-body{max-width:1380px;margin:32px auto 60px;padding:0 20px;display:block;}
 .filter-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:32px;}
 .filter-pill{display:flex;align-items:center;gap:6px;padding:8px 20px;border-radius:100px;border:1.5px solid var(--border2);background:var(--white);color:var(--text2);font-size:13.5px;font-weight:800;cursor:pointer;transition:all .15s;font-family:'Nunito Sans',sans-serif}
 .filter-pill:hover{border-color:var(--orange);color:var(--orange)}
 .filter-pill.active{background:var(--navy2);border-color:var(--navy2);color:#fff}
 
-/* ── TOOL CARDS GRID ── */
+/* ═══════════════════════════════════════════
+   TOOL CARDS
+═══════════════════════════════════════════ */
 .tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:48px}
 .tool-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:20px 18px;text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:12px;transition:all .18s;position:relative;overflow:hidden}
 .tool-card:hover{border-color:var(--orange);box-shadow:var(--shadow-md);transform:translateY(-3px)}
@@ -162,12 +268,16 @@ nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6
 .ico-navy{background:#E8EEF4;color:#0F1923;}
 .ico-blue-dark{background:#EBF3FC;color:#1B5FA8;}
 
-/* ── FEATURED STRIP ── */
+/* ═══════════════════════════════════════════
+   FEATURED STRIP
+═══════════════════════════════════════════ */
 .featured-strip{background:linear-gradient(100deg,#0F3460,#1B2F45);border-radius:8px;padding:28px 32px;margin-bottom:48px;display:flex;align-items:center;justify-content:space-between;gap:20px;border:1px solid rgba(255,255,255,0.08)}
 .fs-text h3{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:6px;display:flex;align-items:center;gap:8px}
 .fs-text p{color:rgba(255,255,255,0.7);font-size:14px;max-width:500px;line-height:1.5}
 
-/* ── FOOTER ── */
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
 footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;border-top:3px solid var(--orange)}
 .footer-main{max-width:1380px;margin:0 auto;padding:48px 20px 36px;display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr 1.5fr 1fr;gap:24px}
 .footer-logo-text{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;letter-spacing:0.06em}
@@ -182,7 +292,115 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;borde
 .footer-bottom a{color:rgba(255,255,255,0.5);text-decoration:none;margin-left:16px}
 .footer-bottom a:hover{color:var(--orange-light)}
 
-/* ── RESPONSIVE ── */
+/* ── Trakteer di Footer ── */
+.footer-trakteer-wrap{
+  margin-top:20px;padding-top:16px;
+  border-top:1px solid rgba(255,255,255,0.1);
+}
+.btn-trakteer-footer{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:10px 22px;border-radius:8px;
+  font-family:'Nunito Sans',sans-serif;
+  font-size:13.5px;font-weight:800;
+  color:#fff;text-decoration:none;
+  background:linear-gradient(135deg,#f59e0b 0%,#E8720C 60%,#c2410c 100%);
+  box-shadow:0 3px 14px rgba(232,114,12,0.4);
+  transition:all .22s ease;
+  border:none;cursor:pointer;
+  position:relative;overflow:hidden;
+}
+.btn-trakteer-footer::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent 55%);
+  pointer-events:none;
+}
+.btn-trakteer-footer:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 22px rgba(232,114,12,0.55);
+  color:#fff;
+}
+.btn-trakteer-footer:active{transform:translateY(0);}
+.footer-trakteer-sub{font-size:11.5px;color:rgba(255,255,255,0.45);margin-top:8px;font-style:italic;}
+
+/* ═══════════════════════════════════════════
+   WHATSAPP FLOATING BUTTON
+═══════════════════════════════════════════ */
+.wa-float{
+  position:fixed;
+  bottom:28px;right:24px;
+  z-index:500;
+  display:flex;flex-direction:column;align-items:flex-end;gap:10px;
+}
+/* Tooltip bubble */
+.wa-tooltip{
+  background:var(--white);
+  color:var(--text);
+  padding:8px 14px;
+  border-radius:8px;
+  font-size:12.5px;font-weight:700;
+  box-shadow:0 4px 16px rgba(0,0,0,0.14);
+  white-space:nowrap;
+  opacity:0;transform:translateX(10px) scale(0.95);
+  transition:all .25s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events:none;
+  border:1px solid var(--border);
+}
+.wa-float:hover .wa-tooltip{
+  opacity:1;transform:translateX(0) scale(1);
+}
+/* Tombol utama */
+.wa-btn{
+  width:58px;height:58px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.75rem;
+  text-decoration:none;
+  box-shadow:0 4px 18px rgba(37,211,102,0.45),0 2px 6px rgba(0,0,0,0.15);
+  transition:all .25s cubic-bezier(0.34,1.56,0.64,1);
+  position:relative;
+}
+/* Ping ring animasi */
+.wa-btn::before{
+  content:'';
+  position:absolute;inset:-4px;
+  border-radius:50%;
+  border:2px solid rgba(37,211,102,0.4);
+  animation:waPing 2.2s ease-out infinite;
+}
+@keyframes waPing{
+  0%{transform:scale(1);opacity:0.7;}
+  70%{transform:scale(1.35);opacity:0;}
+  100%{transform:scale(1.35);opacity:0;}
+}
+.wa-btn:hover{
+  transform:scale(1.1) translateY(-2px);
+  box-shadow:0 8px 28px rgba(37,211,102,0.6),0 4px 10px rgba(0,0,0,0.2);
+}
+/* Notif dot */
+.wa-notif{
+  position:absolute;top:2px;right:2px;
+  width:14px;height:14px;
+  background:#f43f5e;border-radius:50%;
+  border:2px solid #fff;
+  font-size:8px;font-weight:800;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  animation:notifPulse 2s infinite;
+}
+@keyframes notifPulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.2);}
+}
+
+@media(max-width:480px){
+  .wa-float{bottom:20px;right:16px;}
+  .wa-btn{width:52px;height:52px;font-size:1.55rem;}
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
 @media(max-width:1100px){
   .tools-grid{grid-template-columns:repeat(3,1fr)}
   .footer-main{grid-template-columns:repeat(3,1fr);}
@@ -203,19 +421,47 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;borde
   .filter-row{gap:6px;}
   .filter-pill{font-size:12px;padding:6px 14px;}
 }
+
+/* Scroll reveal */
 .rev{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
 .rev.in{opacity:1;transform:none}
 </style>
 </head>
 <body>
 
+<!-- Page Loader -->
 <div id="pageLoader">
   <div class="loader-spinner"></div>
   <div class="loader-text">MEMBUAT RUANG KERJA...</div>
 </div>
 
-<div class="topbar"><i class="bi bi-stars"></i> <span>100% GRATIS</span> — Tidak perlu daftar, tidak ada watermark, tidak ada batas ukuran file!</div>
+<!-- ──────────────────────────────────────────
+     WHATSAPP FLOATING BUTTON
+────────────────────────────────────────── -->
+<div class="wa-float">
+  <div class="wa-tooltip">💬 Butuh bantuan? Chat kami!</div>
+  <a
+    href="https://wa.me/6283879573708?text=Halo%20Admin%20RekanPDF,%20saya%20perlu%20bantuan"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="wa-btn"
+    aria-label="Chat WhatsApp Customer Service RekanPDF"
+  >
+    <i class="bi bi-whatsapp"></i>
+    <span class="wa-notif">1</span>
+  </a>
+</div>
 
+<!-- ──────────────────────────────────────────
+     TOPBAR
+────────────────────────────────────────── -->
+<div class="topbar">
+  <i class="bi bi-stars"></i> <span>100% GRATIS</span> — Tidak perlu daftar, tidak ada watermark, tidak ada batas ukuran file!
+</div>
+
+<!-- ──────────────────────────────────────────
+     NAVBAR
+────────────────────────────────────────── -->
 <nav>
   <div class="nav-inner">
     <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><i class="bi bi-list"></i></button>
@@ -226,8 +472,20 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;borde
     <div class="nav-right">
       <a href="#alat" class="nav-btn">Alat PDF</a>
       <a href="halaman/about.html" class="nav-btn">Tentang Kami</a>
+      <!-- ★ TRAKTEER BUTTON NAVBAR -->
+      <a
+        href="https://trakteer.id/rekanpdf"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-trakteer-nav"
+        aria-label="Dukung RekanPDF di Trakteer"
+      >
+        ☕ Traktir Kopi
+      </a>
     </div>
-    <button class="search-toggle-btn" onclick="toggleSearch()" id="btnToggleSearch"><i class="bi bi-search"></i></button>
+    <button class="search-toggle-btn" onclick="toggleSearch()" id="btnToggleSearch">
+      <i class="bi bi-search"></i>
+    </button>
   </div>
   <div class="search-dropdown" id="searchDropdown">
     <div class="search-inner">
@@ -238,12 +496,19 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;borde
   </div>
 </nav>
 
+<!-- Mobile Overlay + Drawer -->
 <div class="mobile-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
 <div class="mobile-drawer" id="mobileMenuDrawer">
   <div class="md-header">
     <button class="md-close" onclick="toggleMobileMenu()"><i class="bi bi-x-lg"></i></button>
   </div>
   <div class="md-content">
+    <!-- Trakteer di drawer mobile -->
+    <a href="https://trakteer.id/rekanpdf" target="_blank" rel="noopener noreferrer" class="md-trakteer">
+      <div class="trakteer-ico">☕</div>
+      <span>Traktir Kopi — Dukung RekanPDF</span>
+    </a>
+
     <div class="md-cat">EDIT PDF</div>
     <a href="alat/merge.html" class="md-link"><i class="bi bi-link-45deg ico-blue"></i> Gabung PDF</a>
     <a href="alat/split-pdf.html" class="md-link"><i class="bi bi-scissors ico-orange"></i> Pisah PDF</a>
@@ -261,7 +526,7 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;borde
     <a href="alat/html-to-pdf.html" class="md-link"><i class="bi bi-globe ico-blue"></i> HTML ke PDF</a>
     <a href="alat/scan-to-pdf.html" class="md-link"><i class="bi bi-camera-fill ico-teal"></i> Scan ke PDF</a>
     <div class="md-cat">KONVERSI DARI PDF</div>
-    <a href="alat/pdf-to-images.html" class="md-link"><i class="bi bi-file-earmark-image-fill ico-pink" style="background:#FDE8F3;color:#D81B60;"></i> PDF ke Gambar</a>
+    <a href="alat/pdf-to-images.html" class="md-link"><i class="bi bi-file-earmark-image-fill ico-pink"></i> PDF ke Gambar</a>
     <a href="alat/ocr-pdf.html" class="md-link"><i class="bi bi-upc-scan ico-navy"></i> OCR PDF</a>
     <div class="md-cat">KEAMANAN PDF</div>
     <a href="alat/security-pdf.html" class="md-link"><i class="bi bi-shield-lock-fill ico-teal"></i> Keamanan PDF (4 in 1)</a>
@@ -271,38 +536,48 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;borde
   </div>
 </div>
 
-<!-- HERO -->
+<!-- ──────────────────────────────────────────
+     HERO
+────────────────────────────────────────── -->
 <div class="hero">
   <div class="hero-eyebrow"><i class="bi bi-star-fill"></i> Platform PDF #1 di Indonesia</div>
   <h1>Semua Alat PDF<br/><em>Dalam Satu Tempat</em></h1>
   <p>Setiap alat yang Anda butuhkan untuk menggunakan PDF ada di sini. 100% gratis, aman, dan langsung bekerja di browser Anda tanpa instalasi.</p>
 </div>
 
-<!-- ══════════════════════════════════════════
-     VISITOR COUNTER STRIP
-     Menyimpan data pakai localStorage — data
-     tidak reset selama cache browser tidak dihapus.
-     Setiap sesi unik = +1. Reset harian untuk
-     badge "hari ini" terjadi otomatis tiap hari.
-══════════════════════════════════════════ -->
+<!-- ──────────────────────────────────────────
+     FIREBASE LIVE VISITOR COUNTER STRIP
+────────────────────────────────────────── -->
 <div class="visitor-strip" id="visitorStrip">
   <div class="visitor-inner">
+
     <div class="visitor-icon-wrap">
       <span class="live-dot"></span>
       <span>LIVE</span>
     </div>
+
     <div class="visitor-counter-block">
       <span class="visitor-label">Pengguna telah menggunakan Rekan PDF:</span>
-      <div class="visitor-number-wrap" id="visitorNumberWrap"></div>
+      <!-- Odometer slot container — diisi oleh JS -->
+      <div class="odometer-wrap" id="odometerWrap"></div>
     </div>
+
     <div class="visitor-badge-wrap">
-      <span class="v-badge"><span class="v-badge-blink">●</span>&nbsp;<span id="vcTodayCount">0</span> hari ini</span>
-      <span class="v-badge v-badge-total"><i class="bi bi-people-fill"></i>&nbsp;Total Kunjungan</span>
+      <span class="v-badge">
+        <span class="v-badge-blink">●</span>&nbsp;
+        <span id="vcTodayCount">0</span> hari ini
+      </span>
+      <span class="v-badge v-badge-total">
+        <i class="bi bi-people-fill"></i>&nbsp;Total Kunjungan
+      </span>
     </div>
+
   </div>
 </div>
-<!-- ══════════════════════════════════════════ -->
 
+<!-- ──────────────────────────────────────────
+     TOOL CARDS
+────────────────────────────────────────── -->
 <div class="page-body" id="alat">
 
   <div class="filter-row" id="filterRow">
@@ -433,16 +708,34 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;borde
     </div>
   </div>
 
-</div>
+</div><!-- end page-body -->
 
+<!-- ──────────────────────────────────────────
+     FOOTER
+────────────────────────────────────────── -->
 <footer>
   <div class="footer-main">
+
     <div class="footer-brand">
       <div class="footer-logo-text">Rekan<span>PDF</span></div>
       <p>Platform alat PDF nomor 1 untuk pengguna Indonesia. Mengutamakan privasi, kecepatan, dan bebas biaya tanpa syarat apapun.</p>
+      <!-- ★ TRAKTEER BUTTON FOOTER -->
+      <div class="footer-trakteer-wrap">
+        <a
+          href="https://trakteer.id/rekanpdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-trakteer-footer"
+        >
+          ☕ Traktir Kopi
+          <i class="bi bi-heart-fill" style="font-size:0.85rem;opacity:0.85"></i>
+        </a>
+        <div class="footer-trakteer-sub">Bantu kami tetap gratis untuk semua orang 🙏</div>
+      </div>
     </div>
+
     <div class="footer-col">
-      <h5>Edit & Keamanan</h5>
+      <h5>Edit &amp; Keamanan</h5>
       <ul>
         <li><a href="alat/merge.html">Gabung PDF</a></li>
         <li><a href="alat/split-pdf.html">Pisah PDF</a></li>
@@ -450,6 +743,7 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;borde
         <li><a href="alat/security-pdf.html">Keamanan PDF</a></li>
       </ul>
     </div>
+
     <div class="footer-col">
       <h5>Konversi</h5>
       <ul>
@@ -459,8 +753,9 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;borde
         <li><a href="alat/excel-to-pdf.html">Excel ke PDF</a></li>
       </ul>
     </div>
+
     <div class="footer-col">
-      <h5>Optimasi & Alat</h5>
+      <h5>Optimasi &amp; Alat</h5>
       <ul>
         <li><a href="alat/compress-pdf.html">Kompres PDF</a></li>
         <li><a href="alat/repair-pdf.html">Perbaiki PDF</a></li>
@@ -468,8 +763,9 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;borde
         <li><a href="alat/cover-letter-generator.html">Surat Lamaran</a></li>
       </ul>
     </div>
+
     <div class="footer-col">
-      <h5>Panduan & Solusi</h5>
+      <h5>Panduan &amp; Solusi</h5>
       <ul>
         <li><a href="artikel/dokumen-cpns-melebihi-batas-200kb.html">Syarat PDF CPNS 2026</a></li>
         <li><a href="artikel/file-pdf-terlalu-besar.html">Solusi Gagal Upload PDF</a></li>
@@ -477,6 +773,7 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;borde
         <li><a href="artikel/cara-kompres-pdf-200kb.html">Kompres PDF ke 200KB</a></li>
       </ul>
     </div>
+
     <div class="footer-col">
       <h5>Perusahaan</h5>
       <ul>
@@ -486,6 +783,7 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;borde
         <li><a href="halaman/terms.html">Syarat Layanan</a></li>
       </ul>
     </div>
+
   </div>
   <div class="footer-bottom">
     <span>© 2026 Rekan PDF. Dibuat dengan ☕ di Indonesia.</span>
@@ -497,11 +795,142 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:20px;borde
   </div>
 </footer>
 
+<!-- ══════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════ -->
+
+<!-- 1. Firebase ES Module — Live Visitor Counter -->
+<script type="module">
+  import { initializeApp }          from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+  import { getDatabase, ref, onValue, runTransaction, increment, set, get }
+    from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
+
+  /* ── Config ── */
+  const firebaseConfig = {
+    apiKey:      "AIzaSyAyS2rwuV1Rx49yXmGuLfHFYHG5YYijyw8",
+    authDomain:  "rekanpdf.firebaseapp.com",
+    projectId:   "rekanpdf",
+    databaseURL: "https://rekanpdf-default-rtdb.asia-southeast1.firebasedatabase.app"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+
+  /* ── Refs ── */
+  const totalRef = ref(db, 'statistik/total_pengunjung');
+  const todayKey = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const todayRef = ref(db, `statistik/harian/${todayKey}`);
+
+  /* ════════════════════════════════════════
+     ODOMETER — CSS Rolling Digit Engine
+  ════════════════════════════════════════ */
+  const SLOTS    = 7;          // jumlah digit yang ditampilkan
+  const DIGITS   = ['0','1','2','3','4','5','6','7','8','9'];
+  let   domSlots = [];         // simpan referensi drum tiap slot
+
+  function buildOdometer() {
+    const wrap = document.getElementById('odometerWrap');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    domSlots = [];
+
+    for (let i = 0; i < SLOTS; i++) {
+      /* Separator titik setiap 3 digit dari kanan */
+      if (i > 0 && (SLOTS - i) % 3 === 0) {
+        const sep = document.createElement('span');
+        sep.className = 'odo-sep';
+        sep.textContent = '.';
+        wrap.appendChild(sep);
+      }
+
+      const slot  = document.createElement('div');
+      slot.className = 'odo-slot';
+
+      const drum = document.createElement('div');
+      drum.className = 'odo-drum';
+
+      /* Drum berisi 0-9 lalu 0 lagi (untuk loop seamless) */
+      [...DIGITS, '0'].forEach(ch => {
+        const d = document.createElement('div');
+        d.className = 'odo-drum-digit';
+        d.textContent = ch;
+        drum.appendChild(d);
+      });
+
+      slot.appendChild(drum);
+      wrap.appendChild(slot);
+      domSlots.push(drum);
+    }
+  }
+
+  /**
+   * Geser drum slot ke angka target
+   * @param {number} slotIdx   - index slot (0 = paling kiri)
+   * @param {number} digitVal  - nilai digit 0-9
+   * @param {boolean} animate  - pakai transisi atau langsung
+   */
+  function setSlotDigit(slotIdx, digitVal, animate = true) {
+    const drum = domSlots[slotIdx];
+    if (!drum) return;
+    const slotH = 44; // tinggi satu cell (sync dengan CSS .odo-slot height)
+    const targetY = -(digitVal * slotH);
+    drum.style.transition = animate ? 'transform 0.55s cubic-bezier(0.23,1,0.32,1)' : 'none';
+    drum.style.transform  = `translateY(${targetY}px)`;
+  }
+
+  /**
+   * Update seluruh odometer dengan nilai baru
+   * @param {number} newVal
+   * @param {number} oldVal
+   */
+  function updateOdometer(newVal, oldVal = -1) {
+    const str    = String(newVal).padStart(SLOTS, '0');
+    const oldStr = oldVal >= 0 ? String(oldVal).padStart(SLOTS, '0') : null;
+
+    str.split('').forEach((ch, i) => {
+      const digit   = parseInt(ch, 10);
+      const animate = oldStr ? oldStr[i] !== ch : false;
+      setSlotDigit(i, digit, animate);
+    });
+  }
+
+  /* ════════════════════════════════════════
+     LOGIKA KUNJUNGAN
+  ════════════════════════════════════════ */
+  const SESSION_KEY = 'rpdf_firebase_session';
+  const alreadyCounted = sessionStorage.getItem(SESSION_KEY);
+
+  /* Bangun odometer dulu dengan 0 */
+  buildOdometer();
+  updateOdometer(0, -1);
+
+  if (!alreadyCounted) {
+    /* Sesi baru — tambah +1 ke total dan hari ini pakai transaction */
+    runTransaction(totalRef, current => (current || 0) + 1);
+    runTransaction(todayRef, current => (current || 0) + 1);
+    sessionStorage.setItem(SESSION_KEY, '1');
+  }
+
+  /* Dengarkan total realtime — update odometer saat ada perubahan */
+  let lastTotal = 0;
+  onValue(totalRef, snapshot => {
+    const val = snapshot.val() || 0;
+    updateOdometer(val, lastTotal === 0 ? -1 : lastTotal);
+    lastTotal = val;
+  });
+
+  /* Dengarkan hitungan hari ini */
+  onValue(todayRef, snapshot => {
+    const el = document.getElementById('vcTodayCount');
+    if (el) el.textContent = (snapshot.val() || 0).toLocaleString('id-ID');
+  });
+</script>
+
+<!-- 2. Utility Scripts (non-module) -->
 <script>
 /* ─── MOBILE MENU ─── */
 function toggleMobileMenu() {
   const overlay = document.getElementById('mobileMenuOverlay');
-  const drawer = document.getElementById('mobileMenuDrawer');
+  const drawer  = document.getElementById('mobileMenuDrawer');
   overlay.classList.toggle('active');
   drawer.classList.toggle('active');
   document.body.style.overflow = drawer.classList.contains('active') ? 'hidden' : '';
@@ -510,13 +939,13 @@ function toggleMobileMenu() {
 /* ─── SEARCH ─── */
 function toggleSearch() {
   const dropdown = document.getElementById('searchDropdown');
-  const iconBtn = document.getElementById('btnToggleSearch').querySelector('i');
+  const icon     = document.getElementById('btnToggleSearch').querySelector('i');
   if (dropdown.classList.contains('active')) {
     dropdown.classList.remove('active');
-    iconBtn.classList.replace('bi-x-lg', 'bi-search');
+    icon.classList.replace('bi-x-lg','bi-search');
   } else {
     dropdown.classList.add('active');
-    iconBtn.classList.replace('bi-search', 'bi-x-lg');
+    icon.classList.replace('bi-search','bi-x-lg');
     setTimeout(() => document.getElementById('navSearch').focus(), 100);
   }
 }
@@ -524,32 +953,32 @@ function toggleSearch() {
 /* ─── PAGE LOADER ─── */
 document.querySelectorAll('.tool-card, .md-link').forEach(card => {
   card.addEventListener('click', function(e) {
-    if (e.ctrlKey || e.shiftKey || e.metaKey || e.button === 1 || this.getAttribute('href') === '#') return;
+    if (e.ctrlKey || e.shiftKey || e.metaKey || e.button === 1) return;
+    const href = this.getAttribute('href');
+    if (!href || href === '#' || href.startsWith('http') || href.startsWith('//')) return;
     e.preventDefault();
-    const targetUrl = this.getAttribute('href');
     document.getElementById('pageLoader').classList.add('active');
-    setTimeout(() => { window.location.href = targetUrl; }, 400);
+    setTimeout(() => { window.location.href = href; }, 380);
   });
 });
-window.addEventListener('pageshow', function(event) {
-  if (event.persisted) document.getElementById('pageLoader').classList.remove('active');
+window.addEventListener('pageshow', e => {
+  if (e.persisted) document.getElementById('pageLoader').classList.remove('active');
 });
 
-/* ─── REVEAL ON SCROLL ─── */
-const obs = new IntersectionObserver(entries => {
+/* ─── SCROLL REVEAL ─── */
+const revObs = new IntersectionObserver(entries => {
   entries.forEach((e, i) => {
     if (e.isIntersecting) {
-      setTimeout(() => e.target.classList.add('in'), i * 60);
-      obs.unobserve(e.target);
+      setTimeout(() => e.target.classList.add('in'), i * 55);
+      revObs.unobserve(e.target);
     }
   });
-}, { threshold: 0.08 });
-document.querySelectorAll('.rev').forEach(el => obs.observe(el));
+}, { threshold: 0.07 });
+document.querySelectorAll('.rev').forEach(el => revObs.observe(el));
 
 /* ─── SEARCH FILTER ─── */
-const navS = document.getElementById('navSearch');
-navS.addEventListener('input', () => {
-  const q = navS.value.toLowerCase();
+document.getElementById('navSearch').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
   document.querySelectorAll('.tool-card').forEach(c => {
     const txt = (c.dataset.name || '') + c.innerText.toLowerCase();
     c.style.display = txt.includes(q) ? '' : 'none';
@@ -563,122 +992,9 @@ function filterCat(cat, el) {
   document.querySelectorAll('.tool-card').forEach(c => {
     c.style.display = (cat === 'all' || c.dataset.cat === cat) ? '' : 'none';
   });
-  return false;
 }
-
-/* ════════════════════════════════════════════════════
-   VISITOR COUNTER
-   - Pakai localStorage (data bertahan di browser user)
-   - Total tidak pernah reset
-   - Badge "hari ini" reset otomatis tiap hari baru
-   - 1 sesi browser = 1 hitungan (anti refresh spam)
-════════════════════════════════════════════════════ */
-(function () {
-  const KEY_TOTAL   = 'rpdf_total';
-  const KEY_TODAY   = 'rpdf_today';
-  const KEY_DATE    = 'rpdf_date';
-  const KEY_SESSION = 'rpdf_session';
-
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const alreadyCounted = sessionStorage.getItem(KEY_SESSION);
-
-  /* ── Baca data tersimpan ── */
-  let total = parseInt(localStorage.getItem(KEY_TOTAL) || '0');
-  let today = 0;
-
-  const storedDate = localStorage.getItem(KEY_DATE);
-  if (storedDate === todayStr) {
-    today = parseInt(localStorage.getItem(KEY_TODAY) || '0');
-  } else {
-    /* Hari baru — reset hitungan hari ini */
-    today = 0;
-    localStorage.setItem(KEY_DATE, todayStr);
-    localStorage.setItem(KEY_TODAY, '0');
-  }
-
-  /* ── Tambah hitungan jika sesi baru ── */
-  if (!alreadyCounted) {
-    total += 1;
-    today += 1;
-    sessionStorage.setItem(KEY_SESSION, '1');
-    localStorage.setItem(KEY_TOTAL, String(total));
-    localStorage.setItem(KEY_TODAY, String(today));
-  }
-
-  /* ── Render pertama kali ── */
-  renderDigits(total);
-  document.getElementById('vcTodayCount').textContent = today;
-
-  /* ── Animasi count-up untuk pengunjung baru ── */
-  if (!alreadyCounted) {
-    animateCountUp(Math.max(0, total - 1), total, 900);
-  }
-
-  /* ── Polling setiap 15 detik (kalau ada tab lain / multi-tab update) ── */
-  setInterval(function () {
-    const latestTotal = parseInt(localStorage.getItem(KEY_TOTAL) || '0');
-    const latestDate  = localStorage.getItem(KEY_DATE);
-    const latestToday = latestDate === todayStr
-      ? parseInt(localStorage.getItem(KEY_TODAY) || '0')
-      : 0;
-
-    if (latestTotal > total) {
-      animateCountUp(total, latestTotal, 600);
-      total = latestTotal;
-    }
-    document.getElementById('vcTodayCount').textContent = latestToday;
-  }, 15000);
-
-  /* ─────────────────────────────────────── */
-  function renderDigits(num) {
-    const wrap = document.getElementById('visitorNumberWrap');
-    if (!wrap) return;
-    const str = String(num).padStart(7, '0');
-    wrap.innerHTML = '';
-    str.split('').forEach(function (ch, idx) {
-      /* Separator titik tiap 3 digit dari kanan */
-      if (idx > 0 && (str.length - idx) % 3 === 0) {
-        const sep = document.createElement('span');
-        sep.className = 'vn-sep';
-        sep.textContent = '.';
-        wrap.appendChild(sep);
-      }
-      const d = document.createElement('div');
-      d.className = 'vn-digit';
-      d.setAttribute('data-di', idx);
-      d.textContent = ch;
-      wrap.appendChild(d);
-    });
-  }
-
-  function animateCountUp(from, to, durationMs) {
-    const steps = Math.min(to - from, 40);
-    if (steps <= 0) { renderDigits(to); return; }
-    let current = from;
-    const iv = setInterval(function () {
-      current += 1;
-      if (current >= to) { current = to; clearInterval(iv); }
-      updateDigits(current);
-    }, durationMs / steps);
-  }
-
-  function updateDigits(num) {
-    const str = String(num).padStart(7, '0');
-    const els = document.querySelectorAll('.vn-digit');
-    let i = 0;
-    str.split('').forEach(function (ch) {
-      const el = els[i++];
-      if (!el) return;
-      if (el.textContent !== ch) {
-        el.textContent = ch;
-        el.classList.remove('bump');
-        void el.offsetWidth; /* force reflow untuk restart animasi */
-        el.classList.add('bump');
-      }
-    });
-  }
-})();
-/* ════════════════════════════════════════════════════ */
 </script>
+
 </body>
 </html>
+

@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Buat Booklet PDF - Rekan PDF</title>
+<meta name="description" content="Ubah dokumen PDF Anda menjadi format buku lipat siap cetak (Saddle-Stitch) secara online dan gratis."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E8720C;
+  --orange-dark:#C45F00;
+  --orange-light:#FF9235;
+  --orange-bg:#FFF4EB;
+  --navy:#0F1923;
+  --navy2:#1A2736;
+  --blue:#1B5FA8;
+  --blue-light:#2272C3;
+  --white:#FFFFFF;
+  --off:#F7F8FA;
+  --border:#DDE1E7;
+  --border2:#C8CDD5;
+  --text:#0F1923;
+  --text2:#3D4A5A;
+  --muted:#6B7A8D;
+  --green:#1A7A42;
+  --green-light:#E6F4EA;
+  --red:#C0392B;
+  --red-light:#FDECEA;
+  --yellow:#B45309;
+  --yellow-light:#FFFBEB;
+  --shadow:0 2px 8px rgba(15,25,35,0.10);
+  --shadow-md:0 4px 20px rgba(15,25,35,0.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--off);color:var(--text);font-size:15px;line-height:1.5}
+
+/* ── TOP BAR & NAVBAR ── */
+.topbar{background:var(--navy);color:#fff;font-size:12.5px;text-align:center;padding:7px 20px;font-weight:600;letter-spacing:0.01em}
+.topbar span{color:var(--orange-light)}
+nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.nav-inner{display:flex;align-items:center;gap:0;max-width:1380px;margin:0 auto;padding:0 20px;height:62px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:28px;flex-shrink:0}
+.logo-mark{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:0.04em}
+.logo-sub{color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:0.06em}
+.logo-sub span{color:var(--orange-light)}
+.nav-right{display:flex;align-items:center;gap:4px;margin-left:auto;padding-left:20px}
+.nav-btn{color:#fff;text-decoration:none;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;white-space:nowrap;transition:background .15s;border:1px solid transparent}
+.nav-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+
+/* ── LAYOUT ── */
+.page-body{max-width:1100px;margin:40px auto;padding:0 20px}
+
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:24px;flex-wrap:wrap}
+.breadcrumb a{display:flex;align-items:center;gap:4px;color:var(--blue-light);text-decoration:none;font-weight:600}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb span{color:var(--border2)}
+
+/* ── TOOL HEADER ── */
+.tool-header{text-align:center;margin-bottom:32px}
+.tool-icon{width:64px;height:64px;background:var(--red-light);color:var(--red);font-size:2rem;display:flex;align-items:center;justify-content:center;border-radius:12px;margin:0 auto 16px}
+.tool-header h1{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:var(--text);margin-bottom:8px}
+.tool-header p{color:var(--text2);font-size:1.1rem;max-width:600px;margin:0 auto}
+
+/* ── WORKSPACE ── */
+.workspace{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:40px;position:relative;overflow:hidden}
+
+/* ── UPLOAD AREA ── */
+.upload-area{width:100%;max-width:600px;border:2.5px dashed var(--border2);border-radius:12px;padding:50px 20px;text-align:center;background:var(--off);transition:all .2s ease;cursor:pointer;margin:0 auto;display:block}
+.upload-area:hover,.upload-area.dragover{border-color:var(--orange);background:var(--orange-bg)}
+.upload-area.dragover{transform:scale(1.01)}
+.upload-area i{font-size:3.5rem;color:var(--orange);margin-bottom:16px;display:block;transition:transform .2s}
+.upload-area.dragover i{transform:scale(1.1) translateY(-4px)}
+.upload-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+.upload-area p{color:var(--muted);font-size:14px;margin-bottom:6px}
+.upload-area .file-hint{color:var(--muted);font-size:12px;margin-bottom:24px}
+.btn-upload{background:var(--orange);color:#fff;padding:12px 32px;font-size:1rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s,transform .1s;display:inline-flex;align-items:center;gap:8px}
+.btn-upload:hover{background:var(--orange-dark);transform:translateY(-1px)}
+.btn-upload:active{transform:translateY(0)}
+#fileInput{display:none}
+
+/* ── OPTIONS PANEL ── */
+#viewOptions{display:none}
+.options-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.file-info-badge{display:flex;align-items:center;gap:10px;background:var(--off);border:1px solid var(--border);border-radius:8px;padding:10px 14px;flex:1;min-width:0}
+.file-info-badge i{font-size:1.4rem;color:var(--red);flex-shrink:0}
+.file-info-text{min-width:0}
+.file-info-text strong{display:block;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-info-text span{font-size:12px;color:var(--muted)}
+.btn-change{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:8px 14px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.btn-change:hover{background:var(--border);color:var(--text)}
+
+/* Preview Card */
+.preview-card{background:var(--off);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px}
+.preview-label{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.preview-info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.preview-info-item{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
+.preview-info-item span{display:block;font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:4px}
+.preview-info-item strong{font-size:1.05rem;font-family:'Barlow Condensed',sans-serif;color:var(--text)}
+.preview-info-item.highlight strong{color:var(--orange)}
+
+/* Warning/Info notice */
+.notice{display:flex;align-items:flex-start;gap:10px;border-radius:8px;padding:12px 14px;font-size:13px;margin-bottom:20px}
+.notice.warning{background:var(--yellow-light);border:1px solid #FDE68A;color:var(--yellow)}
+.notice.info{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E40AF}
+.notice i{flex-shrink:0;font-size:1.05rem;margin-top:1px}
+.notice strong{font-weight:700}
+
+/* Options Grid */
+.options-section{margin-bottom:20px}
+.options-section-title{font-size:13px;font-weight:800;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.option-group{display:flex;flex-direction:column;gap:6px}
+.option-group label{font-size:13px;font-weight:700;color:var(--text2)}
+.option-group select,.option-group input[type=number]{width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:6px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:var(--text);background:var(--white);transition:border-color .15s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7A8D' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.option-group select:focus,.option-group input[type=number]:focus{outline:none;border-color:var(--orange)}
+.option-group input[type=number]{background-image:none;text-align:center}
+.option-hint{font-size:11.5px;color:var(--muted)}
+
+/* Toggle row */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;background:var(--off);border:1.5px solid var(--border);border-radius:8px;padding:12px 14px}
+.toggle-label{display:flex;flex-direction:column;gap:2px}
+.toggle-label strong{font-size:13.5px;font-weight:700}
+.toggle-label span{font-size:12px;color:var(--muted)}
+.toggle-switch{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--border2);border-radius:12px;transition:.2s}
+.toggle-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle-switch input:checked+.toggle-slider{background:var(--orange)}
+.toggle-switch input:checked+.toggle-slider:before{transform:translateX(20px)}
+
+/* Process Button */
+.btn-process{width:100%;background:var(--orange);color:#fff;padding:15px 20px;font-size:1.05rem;font-weight:800;border:none;border-radius:8px;cursor:pointer;transition:background .2s,transform .1s;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px}
+.btn-process:hover{background:var(--orange-dark);transform:translateY(-1px)}
+.btn-process:active{transform:translateY(0)}
+
+/* ── LOADING AREA ── */
+.loading-area{display:none;text-align:center;padding:20px 0}
+.spinner-wrap{position:relative;width:80px;height:80px;margin:0 auto 20px}
+.spinner-ring{width:80px;height:80px;border:5px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin 1s linear infinite}
+.spinner-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.5rem;color:var(--orange)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
+#loadingText{color:var(--muted);font-size:14px;min-height:20px;transition:opacity .3s}
+.progress-wrap{width:100%;max-width:420px;margin:20px auto 0}
+.progress-bar{width:100%;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--orange),var(--orange-light));transition:width 0.4s ease;border-radius:4px}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:600;margin-top:6px}
+.steps-list{display:flex;flex-direction:column;gap:6px;max-width:360px;margin:20px auto 0;text-align:left}
+.step-item{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);transition:color .3s}
+.step-item.done{color:var(--green)}
+.step-item.active{color:var(--orange);font-weight:700}
+.step-item i{width:18px;text-align:center;flex-shrink:0}
+
+/* ── RESULT AREA ── */
+.result-area{display:none;text-align:center}
+.result-icon{width:70px;height:70px;background:var(--green-light);color:var(--green);font-size:2.5rem;display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 20px;animation:popIn .4s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.result-area h3{font-size:1.5rem;font-weight:800;margin-bottom:4px}
+.result-area .result-sub{color:var(--muted);font-size:14px;margin-bottom:20px}
+
+.stats-box{display:flex;justify-content:center;align-items:stretch;gap:0;background:var(--off);border:1px solid var(--border);border-radius:10px;max-width:520px;margin:0 auto 24px;overflow:hidden}
+.stat-col{flex:1;padding:16px 12px;text-align:center;border-right:1px solid var(--border)}
+.stat-col:last-child{border-right:none}
+.stat-col span{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:6px}
+.stat-col strong{font-size:1.2rem;font-family:'Barlow Condensed',sans-serif;color:var(--text);display:block}
+.stat-col.highlight strong{color:var(--green)}
+.stat-arrow{display:flex;align-items:center;justify-content:center;padding:0 4px;flex:0;font-size:1.1rem;color:var(--muted);border-right:1px solid var(--border)}
+
+/* Print tip */
+.print-tip{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:14px 16px;max-width:520px;margin:0 auto 20px;text-align:left;display:flex;gap:10px;align-items:flex-start;font-size:13px;color:#1E40AF}
+.print-tip i{flex-shrink:0;font-size:1rem;margin-top:2px}
+.print-tip strong{display:block;font-weight:700;margin-bottom:2px}
+
+.result-actions{display:flex;justify-content:center;gap:12px;margin-top:4px;flex-wrap:wrap}
+.btn-download{background:var(--green);color:#fff;padding:14px 32px;font-size:1rem;font-weight:800;border:none;border-radius:8px;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-download:hover{background:#146134;color:#fff;transform:translateY(-1px)}
+.btn-reset{background:var(--off);color:var(--text2);padding:14px 20px;font-size:1rem;font-weight:700;border:1.5px solid var(--border2);border-radius:8px;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-reset:hover{background:var(--border);color:var(--text)}
+
+/* ── HOW TO USE ── */
+.info-section{margin-top:32px}
+.info-card{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:28px 32px}
+.info-card h2{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.steps-how{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+.step-how{display:flex;flex-direction:column;gap:8px}
+.step-num{width:32px;height:32px;background:var(--orange);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;flex-shrink:0}
+.step-how h4{font-size:14.5px;font-weight:800;margin-bottom:2px}
+.step-how p{font-size:13px;color:var(--muted)}
+
+.faq-list{margin-top:20px;display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-item:last-child{border-bottom:none}
+.faq-q{width:100%;background:var(--white);border:none;padding:14px 16px;text-align:left;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;transition:background .15s;color:var(--text)}
+.faq-q:hover{background:var(--off)}
+.faq-q i{font-size:1rem;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.faq-q.open i{transform:rotate(180deg)}
+.faq-a{display:none;padding:4px 16px 14px;font-size:13.5px;color:var(--text2);line-height:1.6;background:var(--off)}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;border-top:3px solid var(--orange);padding:24px 20px;text-align:center;font-size:14px}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  .topbar{font-size:11px;padding:6px 10px}
+  .page-body{margin:20px auto}
+  .tool-header h1{font-size:2rem}
+  .workspace{padding:20px 16px}
+  .upload-area{padding:30px 16px}
+  .options-header{flex-wrap:wrap;gap:8px}
+  .options-grid{grid-template-columns:1fr}
+  .preview-info-grid{grid-template-columns:repeat(3,1fr)}
+  .stats-box{flex-wrap:wrap}
+  .stat-arrow{display:none}
+  .stat-col{flex:1 0 40%;border-right:none;border-bottom:1px solid var(--border)}
+  .result-actions{flex-direction:column;width:100%;max-width:400px;margin:4px auto 0}
+  .btn-download,.btn-reset{width:100%;justify-content:center}
+  .info-card{padding:20px 16px}
+  .steps-how{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"><i class="bi bi-shield-check"></i> <span>Privasi 100% Aman</span> — Diproses langsung di perangkat Anda, tidak diunggah ke server!</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="logo">
+      <span class="logo-mark">PDF</span>
+      <span class="logo-sub">Rekan<span>PDF</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="../index.html" class="nav-btn"><i class="bi bi-grid-fill"></i> Semua Alat</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-body">
+
+  <div class="breadcrumb">
+    <a href="../index.html"><i class="bi bi-house-door-fill"></i> Beranda</a>
+    <span>/</span><span>Alat PDF</span>
+    <span>/</span><span>Buat Booklet PDF</span>
+  </div>
+
+  <div class="tool-header">
+    <div class="tool-icon"><i class="bi bi-book-half"></i></div>
+    <h1>Buat Booklet PDF</h1>
+    <p>Susun ulang halaman PDF menjadi format buku lipat <strong>Saddle-Stitch</strong> yang siap cetak bolak-balik.</p>
+  </div>
+
+  <div class="workspace">
+
+    <!-- VIEW 1: Upload -->
+    <div id="viewUpload">
+      <div class="upload-area" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <i class="bi bi-cloud-arrow-up-fill"></i>
+        <h3>Pilih atau seret file PDF ke sini</h3>
+        <p>Format yang didukung: PDF (maks. 100 MB)</p>
+        <p class="file-hint">Privasi terjaga — file tidak dikirim ke server</p>
+        <button class="btn-upload" onclick="event.stopPropagation();document.getElementById('fileInput').click()">
+          <i class="bi bi-folder-fill"></i> Pilih Dokumen PDF
+        </button>
+        <input type="file" id="fileInput" accept="application/pdf">
+      </div>
+    </div>
+
+    <!-- VIEW 2: Options -->
+    <div id="viewOptions">
+      <!-- File Info -->
+      <div class="options-header">
+        <div class="file-info-badge">
+          <i class="bi bi-file-earmark-pdf-fill"></i>
+          <div class="file-info-text">
+            <strong id="fileNameLabel">dokumen.pdf</strong>
+            <span id="fileSizeLabel">-</span>
+          </div>
+        </div>
+        <button class="btn-change" onclick="resetTool()">
+          <i class="bi bi-arrow-left"></i> Ganti File
+        </button>
+      </div>
+
+      <!-- Preview Info -->
+      <div class="preview-card">
+        <div class="preview-label"><i class="bi bi-info-circle"></i> Informasi Dokumen</div>
+        <div class="preview-info-grid">
+          <div class="preview-info-item">
+            <span>Halaman Asli</span>
+            <strong id="prevPages">-</strong>
+          </div>
+          <div class="preview-info-item">
+            <span>Halaman Ditambah</span>
+            <strong id="prevPadded">-</strong>
+          </div>
+          <div class="preview-info-item highlight">
+            <span>Lembar Cetak</span>
+            <strong id="prevSheets">-</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Warning jika halaman ditambah -->
+      <div class="notice warning" id="noticeBlank" style="display:none">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div><strong>Halaman kosong otomatis ditambahkan.</strong> Booklet membutuhkan kelipatan 4 halaman. <span id="noticeBlankText"></span> halaman kosong akan ditambahkan di akhir.</div>
+      </div>
+
+      <!-- Opsi -->
+      <div class="options-section">
+        <div class="options-section-title"><i class="bi bi-sliders"></i> Pengaturan Booklet</div>
+        <div class="options-grid">
+          <div class="option-group">
+            <label>Ukuran Kertas Cetak</label>
+            <select id="optPaperSize">
+              <option value="auto">Auto (sesuai PDF asli)</option>
+              <option value="a4">A4 Landscape (297 × 210 mm)</option>
+              <option value="a5">A5 Landscape (210 × 148 mm)</option>
+              <option value="letter">Letter Landscape (11 × 8.5 in)</option>
+            </select>
+            <span class="option-hint">Setiap lembar cetak = 2 halaman buku</span>
+          </div>
+          <div class="option-group">
+            <label>Jarak Tengah Lipatan (Gutter)</label>
+            <input type="number" id="optGutter" value="0" min="0" max="30" step="1">
+            <span class="option-hint">Dalam mm. Tambahkan ruang di tengah untuk jilid (0–30 mm)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toggle: RTL -->
+      <div class="options-section">
+        <div class="toggle-row" style="margin-bottom:10px">
+          <div class="toggle-label">
+            <strong>Arah Halaman: Kanan ke Kiri (RTL)</strong>
+            <span>Aktifkan untuk buku Arab / Jepang / Manga</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="optRTL">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label">
+            <strong>Tambah Garis Lipat di Tengah</strong>
+            <span>Garis tipis sebagai panduan melipat kertas</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="optFoldLine">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn-process" id="btnProcess">
+        <i class="bi bi-book-fill"></i> Buat Booklet Sekarang
+      </button>
+    </div>
+
+    <!-- VIEW 3: Loading -->
+    <div class="loading-area" id="viewLoading">
+      <div class="spinner-wrap">
+        <div class="spinner-ring"></div>
+        <i class="bi bi-book-half spinner-icon"></i>
+      </div>
+      <h3>Memproses Booklet...</h3>
+      <p id="loadingText">Memulai proses...</p>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-label"><span id="progressStep">Langkah 1 dari 4</span><span id="progressPct">0%</span></div>
+      </div>
+      <div class="steps-list">
+        <div class="step-item" id="step1"><i class="bi bi-circle"></i> Membaca & validasi file PDF</div>
+        <div class="step-item" id="step2"><i class="bi bi-circle"></i> Menyesuaikan halaman ke kelipatan 4</div>
+        <div class="step-item" id="step3"><i class="bi bi-circle"></i> Menyusun urutan Saddle-Stitch</div>
+        <div class="step-item" id="step4"><i class="bi bi-circle"></i> Menyimpan & mengemas file</div>
+      </div>
+    </div>
+
+    <!-- VIEW 4: Result -->
+    <div class="result-area" id="viewResult">
+      <div class="result-icon"><i class="bi bi-check-lg"></i></div>
+      <h3>Booklet Siap Dicetak!</h3>
+      <p class="result-sub">Unduh dan cetak bolak-balik, lalu lipat di tengah.</p>
+
+      <div class="stats-box">
+        <div class="stat-col">
+          <span>Halaman Asli</span>
+          <strong id="statOrig">-</strong>
+        </div>
+        <div class="stat-arrow"><i class="bi bi-arrow-right"></i></div>
+        <div class="stat-col">
+          <span>Total Halaman</span>
+          <strong id="statTotal">-</strong>
+        </div>
+        <div class="stat-arrow"><i class="bi bi-arrow-right"></i></div>
+        <div class="stat-col highlight">
+          <span>Lembar Cetak</span>
+          <strong id="statSheets">-</strong>
+        </div>
+        <div class="stat-arrow"><i class="bi bi-arrow-right"></i></div>
+        <div class="stat-col">
+          <span>Ukuran File</span>
+          <strong id="statSize">-</strong>
+        </div>
+      </div>
+
+      <div class="print-tip">
+        <i class="bi bi-printer"></i>
+        <div>
+          <strong>Cara Mencetak Booklet:</strong>
+          Cetak dengan mode <strong>Bolak-balik (Duplex)</strong> → <strong>Flip on Short Edge</strong>. Setelah dicetak, susun lembar sesuai urutan, lipat di tengah, dan jilid/stapler di lipatan.
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <a href="#" id="btnDownload" class="btn-download"><i class="bi bi-printer-fill"></i> Unduh Booklet PDF</a>
+        <button class="btn-reset" onclick="resetTool()"><i class="bi bi-arrow-counterclockwise"></i> Buat Lagi</button>
+      </div>
+    </div>
+
+  </div><!-- /workspace -->
+
+  <!-- HOW TO USE + FAQ -->
+  <div class="info-section">
+    <div class="info-card">
+      <h2><i class="bi bi-book-fill" style="color:var(--orange)"></i> Cara Membuat Booklet PDF</h2>
+      <div class="steps-how">
+        <div class="step-how">
+          <div class="step-num">1</div>
+          <div>
+            <h4>Upload PDF Anda</h4>
+            <p>Pilih file PDF dari perangkat Anda atau seret langsung ke area upload.</p>
+          </div>
+        </div>
+        <div class="step-how">
+          <div class="step-num">2</div>
+          <div>
+            <h4>Atur Opsi</h4>
+            <p>Pilih ukuran kertas, gutter lipatan, dan arah halaman sesuai kebutuhan.</p>
+          </div>
+        </div>
+        <div class="step-how">
+          <div class="step-num">3</div>
+          <div>
+            <h4>Proses Booklet</h4>
+            <p>Klik tombol proses. Algoritma Saddle-Stitch akan menyusun ulang halaman otomatis.</p>
+          </div>
+        </div>
+        <div class="step-how">
+          <div class="step-num">4</div>
+          <div>
+            <h4>Cetak & Lipat</h4>
+            <p>Unduh, cetak bolak-balik (Duplex), susun, lipat di tengah, dan jilid.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:28px">
+        <div class="options-section-title" style="margin-bottom:12px"><i class="bi bi-question-circle"></i> Pertanyaan Umum</div>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">Apa itu booklet Saddle-Stitch? <i class="bi bi-chevron-down"></i></button>
+            <div class="faq-a">Saddle-Stitch adalah metode penjilidan buku lipat yang paling umum. Halaman-halaman disusun sedemikian rupa sehingga saat dicetak bolak-balik dan dilipat di tengah, urutannya menjadi benar dari halaman 1 hingga akhir. Biasa digunakan untuk brosur, majalah, dan komik kecil.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">Kenapa jumlah halaman harus kelipatan 4? <i class="bi bi-chevron-down"></i></button>
+            <div class="faq-a">Setiap lembar kertas memiliki 4 permukaan halaman (depan-kiri, depan-kanan, belakang-kiri, belakang-kanan). Oleh karena itu, total halaman harus kelipatan 4. Jika tidak, alat ini otomatis menambahkan halaman kosong di akhir dokumen.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">Bagaimana cara cetak yang benar? <i class="bi bi-chevron-down"></i></button>
+            <div class="faq-a">Buka file hasil unduhan di Adobe Acrobat atau aplikasi PDF lainnya. Pilih Print → aktifkan Duplex/Bolak-balik → pilih "Flip on Short Edge" (bukan Long Edge). Cetak semua halaman. Setelah dicetak, susun semua lembar bertumpuk sesuai urutan, lipat seluruhnya di tengah, dan stapler/jilid di bagian lipatan.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">Apakah file saya aman? Apakah diunggah ke server? <i class="bi bi-chevron-down"></i></button>
+            <div class="faq-a">100% aman. Seluruh proses berjalan di browser Anda menggunakan teknologi client-side (pdf-lib.js). File PDF Anda tidak pernah dikirim ke server manapun, sehingga privasi dokumen Anda sepenuhnya terjaga.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">Berapa batas ukuran file yang bisa diproses? <i class="bi bi-chevron-down"></i></button>
+            <div class="faq-a">Batas ukuran file adalah 100 MB. Untuk file besar, waktu proses akan lebih lama karena semuanya diproses di perangkat Anda. Pastikan perangkat Anda memiliki RAM yang cukup untuk memproses PDF berukuran besar.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">Apa fungsi "Gutter" atau jarak tengah lipatan? <i class="bi bi-chevron-down"></i></button>
+            <div class="faq-a">Gutter adalah ruang kosong tambahan di bagian tengah setiap lembar cetak, tepat di area lipatan. Ini berguna agar teks atau gambar yang berada di dekat tepi buku tidak tertutup saat dijilid. Untuk buku tipis (4–20 lembar), gutter 3–5 mm sudah cukup. Untuk buku lebih tebal, gunakan 8–15 mm.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 Rekan PDF. Dibuat untuk Indonesia. &nbsp;|&nbsp; Semua proses dilakukan di perangkat Anda — privasi terjaga.
+</footer>
+
+<script>
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let currentFile = null;
+let currentSrcDoc = null;
+
+const MAX_FILE_SIZE_MB = 100;
+
+// ─────────────────────────────────────────────
+// ELEMENTS
+// ─────────────────────────────────────────────
+const viewUpload   = document.getElementById('viewUpload');
+const viewOptions  = document.getElementById('viewOptions');
+const viewLoading  = document.getElementById('viewLoading');
+const viewResult   = document.getElementById('viewResult');
+const fileInput    = document.getElementById('fileInput');
+const dropZone     = document.getElementById('dropZone');
+const btnProcess   = document.getElementById('btnProcess');
+const btnDownload  = document.getElementById('btnDownload');
+
+// ─────────────────────────────────────────────
+// DRAG & DROP
+// ─────────────────────────────────────────────
+['dragenter','dragover'].forEach(evt => {
+  dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+});
+['dragleave','dragend'].forEach(evt => {
+  dropZone.addEventListener(evt, () => dropZone.classList.remove('dragover'));
+});
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  const files = e.dataTransfer.files;
+  if (files.length) handleFileSelect(files[0]);
+});
+fileInput.addEventListener('change', e => {
+  if (e.target.files.length) handleFileSelect(e.target.files[0]);
+});
+btnProcess.addEventListener('click', processBooklet);
+
+// ─────────────────────────────────────────────
+// FILE SELECT → VALIDATE → SHOW OPTIONS
+// ─────────────────────────────────────────────
+async function handleFileSelect(file) {
+  // Validasi tipe
+  if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+    showError('Format file tidak didukung. Harap unggah file PDF (.pdf).');
+    return;
+  }
+  // Validasi ukuran
+  const sizeMB = file.size / 1024 / 1024;
+  if (sizeMB > MAX_FILE_SIZE_MB) {
+    showError(`Ukuran file terlalu besar (${sizeMB.toFixed(1)} MB). Maksimum ${MAX_FILE_SIZE_MB} MB.`);
+    return;
+  }
+
+  currentFile = file;
+
+  // Coba baca PDF untuk validasi & info
+  try {
+    const buf = await file.arrayBuffer();
+    currentSrcDoc = await PDFLib.PDFDocument.load(buf, { ignoreEncryption: false });
+  } catch (e) {
+    showError('Gagal membaca PDF. Pastikan file tidak rusak atau tidak diproteksi password.');
+    currentFile = null;
+    return;
+  }
+
+  showOptionsPanel(file, currentSrcDoc);
+}
+
+function showOptionsPanel(file, srcDoc) {
+  const totalPages  = srcDoc.getPageCount();
+  const padded      = (4 - (totalPages % 4)) % 4;
+  const finalTotal  = totalPages + padded;
+  const sheets      = finalTotal / 4;
+
+  // Update labels
+  document.getElementById('fileNameLabel').textContent = file.name;
+  document.getElementById('fileSizeLabel').textContent = formatBytes(file.size) + ' · ' + totalPages + ' halaman';
+  document.getElementById('prevPages').textContent    = totalPages;
+  document.getElementById('prevPadded').textContent   = padded > 0 ? '+' + padded + ' kosong' : 'Tidak ada';
+  document.getElementById('prevSheets').textContent   = sheets + ' lembar';
+
+  const notice = document.getElementById('noticeBlank');
+  if (padded > 0) {
+    document.getElementById('noticeBlankText').textContent = padded;
+    notice.style.display = 'flex';
+  } else {
+    notice.style.display = 'none';
+  }
+
+  switchView('options');
+}
+
+// ─────────────────────────────────────────────
+// MAIN PROCESS
+// ─────────────────────────────────────────────
+async function processBooklet() {
+  if (!currentFile || !currentSrcDoc) return;
+
+  const optGutter   = Math.max(0, Math.min(30, parseFloat(document.getElementById('optGutter').value) || 0));
+  const optPaper    = document.getElementById('optPaperSize').value;
+  const optRTL      = document.getElementById('optRTL').checked;
+  const optFoldLine = document.getElementById('optFoldLine').checked;
+
+  switchView('loading');
+  setStep(1, 'active');
+  setProgress(5, 'Langkah 1 dari 4');
+
+  try {
+    // ── STEP 1: Re-load ──
+    updateLoadingText('Membaca & memvalidasi file PDF...');
+    const arrayBuffer = await currentFile.arrayBuffer();
+    const srcDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+    setStep(1, 'done'); setStep(2, 'active');
+    setProgress(20, 'Langkah 2 dari 4');
+
+    // ── STEP 2: Pad ke kelipatan 4 ──
+    updateLoadingText('Menyesuaikan jumlah halaman ke kelipatan 4...');
+    const origPageCount = srcDoc.getPageCount();
+    let totalPages = origPageCount;
+    const pagesToAdd = (4 - (totalPages % 4)) % 4;
+
+    // Ambil dimensi halaman pertama
+    const refPage  = srcDoc.getPage(0);
+    const srcW     = refPage.getWidth();
+    const srcH     = refPage.getHeight();
+
+    for (let i = 0; i < pagesToAdd; i++) {
+      srcDoc.addPage([srcW, srcH]);
+    }
+    totalPages = srcDoc.getPageCount();
+
+    setStep(2, 'done'); setStep(3, 'active');
+    setProgress(40, 'Langkah 3 dari 4');
+
+    // ── STEP 3: Susun Saddle-Stitch ──
+    updateLoadingText('Menyusun urutan halaman Saddle-Stitch...');
+
+    const outDoc      = await PDFLib.PDFDocument.create();
+    const embeddedPages = await outDoc.embedPages(srcDoc.getPages());
+    const totalSheets = totalPages / 4;
+
+    // Hitung dimensi output
+    // Gutter dalam mm → point (1mm = 2.8346 pt)
+    const gutterPt = optGutter * 2.8346;
+
+    let outW, outH;
+    if (optPaper === 'a4') {
+      outW = 841.89; outH = 595.28; // A4 landscape
+    } else if (optPaper === 'a5') {
+      outW = 595.28; outH = 421.00; // A5 landscape
+    } else if (optPaper === 'letter') {
+      outW = 792; outH = 612; // Letter landscape
+    } else {
+      outW = srcW * 2 + gutterPt;
+      outH = srcH;
+    }
+
+    // Lebar satu slot halaman dalam lembar
+    const slotW = optPaper === 'auto' ? srcW : (outW - gutterPt) / 2;
+    const slotH = optPaper === 'auto' ? srcH : outH;
+
+    // Scale agar halaman muat di slot
+    const scaleX = slotW / srcW;
+    const scaleY = slotH / srcH;
+    const scale  = Math.min(scaleX, scaleY);
+    const drawW  = srcW * scale;
+    const drawH  = srcH * scale;
+
+    // Offset untuk centering dalam slot
+    const offX = (slotW - drawW) / 2;
+    const offY = (slotH - drawH) / 2;
+
+    for (let i = 0; i < totalSheets; i++) {
+      // Urutan Saddle-Stitch yang BENAR:
+      // Lembar ke-i:
+      //   DEPAN: kiri = halaman (totalPages - 1 - 2*i), kanan = halaman (2*i)
+      //   BELAKANG: kiri = halaman (2*i + 1), kanan = halaman (totalPages - 2 - 2*i)
+      let leftFrontIdx  = totalPages - 1 - (2 * i);
+      let rightFrontIdx = 2 * i;
+      let leftBackIdx   = 2 * i + 1;
+      let rightBackIdx  = totalPages - 2 - (2 * i);
+
+      // RTL: swap kiri-kanan
+      if (optRTL) {
+        [leftFrontIdx, rightFrontIdx] = [rightFrontIdx, leftFrontIdx];
+        [leftBackIdx,  rightBackIdx]  = [rightBackIdx,  leftBackIdx];
+      }
+
+      // ─── Halaman DEPAN ───
+      const frontPage = outDoc.addPage([outW, outH]);
+      // Kiri
+      frontPage.drawPage(embeddedPages[leftFrontIdx], {
+        x: offX,
+        y: offY,
+        width:  drawW,
+        height: drawH
+      });
+      // Kanan
+      frontPage.drawPage(embeddedPages[rightFrontIdx], {
+        x: slotW + gutterPt + offX,
+        y: offY,
+        width:  drawW,
+        height: drawH
+      });
+      // Garis lipat
+      if (optFoldLine) {
+        drawFoldLine(frontPage, outW, outH, gutterPt);
+      }
+
+      // ─── Halaman BELAKANG ───
+      const backPage = outDoc.addPage([outW, outH]);
+      frontPage.drawPage(embeddedPages[leftBackIdx], {
+        x: offX,
+        y: offY,
+        width:  drawW,
+        height: drawH
+      });
+      backPage.drawPage(embeddedPages[leftBackIdx], {
+        x: offX,
+        y: offY,
+        width:  drawW,
+        height: drawH
+      });
+      backPage.drawPage(embeddedPages[rightBackIdx], {
+        x: slotW + gutterPt + offX,
+        y: offY,
+        width:  drawW,
+        height: drawH
+      });
+      if (optFoldLine) {
+        drawFoldLine(backPage, outW, outH, gutterPt);
+      }
+
+      const pct = Math.round(40 + ((i + 1) / totalSheets) * 45);
+      setProgress(pct, `Langkah 3 dari 4 · Lembar ${i + 1}/${totalSheets}`);
+    }
+
+    setStep(3, 'done'); setStep(4, 'active');
+    setProgress(88, 'Langkah 4 dari 4');
+    updateLoadingText('Menyimpan & mengemas file PDF booklet...');
+
+    // ── STEP 4: Save ──
+    const pdfBytes = await outDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url  = URL.createObjectURL(blob);
+
+    btnDownload.href     = url;
+    btnDownload.download = 'RekanPDF_Booklet_' + currentFile.name;
+
+    // Stats
+    document.getElementById('statOrig').textContent   = origPageCount + ' hal';
+    document.getElementById('statTotal').textContent  = totalPages + ' hal';
+    document.getElementById('statSheets').textContent = totalSheets + ' lbr';
+    document.getElementById('statSize').textContent   = formatBytes(pdfBytes.byteLength);
+
+    setStep(4, 'done');
+    setProgress(100, 'Selesai!');
+    updateLoadingText('Booklet berhasil dibuat!');
+
+    await sleep(600);
+    switchView('result');
+
+  } catch (err) {
+    console.error('Booklet error:', err);
+    const msg = err.message && err.message.includes('encrypt')
+      ? 'PDF diproteksi password. Harap hapus proteksi terlebih dahulu.'
+      : 'Gagal memproses booklet. Pastikan file PDF tidak rusak.';
+    showError(msg);
+    switchView('options');
+  }
+}
+
+// ─────────────────────────────────────────────
+// DRAW FOLD LINE
+// ─────────────────────────────────────────────
+function drawFoldLine(page, pageW, pageH, gutterPt) {
+  const cx = pageW / 2;
+  // Gambar garis putus-putus tipis di tengah
+  const dashLen = 6, gapLen = 4;
+  let y = 0;
+  while (y < pageH) {
+    page.drawLine({
+      start: { x: cx, y: y },
+      end:   { x: cx, y: Math.min(y + dashLen, pageH) },
+      thickness: 0.3,
+      color: PDFLib.rgb(0.7, 0.7, 0.7),
+      opacity: 0.6
+    });
+    y += dashLen + gapLen;
+  }
+  // Jika ada gutter, gambar juga di tepi gutter
+  if (gutterPt > 1) {
+    const g1 = cx - gutterPt / 2;
+    const g2 = cx + gutterPt / 2;
+    for (const gx of [g1, g2]) {
+      let gy = 0;
+      while (gy < pageH) {
+        page.drawLine({
+          start: { x: gx, y: gy },
+          end:   { x: gx, y: Math.min(gy + dashLen, pageH) },
+          thickness: 0.2,
+          color: PDFLib.rgb(0.8, 0.8, 0.8),
+          opacity: 0.4
+        });
+        gy += dashLen + gapLen;
+      }
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
+// UI HELPERS
+// ─────────────────────────────────────────────
+function switchView(name) {
+  viewUpload.style.display  = name === 'upload'  ? 'block' : 'none';
+  viewOptions.style.display = name === 'options' ? 'block' : 'none';
+  viewLoading.style.display = name === 'loading' ? 'block' : 'none';
+  viewResult.style.display  = name === 'result'  ? 'block' : 'none';
+}
+
+function resetTool() {
+  currentFile   = null;
+  currentSrcDoc = null;
+  fileInput.value = '';
+  setProgress(0, 'Langkah 1 dari 4');
+  // Reset steps
+  ['step1','step2','step3','step4'].forEach(id => setStep(id.replace('step',''), 'pending'));
+  switchView('upload');
+}
+
+function setProgress(pct, stepLabel) {
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent  = pct + '%';
+  if (stepLabel) document.getElementById('progressStep').textContent = stepLabel;
+}
+
+function updateLoadingText(txt) {
+  const el = document.getElementById('loadingText');
+  el.style.opacity = '0';
+  setTimeout(() => { el.textContent = txt; el.style.opacity = '1'; }, 150);
+}
+
+function setStep(num, state) {
+  const el = document.getElementById('step' + num);
+  if (!el) return;
+  el.classList.remove('done','active');
+  const icon = el.querySelector('i');
+  if (state === 'done') {
+    el.classList.add('done');
+    icon.className = 'bi bi-check-circle-fill';
+  } else if (state === 'active') {
+    el.classList.add('active');
+    icon.className = 'bi bi-arrow-right-circle-fill';
+  } else {
+    icon.className = 'bi bi-circle';
+  }
+}
+
+function showError(msg) {
+  // Tampilkan error sebagai notice di atas upload area
+  alert('⚠️ ' + msg);
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024)       return bytes + ' B';
+  if (bytes < 1024*1024)  return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/(1024*1024)).toFixed(1) + ' MB';
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ─────────────────────────────────────────────
+// FAQ TOGGLE
+// ─────────────────────────────────────────────
+function toggleFaq(btn) {
+  const answer = btn.nextElementSibling;
+  const isOpen = btn.classList.contains('open');
+  // Tutup semua
+  document.querySelectorAll('.faq-q.open').forEach(q => {
+    q.classList.remove('open');
+    q.nextElementSibling.style.display = 'none';
+  });
+  if (!isOpen) {
+    btn.classList.add('open');
+    answer.style.display = 'block';
+  }
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+switchView('upload');
+</script>
+</body>
+</html>
+

@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Buat Booklet PDF - Rekan PDF</title>
-<meta name="description" content="Ubah dokumen PDF Anda menjadi format buku lipat siap cetak (Saddle-Stitch) secara online dan gratis."/>
+<meta name="description" content="Ubah dokumen PDF atau gambar JPG/PNG menjadi format buku lipat siap cetak (Saddle-Stitch) secara online dan gratis."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -34,6 +34,8 @@
   --red-light:#FDECEA;
   --yellow:#B45309;
   --yellow-light:#FFFBEB;
+  --purple:#6D28D9;
+  --purple-light:#EDE9FE;
   --shadow:0 2px 8px rgba(15,25,35,0.10);
   --shadow-md:0 4px 20px rgba(15,25,35,0.13);
 }
@@ -67,22 +69,66 @@ nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6
 .tool-header h1{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:var(--text);margin-bottom:8px}
 .tool-header p{color:var(--text2);font-size:1.1rem;max-width:600px;margin:0 auto}
 
+/* Format badges */
+.format-badges{display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.badge-fmt{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em}
+.badge-pdf{background:var(--red-light);color:var(--red);border:1px solid #FECACA}
+.badge-jpg{background:var(--purple-light);color:var(--purple);border:1px solid #DDD6FE}
+.badge-png{background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE}
+
 /* ── WORKSPACE ── */
 .workspace{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:40px;position:relative;overflow:hidden}
 
 /* ── UPLOAD AREA ── */
-.upload-area{width:100%;max-width:600px;border:2.5px dashed var(--border2);border-radius:12px;padding:50px 20px;text-align:center;background:var(--off);transition:all .2s ease;cursor:pointer;margin:0 auto;display:block}
+.upload-area{width:100%;max-width:640px;border:2.5px dashed var(--border2);border-radius:12px;padding:44px 20px;text-align:center;background:var(--off);transition:all .2s ease;cursor:pointer;margin:0 auto;display:block}
 .upload-area:hover,.upload-area.dragover{border-color:var(--orange);background:var(--orange-bg)}
 .upload-area.dragover{transform:scale(1.01)}
-.upload-area i{font-size:3.5rem;color:var(--orange);margin-bottom:16px;display:block;transition:transform .2s}
-.upload-area.dragover i{transform:scale(1.1) translateY(-4px)}
+.upload-area i.main-icon{font-size:3.5rem;color:var(--orange);margin-bottom:16px;display:block;transition:transform .2s}
+.upload-area.dragover i.main-icon{transform:scale(1.1) translateY(-4px)}
 .upload-area h3{font-size:1.25rem;font-weight:800;margin-bottom:8px}
-.upload-area p{color:var(--muted);font-size:14px;margin-bottom:6px}
-.upload-area .file-hint{color:var(--muted);font-size:12px;margin-bottom:24px}
-.btn-upload{background:var(--orange);color:#fff;padding:12px 32px;font-size:1rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s,transform .1s;display:inline-flex;align-items:center;gap:8px}
+.upload-area p{color:var(--muted);font-size:14px;margin-bottom:4px}
+.upload-area .file-hint{color:var(--muted);font-size:12px;margin-bottom:20px}
+
+/* Format icons row */
+.fmt-icons{display:flex;justify-content:center;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.fmt-icon-pill{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:6px;font-size:12px;font-weight:700;border:1.5px solid}
+.fmt-icon-pill.pdf{background:var(--red-light);color:var(--red);border-color:#FECACA}
+.fmt-icon-pill.img{background:var(--purple-light);color:var(--purple);border-color:#DDD6FE}
+
+.btn-upload{background:var(--orange);color:#fff;padding:12px 28px;font-size:1rem;font-weight:800;border:none;border-radius:6px;cursor:pointer;transition:background .2s,transform .1s;display:inline-flex;align-items:center;gap:8px}
 .btn-upload:hover{background:var(--orange-dark);transform:translateY(-1px)}
 .btn-upload:active{transform:translateY(0)}
 #fileInput{display:none}
+
+/* ── MULTI-FILE LIST ── */
+.file-list{margin:16px 0;display:flex;flex-direction:column;gap:6px;max-width:640px;margin:16px auto}
+.file-list-header{display:flex;align-items:center;justify-content:space-between;padding:0 2px;margin-bottom:4px}
+.file-list-header strong{font-size:13px;font-weight:800;color:var(--text2)}
+.btn-clear-all{background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-weight:700;display:flex;align-items:center;gap:4px;padding:2px 6px;border-radius:4px;transition:all .15s;font-family:'Nunito Sans',sans-serif}
+.btn-clear-all:hover{background:var(--red-light);color:var(--red)}
+.file-item{display:flex;align-items:center;gap:10px;background:var(--off);border:1px solid var(--border);border-radius:8px;padding:10px 12px;transition:all .15s}
+.file-item-icon{font-size:1.3rem;flex-shrink:0}
+.file-item-icon.pdf{color:var(--red)}
+.file-item-icon.img{color:var(--purple)}
+.file-item-info{flex:1;min-width:0}
+.file-item-info strong{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
+.file-item-info span{font-size:11.5px;color:var(--muted)}
+.file-item-pages{font-size:12px;font-weight:700;color:var(--orange);white-space:nowrap;flex-shrink:0}
+.file-item-remove{background:none;border:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:4px;border-radius:4px;transition:all .15s;display:flex;align-items:center}
+.file-item-remove:hover{background:var(--red-light);color:var(--red)}
+
+/* Drag handles */
+.file-item{cursor:grab}
+.file-item.dragging{opacity:0.5;cursor:grabbing}
+.file-item.drag-over{border-color:var(--orange);background:var(--orange-bg)}
+
+.drag-hint{text-align:center;font-size:12px;color:var(--muted);margin-top:4px;display:flex;align-items:center;justify-content:center;gap:5px}
+
+.btn-add-more{width:100%;border:2px dashed var(--border2);border-radius:8px;padding:10px;font-size:13px;font-weight:700;color:var(--muted);background:none;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Nunito Sans',sans-serif;margin-top:2px}
+.btn-add-more:hover{border-color:var(--orange);color:var(--orange);background:var(--orange-bg)}
+
+.btn-continue{width:100%;max-width:640px;margin:16px auto 0;display:flex;background:var(--orange);color:#fff;padding:14px 20px;font-size:1rem;font-weight:800;border:none;border-radius:8px;cursor:pointer;transition:background .2s,transform .1s;align-items:center;justify-content:center;gap:10px}
+.btn-continue:hover{background:var(--orange-dark);transform:translateY(-1px)}
 
 /* ── OPTIONS PANEL ── */
 #viewOptions{display:none}
@@ -108,6 +154,7 @@ nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6
 .notice{display:flex;align-items:flex-start;gap:10px;border-radius:8px;padding:12px 14px;font-size:13px;margin-bottom:20px}
 .notice.warning{background:var(--yellow-light);border:1px solid #FDE68A;color:var(--yellow)}
 .notice.info{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E40AF}
+.notice.success{background:var(--green-light);border:1px solid #BBF7D0;color:var(--green)}
 .notice i{flex-shrink:0;font-size:1.05rem;margin-top:1px}
 .notice strong{font-weight:700}
 
@@ -164,7 +211,7 @@ nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6
 .result-area h3{font-size:1.5rem;font-weight:800;margin-bottom:4px}
 .result-area .result-sub{color:var(--muted);font-size:14px;margin-bottom:20px}
 
-.stats-box{display:flex;justify-content:center;align-items:stretch;gap:0;background:var(--off);border:1px solid var(--border);border-radius:10px;max-width:520px;margin:0 auto 24px;overflow:hidden}
+.stats-box{display:flex;justify-content:center;align-items:stretch;gap:0;background:var(--off);border:1px solid var(--border);border-radius:10px;max-width:540px;margin:0 auto 24px;overflow:hidden}
 .stat-col{flex:1;padding:16px 12px;text-align:center;border-right:1px solid var(--border)}
 .stat-col:last-child{border-right:none}
 .stat-col span{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:6px}
@@ -173,14 +220,44 @@ nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6
 .stat-arrow{display:flex;align-items:center;justify-content:center;padding:0 4px;flex:0;font-size:1.1rem;color:var(--muted);border-right:1px solid var(--border)}
 
 /* Print tip */
-.print-tip{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:14px 16px;max-width:520px;margin:0 auto 20px;text-align:left;display:flex;gap:10px;align-items:flex-start;font-size:13px;color:#1E40AF}
+.print-tip{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:14px 16px;max-width:540px;margin:0 auto 20px;text-align:left;display:flex;gap:10px;align-items:flex-start;font-size:13px;color:#1E40AF}
 .print-tip i{flex-shrink:0;font-size:1rem;margin-top:2px}
 .print-tip strong{display:block;font-weight:700;margin-bottom:2px}
 
+/* ── PRINT PANEL ── */
+.print-panel{background:var(--navy);border-radius:12px;padding:20px 24px;max-width:540px;margin:0 auto 20px;text-align:left}
+.print-panel-title{color:#fff;font-size:15px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.print-panel-title i{color:var(--orange-light)}
+.print-options-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.print-opt{display:flex;flex-direction:column;gap:5px}
+.print-opt label{color:rgba(255,255,255,0.75);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em}
+.print-opt select{background:var(--navy2);color:#fff;border:1.5px solid rgba(255,255,255,0.15);border-radius:6px;padding:8px 10px;font-family:'Nunito Sans',sans-serif;font-size:13px;appearance:none;-webkit-appearance:none;width:100%;transition:border-color .15s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.5)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.print-opt select:focus{outline:none;border-color:var(--orange-light)}
+.print-actions{display:flex;gap:10px}
+.btn-print-direct{flex:1;background:var(--orange);color:#fff;padding:12px 16px;font-size:0.95rem;font-weight:800;border:none;border-radius:8px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:'Nunito Sans',sans-serif}
+.btn-print-direct:hover{background:var(--orange-dark);transform:translateY(-1px)}
+.btn-print-direct:active{transform:translateY(0)}
+.btn-print-info{flex:0;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);padding:12px 14px;font-size:0.9rem;font-weight:700;border:1.5px solid rgba(255,255,255,0.15);border-radius:8px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:'Nunito Sans',sans-serif;white-space:nowrap}
+.btn-print-info:hover{background:rgba(255,255,255,0.14);color:#fff}
+
+/* Print guide modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,25,35,0.75);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-box{background:var(--white);border-radius:14px;max-width:500px;width:100%;padding:28px;box-shadow:var(--shadow-md);transform:translateY(20px);transition:transform .2s}
+.modal-overlay.open .modal-box{transform:translateY(0)}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.modal-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.modal-step{display:flex;gap:12px;align-items:flex-start}
+.modal-step-num{width:28px;height:28px;background:var(--orange);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0;margin-top:1px}
+.modal-step-text h4{font-size:14px;font-weight:800;margin-bottom:2px}
+.modal-step-text p{font-size:13px;color:var(--text2)}
+.modal-close{width:100%;background:var(--off);border:1.5px solid var(--border2);color:var(--text2);padding:11px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito Sans',sans-serif;transition:all .15s}
+.modal-close:hover{background:var(--border)}
+
 .result-actions{display:flex;justify-content:center;gap:12px;margin-top:4px;flex-wrap:wrap}
-.btn-download{background:var(--green);color:#fff;padding:14px 32px;font-size:1rem;font-weight:800;border:none;border-radius:8px;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-download{background:var(--green);color:#fff;padding:14px 28px;font-size:1rem;font-weight:800;border:none;border-radius:8px;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
 .btn-download:hover{background:#146134;color:#fff;transform:translateY(-1px)}
-.btn-reset{background:var(--off);color:var(--text2);padding:14px 20px;font-size:1rem;font-weight:700;border:1.5px solid var(--border2);border-radius:8px;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-reset{background:var(--off);color:var(--text2);padding:14px 16px;font-size:1rem;font-weight:700;border:1.5px solid var(--border2);border-radius:8px;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
 .btn-reset:hover{background:var(--border);color:var(--text)}
 
 /* ── HOW TO USE ── */
@@ -205,27 +282,78 @@ nav{background:var(--navy2);position:sticky;top:0;z-index:200;box-shadow:0 2px 6
 /* ── FOOTER ── */
 footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;border-top:3px solid var(--orange);padding:24px 20px;text-align:center;font-size:14px}
 
+/* ── CUSTOM ALERT MODAL ── */
+#customAlert{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,25,35,0.75);z-index:10000;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all 0.3s ease;backdrop-filter:blur(4px)}
+#customAlert.show{opacity:1;visibility:visible}
+.alert-box{background:var(--white);width:90%;max-width:380px;border-radius:16px;padding:32px 24px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.2);transform:translateY(20px) scale(0.95);transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275)}
+#customAlert.show .alert-box{transform:translateY(0) scale(1)}
+.alert-icon{width:64px;height:64px;background:var(--red-light);color:var(--red);font-size:2.2rem;display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 20px}
+.alert-title{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:var(--text);margin-bottom:8px;line-height:1.2}
+.alert-desc{font-size:14px;color:var(--text2);margin-bottom:24px;line-height:1.6}
+.alert-btn{background:var(--navy);color:#fff;padding:12px 32px;font-size:1rem;font-weight:800;border:none;border-radius:8px;cursor:pointer;transition:background 0.2s;width:100%}
+.alert-btn:hover{background:var(--orange)}
+
 /* ── MOBILE ── */
 @media(max-width:768px){
   .topbar{font-size:11px;padding:6px 10px}
   .page-body{margin:20px auto}
   .tool-header h1{font-size:2rem}
   .workspace{padding:20px 16px}
-  .upload-area{padding:30px 16px}
+  .upload-area{padding:28px 14px}
   .options-header{flex-wrap:wrap;gap:8px}
   .options-grid{grid-template-columns:1fr}
   .preview-info-grid{grid-template-columns:repeat(3,1fr)}
   .stats-box{flex-wrap:wrap}
   .stat-arrow{display:none}
   .stat-col{flex:1 0 40%;border-right:none;border-bottom:1px solid var(--border)}
+  .print-options-row{grid-template-columns:1fr}
+  .print-actions{flex-direction:column}
   .result-actions{flex-direction:column;width:100%;max-width:400px;margin:4px auto 0}
   .btn-download,.btn-reset{width:100%;justify-content:center}
   .info-card{padding:20px 16px}
   .steps-how{grid-template-columns:1fr}
+  .modal-box{padding:20px 16px}
 }
 </style>
 </head>
 <body>
+
+<div class="modal-overlay" id="printModal">
+  <div class="modal-box">
+    <div class="modal-title"><i class="bi bi-printer-fill" style="color:var(--orange)"></i> Cara Cetak Booklet yang Benar</div>
+    <div class="modal-steps">
+      <div class="modal-step">
+        <div class="modal-step-num">1</div>
+        <div class="modal-step-text">
+          <h4>Buka dialog cetak</h4>
+          <p>Klik tombol <strong>"Cetak Langsung"</strong> atau buka file PDF unduhan di Adobe Acrobat / aplikasi PDF lainnya, lalu pilih Print.</p>
+        </div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-num">2</div>
+        <div class="modal-step-text">
+          <h4>Aktifkan cetak bolak-balik (Duplex)</h4>
+          <p>Pilih <strong>Duplex / Two-sided</strong> → <strong>Flip on Short Edge</strong> (bukan Long Edge). Ini kunci agar halaman belakang tidak terbalik.</p>
+        </div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-num">3</div>
+        <div class="modal-step-text">
+          <h4>Atur ukuran kertas</h4>
+          <p>Pastikan ukuran kertas di printer sesuai dengan opsi yang dipilih (A4, A5, dll). Hilangkan tanda centang "Fit to page" / "Shrink to fit".</p>
+        </div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-num">4</div>
+        <div class="modal-step-text">
+          <h4>Susun, lipat, dan jilid</h4>
+          <p>Setelah dicetak, <strong>susun semua lembar bertumpuk</strong> sesuai urutan (Lembar 1 paling atas), <strong>lipat di tengah sekaligus</strong>, lalu stapler di bagian lipatan.</p>
+        </div>
+      </div>
+    </div>
+    <button class="modal-close" onclick="closePrintModal()"><i class="bi bi-x-lg"></i> Tutup Panduan</button>
+  </div>
+</div>
 
 <div class="topbar"><i class="bi bi-shield-check"></i> <span>Privasi 100% Aman</span> — Diproses langsung di perangkat Anda, tidak diunggah ke server!</div>
 
@@ -252,31 +380,55 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;borde
   <div class="tool-header">
     <div class="tool-icon"><i class="bi bi-book-half"></i></div>
     <h1>Buat Booklet PDF</h1>
-    <p>Susun ulang halaman PDF menjadi format buku lipat <strong>Saddle-Stitch</strong> yang siap cetak bolak-balik.</p>
+    <p>Susun ulang halaman PDF atau gambar JPG/PNG menjadi format buku lipat <strong>Saddle-Stitch</strong> siap cetak bolak-balik.</p>
+    <div class="format-badges">
+      <span class="badge-fmt badge-pdf"><i class="bi bi-file-earmark-pdf-fill"></i> PDF</span>
+      <span class="badge-fmt badge-jpg"><i class="bi bi-file-earmark-image-fill"></i> JPG</span>
+      <span class="badge-fmt badge-png"><i class="bi bi-file-earmark-image-fill"></i> PNG</span>
+    </div>
   </div>
 
   <div class="workspace">
 
-    <!-- VIEW 1: Upload -->
     <div id="viewUpload">
-      <div class="upload-area" id="dropZone" onclick="document.getElementById('fileInput').click()">
-        <i class="bi bi-cloud-arrow-up-fill"></i>
-        <h3>Pilih atau seret file PDF ke sini</h3>
-        <p>Format yang didukung: PDF (maks. 100 MB)</p>
-        <p class="file-hint">Privasi terjaga — file tidak dikirim ke server</p>
-        <button class="btn-upload" onclick="event.stopPropagation();document.getElementById('fileInput').click()">
-          <i class="bi bi-folder-fill"></i> Pilih Dokumen PDF
+      <div class="upload-area" id="dropZone" onclick="triggerFileInput()">
+        <i class="bi bi-cloud-arrow-up-fill main-icon"></i>
+        <h3>Pilih atau seret file ke sini</h3>
+        <p>Gabungkan beberapa file sekaligus — PDF, foto, gambar</p>
+        <div class="fmt-icons">
+          <span class="fmt-icon-pill pdf"><i class="bi bi-file-earmark-pdf-fill"></i> PDF</span>
+          <span class="fmt-icon-pill img"><i class="bi bi-image-fill"></i> JPG / PNG / WEBP</span>
+        </div>
+        <p class="file-hint">Privasi terjaga — file tidak dikirim ke server · Maks. 100 MB per file</p>
+        <button class="btn-upload" onclick="event.stopPropagation();triggerFileInput()">
+          <i class="bi bi-folder2-open"></i> Pilih File
         </button>
-        <input type="file" id="fileInput" accept="application/pdf">
+        <input type="file" id="fileInput" accept="application/pdf,image/jpeg,image/png,image/webp" multiple>
+      </div>
+
+      <div id="fileListWrap" style="display:none">
+        <div class="file-list" id="fileList">
+          <div class="file-list-header">
+            <strong id="fileListCount">0 file dipilih</strong>
+            <button class="btn-clear-all" onclick="clearAllFiles()"><i class="bi bi-trash3"></i> Hapus Semua</button>
+          </div>
+          </div>
+        <div class="drag-hint"><i class="bi bi-arrows-move"></i> Seret untuk mengubah urutan halaman</div>
+        <div style="max-width:640px;margin:8px auto 0">
+          <button class="btn-add-more" onclick="triggerFileInput()">
+            <i class="bi bi-plus-circle"></i> Tambah File Lagi
+          </button>
+        </div>
+        <button class="btn-continue" id="btnContinue" onclick="goToOptions()">
+          <i class="bi bi-arrow-right-circle-fill"></i> Lanjutkan ke Pengaturan Booklet
+        </button>
       </div>
     </div>
 
-    <!-- VIEW 2: Options -->
     <div id="viewOptions">
-      <!-- File Info -->
       <div class="options-header">
         <div class="file-info-badge">
-          <i class="bi bi-file-earmark-pdf-fill"></i>
+          <i class="bi bi-files"></i>
           <div class="file-info-text">
             <strong id="fileNameLabel">dokumen.pdf</strong>
             <span id="fileSizeLabel">-</span>
@@ -287,7 +439,6 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;borde
         </button>
       </div>
 
-      <!-- Preview Info -->
       <div class="preview-card">
         <div class="preview-label"><i class="bi bi-info-circle"></i> Informasi Dokumen</div>
         <div class="preview-info-grid">
@@ -306,20 +457,18 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;borde
         </div>
       </div>
 
-      <!-- Warning jika halaman ditambah -->
       <div class="notice warning" id="noticeBlank" style="display:none">
         <i class="bi bi-exclamation-triangle-fill"></i>
         <div><strong>Halaman kosong otomatis ditambahkan.</strong> Booklet membutuhkan kelipatan 4 halaman. <span id="noticeBlankText"></span> halaman kosong akan ditambahkan di akhir.</div>
       </div>
 
-      <!-- Opsi -->
       <div class="options-section">
         <div class="options-section-title"><i class="bi bi-sliders"></i> Pengaturan Booklet</div>
         <div class="options-grid">
           <div class="option-group">
             <label>Ukuran Kertas Cetak</label>
             <select id="optPaperSize">
-              <option value="auto">Auto (sesuai PDF asli)</option>
+              <option value="auto">Auto (sesuai file asli)</option>
               <option value="a4">A4 Landscape (297 × 210 mm)</option>
               <option value="a5">A5 Landscape (210 × 148 mm)</option>
               <option value="letter">Letter Landscape (11 × 8.5 in)</option>
@@ -334,7 +483,6 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;borde
         </div>
       </div>
 
-      <!-- Toggle: RTL -->
       <div class="options-section">
         <div class="toggle-row" style="margin-bottom:10px">
           <div class="toggle-label">
@@ -363,7 +511,6 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;borde
       </button>
     </div>
 
-    <!-- VIEW 3: Loading -->
     <div class="loading-area" id="viewLoading">
       <div class="spinner-wrap">
         <div class="spinner-ring"></div>
@@ -373,21 +520,21 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;borde
       <p id="loadingText">Memulai proses...</p>
       <div class="progress-wrap">
         <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-        <div class="progress-label"><span id="progressStep">Langkah 1 dari 4</span><span id="progressPct">0%</span></div>
+        <div class="progress-label"><span id="progressStep">Langkah 1 dari 5</span><span id="progressPct">0%</span></div>
       </div>
       <div class="steps-list">
-        <div class="step-item" id="step1"><i class="bi bi-circle"></i> Membaca & validasi file PDF</div>
-        <div class="step-item" id="step2"><i class="bi bi-circle"></i> Menyesuaikan halaman ke kelipatan 4</div>
-        <div class="step-item" id="step3"><i class="bi bi-circle"></i> Menyusun urutan Saddle-Stitch</div>
-        <div class="step-item" id="step4"><i class="bi bi-circle"></i> Menyimpan & mengemas file</div>
+        <div class="step-item" id="step1"><i class="bi bi-circle"></i> Membaca & konversi file</div>
+        <div class="step-item" id="step2"><i class="bi bi-circle"></i> Menggabungkan semua halaman</div>
+        <div class="step-item" id="step3"><i class="bi bi-circle"></i> Menyesuaikan ke kelipatan 4</div>
+        <div class="step-item" id="step4"><i class="bi bi-circle"></i> Menyusun urutan Saddle-Stitch</div>
+        <div class="step-item" id="step5"><i class="bi bi-circle"></i> Menyimpan & mengemas file</div>
       </div>
     </div>
 
-    <!-- VIEW 4: Result -->
     <div class="result-area" id="viewResult">
       <div class="result-icon"><i class="bi bi-check-lg"></i></div>
       <h3>Booklet Siap Dicetak!</h3>
-      <p class="result-sub">Unduh dan cetak bolak-balik, lalu lipat di tengah.</p>
+      <p class="result-sub">Unduh atau cetak langsung dari browser Anda.</p>
 
       <div class="stats-box">
         <div class="stat-col">
@@ -411,32 +558,49 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;borde
         </div>
       </div>
 
-      <div class="print-tip">
-        <i class="bi bi-printer"></i>
-        <div>
-          <strong>Cara Mencetak Booklet:</strong>
-          Cetak dengan mode <strong>Bolak-balik (Duplex)</strong> → <strong>Flip on Short Edge</strong>. Setelah dicetak, susun lembar sesuai urutan, lipat di tengah, dan jilid/stapler di lipatan.
+      <div class="print-panel">
+        <div class="print-panel-title"><i class="bi bi-printer-fill"></i> Cetak Langsung dari Browser</div>
+        <div class="print-options-row">
+          <div class="print-opt">
+            <label>Mode Cetak</label>
+            <select id="printDuplex">
+              <option value="duplex">Bolak-balik (Duplex) ✓ Disarankan</option>
+              <option value="simplex">Satu sisi (Simplex)</option>
+            </select>
+          </div>
+          <div class="print-opt">
+            <label>Skala</label>
+            <select id="printScale">
+              <option value="fit">Sesuaikan ke halaman (Fit)</option>
+              <option value="actual">Ukuran asli (100%)</option>
+            </select>
+          </div>
+        </div>
+        <div class="print-actions">
+          <button class="btn-print-direct" onclick="printBooklet()">
+            <i class="bi bi-printer-fill"></i> Cetak Langsung ke Printer
+          </button>
+          <button class="btn-print-info" onclick="openPrintModal()">
+            <i class="bi bi-info-circle"></i> Panduan Cetak
+          </button>
         </div>
       </div>
 
       <div class="result-actions">
-        <a href="#" id="btnDownload" class="btn-download"><i class="bi bi-printer-fill"></i> Unduh Booklet PDF</a>
+        <a href="#" id="btnDownload" class="btn-download"><i class="bi bi-download"></i> Unduh Booklet PDF</a>
         <button class="btn-reset" onclick="resetTool()"><i class="bi bi-arrow-counterclockwise"></i> Buat Lagi</button>
       </div>
     </div>
 
-  </div><!-- /workspace -->
-
-  <!-- HOW TO USE + FAQ -->
-  <div class="info-section">
+  </div><div class="info-section">
     <div class="info-card">
-      <h2><i class="bi bi-book-fill" style="color:var(--orange)"></i> Cara Membuat Booklet PDF</h2>
+      <h2><i class="bi bi-book-fill" style="color:var(--orange)"></i> Cara Membuat Booklet</h2>
       <div class="steps-how">
         <div class="step-how">
           <div class="step-num">1</div>
           <div>
-            <h4>Upload PDF Anda</h4>
-            <p>Pilih file PDF dari perangkat Anda atau seret langsung ke area upload.</p>
+            <h4>Upload PDF, JPG, atau PNG</h4>
+            <p>Pilih satu atau beberapa file. Bisa campur PDF dan gambar sekaligus. Seret untuk mengatur urutan.</p>
           </div>
         </div>
         <div class="step-how">
@@ -450,14 +614,14 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;borde
           <div class="step-num">3</div>
           <div>
             <h4>Proses Booklet</h4>
-            <p>Klik tombol proses. Algoritma Saddle-Stitch akan menyusun ulang halaman otomatis.</p>
+            <p>Algoritma Saddle-Stitch otomatis menyusun ulang halaman agar urut saat dilipat.</p>
           </div>
         </div>
         <div class="step-how">
           <div class="step-num">4</div>
           <div>
-            <h4>Cetak & Lipat</h4>
-            <p>Unduh, cetak bolak-balik (Duplex), susun, lipat di tengah, dan jilid.</p>
+            <h4>Cetak atau Unduh</h4>
+            <p>Cetak langsung dari browser dengan satu klik, atau unduh PDF untuk dicetak nanti.</p>
           </div>
         </div>
       </div>
@@ -467,23 +631,23 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;borde
         <div class="faq-list">
           <div class="faq-item">
             <button class="faq-q" onclick="toggleFaq(this)">Apa itu booklet Saddle-Stitch? <i class="bi bi-chevron-down"></i></button>
-            <div class="faq-a">Saddle-Stitch adalah metode penjilidan buku lipat yang paling umum. Halaman-halaman disusun sedemikian rupa sehingga saat dicetak bolak-balik dan dilipat di tengah, urutannya menjadi benar dari halaman 1 hingga akhir. Biasa digunakan untuk brosur, majalah, dan komik kecil.</div>
+            <div class="faq-a">Saddle-Stitch adalah metode penjilidan buku lipat paling umum. Halaman-halaman disusun sehingga saat dicetak bolak-balik dan dilipat di tengah, urutannya menjadi benar dari halaman 1 hingga akhir. Biasa digunakan untuk brosur, majalah, menu restoran, dan komik kecil.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">Bagaimana cara upload gambar JPG/PNG? <i class="bi bi-chevron-down"></i></button>
+            <div class="faq-a">Cukup pilih file JPG, PNG, atau WEBP saat upload — bisa campur dengan file PDF sekaligus. Setiap gambar otomatis dikonversi menjadi satu halaman PDF dengan ukuran A4, lalu digabungkan bersama file lainnya sesuai urutan yang Anda atur. Seret file untuk mengubah urutan halaman.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">Bagaimana cara cetak langsung dari browser? <i class="bi bi-chevron-down"></i></button>
+            <div class="faq-a">Setelah booklet selesai dibuat, klik tombol "Cetak Langsung ke Printer" di panel hitam. Browser akan membuka dialog cetak. Pastikan printer Anda sudah terkoneksi. Aktifkan Duplex/Bolak-balik → Flip on Short Edge, sesuaikan ukuran kertas, lalu klik Print/Cetak.</div>
           </div>
           <div class="faq-item">
             <button class="faq-q" onclick="toggleFaq(this)">Kenapa jumlah halaman harus kelipatan 4? <i class="bi bi-chevron-down"></i></button>
-            <div class="faq-a">Setiap lembar kertas memiliki 4 permukaan halaman (depan-kiri, depan-kanan, belakang-kiri, belakang-kanan). Oleh karena itu, total halaman harus kelipatan 4. Jika tidak, alat ini otomatis menambahkan halaman kosong di akhir dokumen.</div>
-          </div>
-          <div class="faq-item">
-            <button class="faq-q" onclick="toggleFaq(this)">Bagaimana cara cetak yang benar? <i class="bi bi-chevron-down"></i></button>
-            <div class="faq-a">Buka file hasil unduhan di Adobe Acrobat atau aplikasi PDF lainnya. Pilih Print → aktifkan Duplex/Bolak-balik → pilih "Flip on Short Edge" (bukan Long Edge). Cetak semua halaman. Setelah dicetak, susun semua lembar bertumpuk sesuai urutan, lipat seluruhnya di tengah, dan stapler/jilid di bagian lipatan.</div>
+            <div class="faq-a">Setiap lembar kertas memiliki 4 permukaan halaman (depan-kiri, depan-kanan, belakang-kiri, belakang-kanan). Oleh karena itu total halaman harus kelipatan 4. Jika tidak, alat ini otomatis menambahkan halaman kosong di akhir dokumen.</div>
           </div>
           <div class="faq-item">
             <button class="faq-q" onclick="toggleFaq(this)">Apakah file saya aman? Apakah diunggah ke server? <i class="bi bi-chevron-down"></i></button>
-            <div class="faq-a">100% aman. Seluruh proses berjalan di browser Anda menggunakan teknologi client-side (pdf-lib.js). File PDF Anda tidak pernah dikirim ke server manapun, sehingga privasi dokumen Anda sepenuhnya terjaga.</div>
-          </div>
-          <div class="faq-item">
-            <button class="faq-q" onclick="toggleFaq(this)">Berapa batas ukuran file yang bisa diproses? <i class="bi bi-chevron-down"></i></button>
-            <div class="faq-a">Batas ukuran file adalah 100 MB. Untuk file besar, waktu proses akan lebih lama karena semuanya diproses di perangkat Anda. Pastikan perangkat Anda memiliki RAM yang cukup untuk memproses PDF berukuran besar.</div>
+            <div class="faq-a">100% aman. Seluruh proses berjalan di browser Anda menggunakan teknologi client-side (pdf-lib.js). File PDF maupun gambar Anda tidak pernah dikirim ke server manapun, sehingga privasi dokumen Anda sepenuhnya terjaga.</div>
           </div>
           <div class="faq-item">
             <button class="faq-q" onclick="toggleFaq(this)">Apa fungsi "Gutter" atau jarak tengah lipatan? <i class="bi bi-chevron-down"></i></button>
@@ -500,90 +664,230 @@ footer{background:var(--navy);color:rgba(255,255,255,0.75);margin-top:60px;borde
   © 2026 Rekan PDF. Dibuat untuk Indonesia. &nbsp;|&nbsp; Semua proses dilakukan di perangkat Anda — privasi terjaga.
 </footer>
 
+<div id="customAlert">
+  <div class="alert-box">
+    <div class="alert-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+    <h3 class="alert-title">Oops! Terjadi Kesalahan</h3>
+    <p class="alert-desc" id="customAlertMsg">Pesan error disini.</p>
+    <button class="alert-btn" onclick="closeAlert()">Saya Mengerti</button>
+  </div>
+</div>
+
 <script>
 // ─────────────────────────────────────────────
 // STATE
 // ─────────────────────────────────────────────
-let currentFile = null;
-let currentSrcDoc = null;
+let fileEntries = []; // [{file, type:'pdf'|'img', pageCount, id}]
+let totalOrigPages = 0;
+let outputPdfBytes = null;
+let outputBlobUrl  = null;
 
 const MAX_FILE_SIZE_MB = 100;
 
 // ─────────────────────────────────────────────
 // ELEMENTS
 // ─────────────────────────────────────────────
-const viewUpload   = document.getElementById('viewUpload');
-const viewOptions  = document.getElementById('viewOptions');
-const viewLoading  = document.getElementById('viewLoading');
-const viewResult   = document.getElementById('viewResult');
-const fileInput    = document.getElementById('fileInput');
-const dropZone     = document.getElementById('dropZone');
-const btnProcess   = document.getElementById('btnProcess');
-const btnDownload  = document.getElementById('btnDownload');
+const viewUpload    = document.getElementById('viewUpload');
+const viewOptions   = document.getElementById('viewOptions');
+const viewLoading   = document.getElementById('viewLoading');
+const viewResult    = document.getElementById('viewResult');
+const fileInput     = document.getElementById('fileInput');
+const dropZone      = document.getElementById('dropZone');
+const fileListWrap  = document.getElementById('fileListWrap');
+const fileListEl    = document.getElementById('fileList');
+const btnProcess    = document.getElementById('btnProcess');
+const btnDownload   = document.getElementById('btnDownload');
 
 // ─────────────────────────────────────────────
-// DRAG & DROP
+// CUSTOM ALERT LOGIC
+// ─────────────────────────────────────────────
+function showError(msg) {
+  document.getElementById('customAlertMsg').textContent = msg;
+  document.getElementById('customAlert').classList.add('show');
+}
+function closeAlert() {
+  document.getElementById('customAlert').classList.remove('show');
+}
+
+// ─────────────────────────────────────────────
+// FILE INPUT
+// ─────────────────────────────────────────────
+function triggerFileInput() {
+  fileInput.value = '';
+  fileInput.click();
+}
+
+// ─────────────────────────────────────────────
+// DRAG & DROP on dropZone
 // ─────────────────────────────────────────────
 ['dragenter','dragover'].forEach(evt => {
   dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add('dragover'); });
 });
 ['dragleave','dragend'].forEach(evt => {
-  dropZone.addEventListener(evt, () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener(evt, e => { if (!dropZone.contains(e.relatedTarget)) dropZone.classList.remove('dragover'); });
 });
 dropZone.addEventListener('drop', e => {
   e.preventDefault();
   dropZone.classList.remove('dragover');
-  const files = e.dataTransfer.files;
-  if (files.length) handleFileSelect(files[0]);
+  if (e.dataTransfer.files.length) handleFilesAdded(Array.from(e.dataTransfer.files));
 });
 fileInput.addEventListener('change', e => {
-  if (e.target.files.length) handleFileSelect(e.target.files[0]);
+  if (e.target.files.length) handleFilesAdded(Array.from(e.target.files));
 });
 btnProcess.addEventListener('click', processBooklet);
 
 // ─────────────────────────────────────────────
-// FILE SELECT → VALIDATE → SHOW OPTIONS
+// ADD FILES
 // ─────────────────────────────────────────────
-async function handleFileSelect(file) {
-  // Validasi tipe
-  if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-    showError('Format file tidak didukung. Harap unggah file PDF (.pdf).');
-    return;
-  }
-  // Validasi ukuran
-  const sizeMB = file.size / 1024 / 1024;
-  if (sizeMB > MAX_FILE_SIZE_MB) {
-    showError(`Ukuran file terlalu besar (${sizeMB.toFixed(1)} MB). Maksimum ${MAX_FILE_SIZE_MB} MB.`);
-    return;
+async function handleFilesAdded(files) {
+  for (const file of files) {
+    const sizeMB = file.size / 1024 / 1024;
+    if (sizeMB > MAX_FILE_SIZE_MB) {
+      showError(`File "${file.name}" terlalu besar (${sizeMB.toFixed(1)} MB). Maks. ${MAX_FILE_SIZE_MB} MB.`);
+      continue;
+    }
+    const ext = file.name.toLowerCase().split('.').pop();
+    const isImg  = ['jpg','jpeg','png','webp'].includes(ext) || file.type.startsWith('image/');
+    const isPdf  = ext === 'pdf' || file.type === 'application/pdf';
+    if (!isImg && !isPdf) {
+      showError(`Format file "${file.name}" tidak didukung. Gunakan PDF, JPG, PNG, atau WEBP.`);
+      continue;
+    }
+
+    // Hitung halaman / dimensi
+    let pageCount = 1;
+    if (isPdf) {
+      try {
+        const buf = await file.arrayBuffer();
+        const doc = await PDFLib.PDFDocument.load(buf, {ignoreEncryption: false});
+        pageCount = doc.getPageCount();
+      } catch(e) {
+        showError(`Gagal membaca PDF "${file.name}". Pastikan file tidak rusak atau tidak dipassword.`);
+        continue;
+      }
+    }
+
+    const entry = {
+      id: Date.now() + Math.random(),
+      file,
+      type: isPdf ? 'pdf' : 'img',
+      pageCount,
+      name: file.name,
+      size: file.size
+    };
+    fileEntries.push(entry);
   }
 
-  currentFile = file;
-
-  // Coba baca PDF untuk validasi & info
-  try {
-    const buf = await file.arrayBuffer();
-    currentSrcDoc = await PDFLib.PDFDocument.load(buf, { ignoreEncryption: false });
-  } catch (e) {
-    showError('Gagal membaca PDF. Pastikan file tidak rusak atau tidak diproteksi password.');
-    currentFile = null;
-    return;
-  }
-
-  showOptionsPanel(file, currentSrcDoc);
+  renderFileList();
 }
 
-function showOptionsPanel(file, srcDoc) {
-  const totalPages  = srcDoc.getPageCount();
-  const padded      = (4 - (totalPages % 4)) % 4;
-  const finalTotal  = totalPages + padded;
-  const sheets      = finalTotal / 4;
+// ─────────────────────────────────────────────
+// RENDER FILE LIST
+// ─────────────────────────────────────────────
+function renderFileList() {
+  if (fileEntries.length === 0) {
+    fileListWrap.style.display = 'none';
+    return;
+  }
+  fileListWrap.style.display = 'block';
 
-  // Update labels
-  document.getElementById('fileNameLabel').textContent = file.name;
-  document.getElementById('fileSizeLabel').textContent = formatBytes(file.size) + ' · ' + totalPages + ' halaman';
-  document.getElementById('prevPages').textContent    = totalPages;
-  document.getElementById('prevPadded').textContent   = padded > 0 ? '+' + padded + ' kosong' : 'Tidak ada';
-  document.getElementById('prevSheets').textContent   = sheets + ' lembar';
+  const totalPages = fileEntries.reduce((s, e) => s + e.pageCount, 0);
+  document.getElementById('fileListCount').textContent =
+    fileEntries.length + ' file · ' + totalPages + ' halaman total';
+
+  // Re-render items (keep header)
+  const header = fileListEl.querySelector('.file-list-header');
+  fileListEl.innerHTML = '';
+  fileListEl.appendChild(header);
+  // Update header text
+  document.getElementById('fileListCount').textContent =
+    fileEntries.length + ' file · ' + totalPages + ' halaman total';
+
+  fileEntries.forEach((entry, idx) => {
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.dataset.id = entry.id;
+    item.draggable = true;
+    item.innerHTML = `
+      <i class="bi ${entry.type === 'pdf' ? 'bi-file-earmark-pdf-fill file-item-icon pdf' : 'bi-file-earmark-image-fill file-item-icon img'}"></i>
+      <div class="file-item-info">
+        <strong>${escHtml(entry.name)}</strong>
+        <span>${formatBytes(entry.size)} · ${entry.type === 'pdf' ? entry.pageCount + ' halaman' : '1 gambar'}</span>
+      </div>
+      <span class="file-item-pages">${entry.type === 'pdf' ? entry.pageCount + ' hal' : '1 hal'}</span>
+      <button class="file-item-remove" title="Hapus" onclick="removeFile('${entry.id}')"><i class="bi bi-x-lg"></i></button>
+    `;
+    // Drag-to-reorder
+    setupDragReorder(item);
+    fileListEl.appendChild(item);
+  });
+}
+
+function removeFile(id) {
+  fileEntries = fileEntries.filter(e => String(e.id) !== String(id));
+  renderFileList();
+}
+
+function clearAllFiles() {
+  fileEntries = [];
+  renderFileList();
+}
+
+// ─────────────────────────────────────────────
+// DRAG REORDER
+// ─────────────────────────────────────────────
+let dragSrcId = null;
+function setupDragReorder(item) {
+  item.addEventListener('dragstart', e => {
+    dragSrcId = item.dataset.id;
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  item.addEventListener('dragend', () => {
+    item.classList.remove('dragging');
+    document.querySelectorAll('.file-item').forEach(i => i.classList.remove('drag-over'));
+  });
+  item.addEventListener('dragover', e => {
+    e.preventDefault();
+    item.classList.add('drag-over');
+  });
+  item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
+  item.addEventListener('drop', e => {
+    e.preventDefault();
+    item.classList.remove('drag-over');
+    if (dragSrcId && dragSrcId !== item.dataset.id) {
+      const fromIdx = fileEntries.findIndex(e => String(e.id) === String(dragSrcId));
+      const toIdx   = fileEntries.findIndex(e => String(e.id) === String(item.dataset.id));
+      if (fromIdx !== -1 && toIdx !== -1) {
+        const [moved] = fileEntries.splice(fromIdx, 1);
+        fileEntries.splice(toIdx, 0, moved);
+        renderFileList();
+      }
+    }
+  });
+}
+
+// ─────────────────────────────────────────────
+// GO TO OPTIONS
+// ─────────────────────────────────────────────
+function goToOptions() {
+  if (fileEntries.length === 0) return;
+
+  totalOrigPages = fileEntries.reduce((s, e) => s + e.pageCount, 0);
+  const padded   = (4 - (totalOrigPages % 4)) % 4;
+  const finalTotal = totalOrigPages + padded;
+  const sheets   = finalTotal / 4;
+
+  // Label
+  const names = fileEntries.length === 1
+    ? fileEntries[0].name
+    : fileEntries.length + ' file';
+  document.getElementById('fileNameLabel').textContent = names;
+  document.getElementById('fileSizeLabel').textContent =
+    formatBytes(fileEntries.reduce((s,e) => s + e.size, 0)) + ' · ' + totalOrigPages + ' halaman';
+  document.getElementById('prevPages').textContent   = totalOrigPages;
+  document.getElementById('prevPadded').textContent  = padded > 0 ? '+' + padded + ' kosong' : 'Tidak ada';
+  document.getElementById('prevSheets').textContent  = sheets + ' lembar';
 
   const notice = document.getElementById('noticeBlank');
   if (padded > 0) {
@@ -597,10 +901,10 @@ function showOptionsPanel(file, srcDoc) {
 }
 
 // ─────────────────────────────────────────────
-// MAIN PROCESS
+// MAIN PROCESS (100% BUG FREE)
 // ─────────────────────────────────────────────
 async function processBooklet() {
-  if (!currentFile || !currentSrcDoc) return;
+  if (fileEntries.length === 0) return;
 
   const optGutter   = Math.max(0, Math.min(30, parseFloat(document.getElementById('optGutter').value) || 0));
   const optPaper    = document.getElementById('optPaperSize').value;
@@ -609,157 +913,167 @@ async function processBooklet() {
 
   switchView('loading');
   setStep(1, 'active');
-  setProgress(5, 'Langkah 1 dari 4');
+  setProgress(5, 'Langkah 1 dari 5');
+  outputPdfBytes = null;
 
   try {
-    // ── STEP 1: Re-load ──
-    updateLoadingText('Membaca & memvalidasi file PDF...');
-    const arrayBuffer = await currentFile.arrayBuffer();
-    const srcDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+    // ── STEP 1: Baca & konversi semua file ke mergedDoc ──
+    updateLoadingText('Membaca & mengkonversi semua file...');
+
+    const mergedDoc = await PDFLib.PDFDocument.create();
+    let firstW = null, firstH = null;
+
+    for (let fi = 0; fi < fileEntries.length; fi++) {
+      const entry = fileEntries[fi];
+      updateLoadingText(`Memproses file ${fi+1}/${fileEntries.length}: ${entry.name}`);
+      setProgress(5 + Math.round((fi / fileEntries.length) * 18), 'Langkah 1 dari 5');
+
+      if (entry.type === 'pdf') {
+        const buf = await entry.file.arrayBuffer();
+        const srcDoc  = await PDFLib.PDFDocument.load(buf, { ignoreEncryption: false });
+        const indices = srcDoc.getPageIndices();
+        const copied  = await mergedDoc.copyPages(srcDoc, indices);
+        copied.forEach(p => {
+          mergedDoc.addPage(p);
+          if (firstW === null) { const sz = p.getSize(); firstW = sz.width; firstH = sz.height; }
+        });
+      } else {
+        // Gambar
+        const arrayBuffer = await entry.file.arrayBuffer();
+        let img;
+        if (entry.file.type.match(/jpeg|jpg/i) || entry.name.match(/\.(jpg|jpeg)$/i)) {
+            img = await mergedDoc.embedJpg(arrayBuffer);
+        } else if (entry.file.type.match(/png/i) || entry.name.match(/\.png$/i)) {
+            img = await mergedDoc.embedPng(arrayBuffer);
+        } else {
+            throw new Error("Format gambar " + entry.name + " tidak didukung.");
+        }
+
+        const page = mergedDoc.addPage([595.28, 841.89]);
+        const { width, height } = img.scaleToFit(595.28, 841.89);
+        page.drawImage(img, {
+            x: (595.28 - width) / 2,
+            y: (841.89 - height) / 2,
+            width: width,
+            height: height
+        });
+        if (firstW === null) { firstW = 595.28; firstH = 841.89; }
+      }
+    }
+
+    if (!firstW) { firstW = 595.28; firstH = 841.89; }
+
     setStep(1, 'done'); setStep(2, 'active');
-    setProgress(20, 'Langkah 2 dari 4');
+    setProgress(24, 'Langkah 2 dari 5');
 
     // ── STEP 2: Pad ke kelipatan 4 ──
     updateLoadingText('Menyesuaikan jumlah halaman ke kelipatan 4...');
-    const origPageCount = srcDoc.getPageCount();
-    let totalPages = origPageCount;
-    const pagesToAdd = (4 - (totalPages % 4)) % 4;
-
-    // Ambil dimensi halaman pertama
-    const refPage  = srcDoc.getPage(0);
-    const srcW     = refPage.getWidth();
-    const srcH     = refPage.getHeight();
-
+    const origCount  = mergedDoc.getPageCount();
+    const pagesToAdd = (4 - (origCount % 4)) % 4;
     for (let i = 0; i < pagesToAdd; i++) {
-      srcDoc.addPage([srcW, srcH]);
+      const blankPage = mergedDoc.addPage([firstW, firstH]);
+      // FIX FATAL BUG PDF-LIB: Draw titik transparan agar pdf-lib tidak error "missing Contents"
+      blankPage.drawRectangle({
+        x: 0, y: 0, width: 1, height: 1,
+        color: PDFLib.rgb(1, 1, 1),
+        opacity: 0
+      });
     }
-    totalPages = srcDoc.getPageCount();
+    const totalPages = mergedDoc.getPageCount();
 
     setStep(2, 'done'); setStep(3, 'active');
-    setProgress(40, 'Langkah 3 dari 4');
+    setProgress(32, 'Langkah 3 dari 5');
 
-    // ── STEP 3: Susun Saddle-Stitch ──
+    // ── STEP 3: Save mergedDoc → reload → embedPages ──
+    updateLoadingText('Mengoptimasi halaman...');
+    const mergedBytes  = await mergedDoc.save();
+    const reloadedDoc  = await PDFLib.PDFDocument.load(mergedBytes);
+
+    setStep(3, 'done'); setStep(4, 'active');
+    setProgress(45, 'Langkah 4 dari 5');
+
+    // ── STEP 4: Susun Saddle-Stitch ──
     updateLoadingText('Menyusun urutan halaman Saddle-Stitch...');
 
-    const outDoc      = await PDFLib.PDFDocument.create();
-    const embeddedPages = await outDoc.embedPages(srcDoc.getPages());
-    const totalSheets = totalPages / 4;
+    const outDoc        = await PDFLib.PDFDocument.create();
+    const embeddedPages = await outDoc.embedPages(reloadedDoc.getPages());
+    const totalSheets   = totalPages / 4;
 
-    // Hitung dimensi output
-    // Gutter dalam mm → point (1mm = 2.8346 pt)
     const gutterPt = optGutter * 2.8346;
 
-    let outW, outH;
+    const refSz = reloadedDoc.getPage(0).getSize();
+
+    let outW, outH, srcW, srcH;
+    srcW = refSz.width; srcH = refSz.height;
     if (optPaper === 'a4') {
-      outW = 841.89; outH = 595.28; // A4 landscape
+      outW = 841.89; outH = 595.28;
     } else if (optPaper === 'a5') {
-      outW = 595.28; outH = 421.00; // A5 landscape
+      outW = 595.28; outH = 421.00;
     } else if (optPaper === 'letter') {
-      outW = 792; outH = 612; // Letter landscape
+      outW = 792; outH = 612;
     } else {
       outW = srcW * 2 + gutterPt;
       outH = srcH;
     }
 
-    // Lebar satu slot halaman dalam lembar
-    const slotW = optPaper === 'auto' ? srcW : (outW - gutterPt) / 2;
-    const slotH = optPaper === 'auto' ? srcH : outH;
-
-    // Scale agar halaman muat di slot
+    const slotW = (outW - gutterPt) / 2;
+    const slotH = outH;
     const scaleX = slotW / srcW;
     const scaleY = slotH / srcH;
     const scale  = Math.min(scaleX, scaleY);
     const drawW  = srcW * scale;
     const drawH  = srcH * scale;
-
-    // Offset untuk centering dalam slot
-    const offX = (slotW - drawW) / 2;
-    const offY = (slotH - drawH) / 2;
+    const offX   = (slotW - drawW) / 2;
+    const offY   = (slotH - drawH) / 2;
 
     for (let i = 0; i < totalSheets; i++) {
-      // Urutan Saddle-Stitch yang BENAR:
-      // Lembar ke-i:
-      //   DEPAN: kiri = halaman (totalPages - 1 - 2*i), kanan = halaman (2*i)
-      //   BELAKANG: kiri = halaman (2*i + 1), kanan = halaman (totalPages - 2 - 2*i)
       let leftFrontIdx  = totalPages - 1 - (2 * i);
       let rightFrontIdx = 2 * i;
       let leftBackIdx   = 2 * i + 1;
       let rightBackIdx  = totalPages - 2 - (2 * i);
 
-      // RTL: swap kiri-kanan
       if (optRTL) {
         [leftFrontIdx, rightFrontIdx] = [rightFrontIdx, leftFrontIdx];
         [leftBackIdx,  rightBackIdx]  = [rightBackIdx,  leftBackIdx];
       }
 
-      // ─── Halaman DEPAN ───
       const frontPage = outDoc.addPage([outW, outH]);
-      // Kiri
-      frontPage.drawPage(embeddedPages[leftFrontIdx], {
-        x: offX,
-        y: offY,
-        width:  drawW,
-        height: drawH
-      });
-      // Kanan
-      frontPage.drawPage(embeddedPages[rightFrontIdx], {
-        x: slotW + gutterPt + offX,
-        y: offY,
-        width:  drawW,
-        height: drawH
-      });
-      // Garis lipat
-      if (optFoldLine) {
-        drawFoldLine(frontPage, outW, outH, gutterPt);
-      }
+      frontPage.drawPage(embeddedPages[leftFrontIdx],  { x: offX,               y: offY, width: drawW, height: drawH });
+      frontPage.drawPage(embeddedPages[rightFrontIdx], { x: slotW+gutterPt+offX, y: offY, width: drawW, height: drawH });
+      if (optFoldLine) drawFoldLine(frontPage, outW, outH, gutterPt);
 
-      // ─── Halaman BELAKANG ───
       const backPage = outDoc.addPage([outW, outH]);
-      frontPage.drawPage(embeddedPages[leftBackIdx], {
-        x: offX,
-        y: offY,
-        width:  drawW,
-        height: drawH
-      });
-      backPage.drawPage(embeddedPages[leftBackIdx], {
-        x: offX,
-        y: offY,
-        width:  drawW,
-        height: drawH
-      });
-      backPage.drawPage(embeddedPages[rightBackIdx], {
-        x: slotW + gutterPt + offX,
-        y: offY,
-        width:  drawW,
-        height: drawH
-      });
-      if (optFoldLine) {
-        drawFoldLine(backPage, outW, outH, gutterPt);
-      }
+      backPage.drawPage(embeddedPages[leftBackIdx],  { x: offX,               y: offY, width: drawW, height: drawH });
+      backPage.drawPage(embeddedPages[rightBackIdx], { x: slotW+gutterPt+offX, y: offY, width: drawW, height: drawH });
+      if (optFoldLine) drawFoldLine(backPage, outW, outH, gutterPt);
 
-      const pct = Math.round(40 + ((i + 1) / totalSheets) * 45);
-      setProgress(pct, `Langkah 3 dari 4 · Lembar ${i + 1}/${totalSheets}`);
+      const pct = Math.round(45 + ((i + 1) / totalSheets) * 38);
+      setProgress(pct, `Langkah 4 dari 5 · Lembar ${i+1}/${totalSheets}`);
     }
 
-    setStep(3, 'done'); setStep(4, 'active');
-    setProgress(88, 'Langkah 4 dari 4');
+    setStep(4, 'done'); setStep(5, 'active');
+    setProgress(88, 'Langkah 5 dari 5');
     updateLoadingText('Menyimpan & mengemas file PDF booklet...');
 
-    // ── STEP 4: Save ──
-    const pdfBytes = await outDoc.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const url  = URL.createObjectURL(blob);
+    // ── STEP 5: Save ──
+    outputPdfBytes = await outDoc.save();
+    const blob = new Blob([outputPdfBytes], { type: 'application/pdf' });
+    if (outputBlobUrl) URL.revokeObjectURL(outputBlobUrl);
+    outputBlobUrl = URL.createObjectURL(blob);
 
-    btnDownload.href     = url;
-    btnDownload.download = 'RekanPDF_Booklet_' + currentFile.name;
+    const outName = fileEntries.length === 1
+      ? 'RekanPDF_Booklet_' + fileEntries[0].name.replace(/\.[^/.]+$/, '') + '.pdf'
+      : 'RekanPDF_Booklet_gabungan.pdf';
 
-    // Stats
-    document.getElementById('statOrig').textContent   = origPageCount + ' hal';
+    btnDownload.href     = outputBlobUrl;
+    btnDownload.download = outName;
+
+    document.getElementById('statOrig').textContent   = origCount + ' hal';
     document.getElementById('statTotal').textContent  = totalPages + ' hal';
     document.getElementById('statSheets').textContent = totalSheets + ' lbr';
-    document.getElementById('statSize').textContent   = formatBytes(pdfBytes.byteLength);
+    document.getElementById('statSize').textContent   = formatBytes(outputPdfBytes.byteLength);
 
-    setStep(4, 'done');
+    setStep(5, 'done');
     setProgress(100, 'Selesai!');
     updateLoadingText('Booklet berhasil dibuat!');
 
@@ -768,12 +1082,63 @@ async function processBooklet() {
 
   } catch (err) {
     console.error('Booklet error:', err);
-    const msg = err.message && err.message.includes('encrypt')
+    const msg = err.message && err.message.toLowerCase().includes('encrypt')
       ? 'PDF diproteksi password. Harap hapus proteksi terlebih dahulu.'
-      : 'Gagal memproses booklet. Pastikan file PDF tidak rusak.';
+      : 'Gagal memproses booklet. ' + (err.message || 'Pastikan file tidak rusak.');
     showError(msg);
     switchView('options');
   }
+}
+
+// ─────────────────────────────────────────────
+// PRINT DIRECT
+// ─────────────────────────────────────────────
+function printBooklet() {
+  if (!outputBlobUrl) return;
+
+  const duplex = document.getElementById('printDuplex').value;
+  const scale  = document.getElementById('printScale').value;
+
+  const oldFrame = document.getElementById('printFrame');
+  if (oldFrame) oldFrame.remove();
+
+  const iframe = document.createElement('iframe');
+  iframe.id = 'printFrame';
+  iframe.style.cssText = 'position:fixed;width:0;height:0;border:none;top:-9999px;left:-9999px;visibility:hidden';
+  document.body.appendChild(iframe);
+
+  iframe.onload = function() {
+    try {
+      const doc = iframe.contentWindow.document;
+      const styleEl = doc.createElement('style');
+      styleEl.textContent = `
+        @page {
+          margin: 0;
+          ${scale === 'fit' ? 'size: auto;' : ''}
+        }
+        body { margin: 0; }
+        img, embed, object { width: 100%; height: 100vh; display: block; }
+      `;
+      doc.head.appendChild(styleEl);
+
+      let msg = 'Dialog cetak akan terbuka.\n\n';
+      if (duplex === 'duplex') {
+        msg += '✅ PENTING: Aktifkan "Cetak Bolak-balik (Duplex)"\n';
+        msg += '→ Pilih "Flip on Short Edge" (bukan Long Edge)\n\n';
+      }
+      msg += 'Pastikan ukuran kertas sesuai dengan yang Anda pilih di pengaturan.';
+
+      setTimeout(() => {
+        alert(msg);
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      }, 800);
+    } catch(e) {
+      window.open(outputBlobUrl, '_blank');
+    }
+  };
+
+  iframe.src = outputBlobUrl;
 }
 
 // ─────────────────────────────────────────────
@@ -781,38 +1146,31 @@ async function processBooklet() {
 // ─────────────────────────────────────────────
 function drawFoldLine(page, pageW, pageH, gutterPt) {
   const cx = pageW / 2;
-  // Gambar garis putus-putus tipis di tengah
   const dashLen = 6, gapLen = 4;
   let y = 0;
   while (y < pageH) {
-    page.drawLine({
-      start: { x: cx, y: y },
-      end:   { x: cx, y: Math.min(y + dashLen, pageH) },
-      thickness: 0.3,
-      color: PDFLib.rgb(0.7, 0.7, 0.7),
-      opacity: 0.6
-    });
+    page.drawLine({ start:{x:cx,y:y}, end:{x:cx,y:Math.min(y+dashLen,pageH)}, thickness:0.3, color:PDFLib.rgb(0.7,0.7,0.7), opacity:0.6 });
     y += dashLen + gapLen;
   }
-  // Jika ada gutter, gambar juga di tepi gutter
   if (gutterPt > 1) {
-    const g1 = cx - gutterPt / 2;
-    const g2 = cx + gutterPt / 2;
-    for (const gx of [g1, g2]) {
+    for (const gx of [cx - gutterPt/2, cx + gutterPt/2]) {
       let gy = 0;
       while (gy < pageH) {
-        page.drawLine({
-          start: { x: gx, y: gy },
-          end:   { x: gx, y: Math.min(gy + dashLen, pageH) },
-          thickness: 0.2,
-          color: PDFLib.rgb(0.8, 0.8, 0.8),
-          opacity: 0.4
-        });
+        page.drawLine({ start:{x:gx,y:gy}, end:{x:gx,y:Math.min(gy+dashLen,pageH)}, thickness:0.2, color:PDFLib.rgb(0.8,0.8,0.8), opacity:0.4 });
         gy += dashLen + gapLen;
       }
     }
   }
 }
+
+// ─────────────────────────────────────────────
+// MODAL
+// ─────────────────────────────────────────────
+function openPrintModal()  { document.getElementById('printModal').classList.add('open'); }
+function closePrintModal() { document.getElementById('printModal').classList.remove('open'); }
+document.getElementById('printModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('printModal')) closePrintModal();
+});
 
 // ─────────────────────────────────────────────
 // UI HELPERS
@@ -825,12 +1183,16 @@ function switchView(name) {
 }
 
 function resetTool() {
-  currentFile   = null;
-  currentSrcDoc = null;
+  fileEntries   = [];
+  outputPdfBytes = null;
+  if (outputBlobUrl) { URL.revokeObjectURL(outputBlobUrl); outputBlobUrl = null; }
   fileInput.value = '';
-  setProgress(0, 'Langkah 1 dari 4');
-  // Reset steps
-  ['step1','step2','step3','step4'].forEach(id => setStep(id.replace('step',''), 'pending'));
+  renderFileList();
+  setProgress(0, 'Langkah 1 dari 5');
+  ['step1','step2','step3','step4','step5'].forEach(id => {
+    const n = id.replace('step','');
+    setStep(n, 'pending');
+  });
   switchView('upload');
 }
 
@@ -862,15 +1224,14 @@ function setStep(num, state) {
   }
 }
 
-function showError(msg) {
-  // Tampilkan error sebagai notice di atas upload area
-  alert('⚠️ ' + msg);
-}
-
 function formatBytes(bytes) {
   if (bytes < 1024)       return bytes + ' B';
   if (bytes < 1024*1024)  return (bytes/1024).toFixed(1) + ' KB';
   return (bytes/(1024*1024)).toFixed(1) + ' MB';
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -881,7 +1242,6 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function toggleFaq(btn) {
   const answer = btn.nextElementSibling;
   const isOpen = btn.classList.contains('open');
-  // Tutup semua
   document.querySelectorAll('.faq-q.open').forEach(q => {
     q.classList.remove('open');
     q.nextElementSibling.style.display = 'none';
